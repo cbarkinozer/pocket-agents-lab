@@ -1655,7 +1655,7 @@ A rough backlog:
 
 ## Foundation
 
-* [ ] Local SLM Android chat
+* [x] Local SLM Android chat: select and load GGUF, prompt, and generate through llama.cpp on arm64-v8a
 * [ ] benchmark CPU inference
 * [ ] model-size comparison
 * [ ] quantization comparison
@@ -1737,6 +1737,144 @@ A rough backlog:
 * [ ] multi-agent experiments
 * [ ] tiny-model routing
 * [ ] adaptive model selection
+
+---
+
+# Long-Term Research Program
+
+The north-star question for this repository is practical:
+
+> Which model and runtime should someone actually use on an inexpensive Android phone?
+
+The work is organized into seven tracks. These are intended to remain useful as a multi-week backlog, not as promises that every experiment will succeed.
+
+## Track 1 — Edge SLM Benchmark
+
+Build a reproducible benchmark that evaluates both whether a model is useful and whether it runs well at the edge.
+
+Measure:
+
+* task quality on public, versioned, contamination-mitigated evaluations;
+* model-load time, time to first token, prompt-processing speed, generation tokens/second, and end-to-end latency;
+* peak and steady-state RAM, model storage size, quantization, and supported context length;
+* CPU utilization, battery or energy cost, temperature, and sustained thermal throttling;
+* supported runtime, acceleration path, ABI, Android version, and device class.
+
+Report the individual measurements first. A composite score is useful for comparison, but must never hide its components or allow a tiny unusable model to win solely through speed.
+
+Candidate score design:
+
+```text
+Quality Score    = normalized task capability
+Efficiency Score = normalized speed, memory, energy, and sustained-performance metrics
+Edge Score       = Quality^alpha × Efficiency^beta
+```
+
+An alternative interpretable form to investigate is:
+
+```text
+Edge Score = Quality × SpeedFactor × MemoryFactor × EnergyFactor
+```
+
+Scores should be normalized against a documented reference device and model. Quality should be a gate or multiplicative factor, not just one small term in a naive weighted average. Publish profiles such as `EdgeScore-General`, `EdgeScore-Agent`, `EdgeScore-Code`, `EdgeScore-LowRAM`, and `EdgeScore-Battery` rather than pretending one weighting fits every use case.
+
+Example result schema:
+
+| Model | Quality | TPS | TTFT | Peak RAM | Energy | Agent score | Edge Score |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Reference model | TBD | TBD | TBD | TBD | TBD | TBD | 100.0 |
+
+Benchmark integrity requirements:
+
+* pin model hashes, runtime commits, prompts, sampling settings, thread count, context, and device state;
+* use held-out or freshly generated test variants where possible and document contamination risk;
+* repeat runs, report dispersion, and separate cold-load from warm inference;
+* begin at a controlled battery level and thermal state, with identical background-app and charging conditions;
+* retain raw machine-readable results so future score formulas can be recomputed;
+* never report only the composite score.
+
+## Track 2 — Runtime and Implementation Benchmark
+
+Run the same model, quantization, prompt set, device, and thermal protocol across compatible runtimes:
+
+* llama.cpp;
+* PicoLM;
+* a minimal or custom C/C++ implementation where useful;
+* ExecuTorch;
+* ONNX Runtime;
+* LiteRT / TensorFlow Lite and NNAPI-capable paths.
+
+This isolates model capability from runtime efficiency and answers: how much performance comes from the model, and how much comes from the runtime?
+
+## Track 3 — On-Device LoRA / QLoRA
+
+Start conservatively with a fixed tiny dataset and a 250M–500M model, running while plugged in and supervised before attempting overnight training.
+
+Measure training RAM, samples/second, total time, energy, temperature, throttling, adapter size, and held-out quality improvement. Compare the benefit with the cost and verify that training does not make the base model worse outside the target task.
+
+## Track 4 — Periodic On-the-Run Adaptation
+
+Explore opt-in collection of user corrections, successful tool calls, failed actions, and preferences. A safer initial loop is:
+
+```text
+use during the day → review examples → train while charging → evaluate → activate a new adapter
+```
+
+Compare four baselines: no personalization, prompt memory, retrieval-augmented memory, and LoRA personalization. Continuous training is not assumed to be better; measurable retention, privacy, reversibility, and regression testing are requirements.
+
+## Track 5 — Agentic Structures
+
+Test whether scaffolding compensates for smaller models by comparing:
+
+* direct answer;
+* structured tool calling;
+* ReAct;
+* planner/executor;
+* generate → execute → repair;
+* short- and long-term memory;
+* dynamic tool retrieval;
+* model-created tools with validation and sandboxing.
+
+This should become an Edge Agent Benchmark distinct from raw language-model quality. Track task success, tool and argument accuracy, steps, repair attempts, total latency, resource use, and unsafe or invalid actions.
+
+## Track 6 — Mobile Capability Proofs
+
+Build focused demonstrations that answer, “Can a local small model actually do this on a normal phone?” Candidate proofs include:
+
+* semantic search across local files and personal knowledge;
+* storage diagnosis and duplicate-photo discovery;
+* battery-health explanation and device troubleshooting;
+* local document Q&A;
+* offline voice assistance;
+* natural language to SQLite and local automation;
+* local code execution in an explicit sandbox;
+* generated mini-apps;
+* screenshot understanding.
+
+Each proof should define a user-visible task, success criteria, permissions and safety boundaries, supported device class, and measured cost.
+
+## Track 7 — Packaging and Deployment
+
+Turn successful experiments into a PocketPal-like experience:
+
+```text
+install app → choose or download model → enable capabilities → use local agent
+```
+
+The final user should not need to understand GGUF, JNI, quantization, context configuration, or tool schemas. The research project discovers what works; the application packages the reproducible winners.
+
+## Near-Term TODO
+
+1. [x] Establish the Galaxy A32 hardware and software baseline and preserve the findings in `docs/`.
+2. [x] Integrate CPU-only llama.cpp for `arm64-v8a` with GGUF selection, model loading, generation, and timing telemetry.
+3. [ ] Define a versioned benchmark-run manifest and JSON/CSV result schema.
+4. [ ] Add repeatable cold-load and warm-generation runs with model-load time, TTFT, TPS, peak RAM, CPU, battery, and thermal samples.
+5. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
+6. [ ] Benchmark several GGUF sizes and quantizations on the A32 using an identical protocol.
+7. [ ] Compare llama.cpp with at least one compatible alternative runtime using the same model family and workload.
+8. [ ] Prototype one constrained mobile capability proof with objective success criteria.
+9. [ ] Design Edge Score only after enough raw results exist to test weighting, gates, stability, and ranking sensitivity.
+10. [ ] Attempt on-device LoRA/QLoRA only after inference, thermal, energy, and recovery tooling are reliable.
 
 ---
 
