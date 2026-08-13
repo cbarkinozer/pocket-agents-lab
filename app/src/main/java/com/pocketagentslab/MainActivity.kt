@@ -183,7 +183,10 @@ private fun PocketAgentsScreen() {
                     try {
                         val started = SystemClock.elapsedRealtime()
                         var generatedPieces = 0
-                        engine.sendUserPrompt(prompt.trim(), predictLength = 64).collect { piece ->
+                        engine.sendUserPrompt(
+                            prompt.trim(),
+                            predictLength = MAX_GENERATED_TOKENS,
+                        ).collect { piece ->
                             output += piece
                             generatedPieces++
                         }
@@ -226,6 +229,8 @@ private fun PocketAgentsScreen() {
         )
     }
 }
+
+private const val MAX_GENERATED_TOKENS = 512
 
 private fun displayName(context: Context, uri: Uri): String {
     var cursor: Cursor? = null

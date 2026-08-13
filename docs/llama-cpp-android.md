@@ -7,7 +7,7 @@ The app uses the official `examples/llama.android` Kotlin/JNI binding from the p
 - ABI: `arm64-v8a` only.
 - Backend: statically linked baseline ARM64 CPU backend; no GPU or network API.
 - Context: 1024 tokens.
-- Maximum generated tokens per request: 64.
+- Maximum generated tokens per request: 512. Generation can stop earlier when the model emits its end-of-sequence token.
 - Model access: Android Storage Access Framework selection followed by an atomic copy to app-private `files/models`. Persisted URI permission is requested, while the private copy gives native llama.cpp a reliable filesystem path.
 - Upstream revision: recorded by the `third_party/llama.cpp` Git submodule.
 
