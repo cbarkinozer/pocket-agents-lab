@@ -7,6 +7,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Debug
 import android.os.SystemClock
 import android.provider.OpenableColumns
 import android.util.Log
@@ -44,8 +45,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.channels.FileChannel
 import java.util.Locale
+import org.tensorflow.lite.Interpreter
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,8 +82,11 @@ private fun PocketAgentsScreen() {
     var output by remember { mutableStateOf("") }
     var metrics by remember { mutableStateOf("") }
     var isBusy by remember { mutableStateOf(false) }
+    var isBenchmarkRunning by remember { mutableStateOf(false) }
+    var benchmarkStatus by remember { mutableStateOf("Benchmark not run") }
     var isModelLoaded by remember { mutableStateOf(false) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
+    val controlsBusy = isBusy || isBenchmarkRunning
 
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
@@ -113,11 +122,29 @@ private fun PocketAgentsScreen() {
             ),
         )
 
+        Text("Device capability", style = MaterialTheme.typography.titleMedium)
+        Button(
+            onClick = {
+                scope.launch {
+                    isBenchmarkRunning = true
+                    benchmarkStatus = "Running MobileNet V1 CPU benchmark for 60 seconds…"
+                    benchmarkStatus = withContext(Dispatchers.Default) {
+                        runMobileNetBenchmark(context)
+                    }
+                    isBenchmarkRunning = false
+                }
+            },
+            enabled = !controlsBusy,
+        ) {
+            Text(if (isBenchmarkRunning) "Benchmark running…" else "Run Device Benchmark")
+        }
+        Text(benchmarkStatus)
+
         Text(selectedName, style = MaterialTheme.typography.bodyMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
                 onClick = { picker.launch(arrayOf("application/octet-stream", "*/*")) },
-                enabled = !isBusy,
+                enabled = !controlsBusy,
             ) {
                 Text("Select GGUF")
             }
@@ -160,7 +187,7 @@ private fun PocketAgentsScreen() {
                         }
                     }
                 },
-                enabled = selectedUri != null && !isBusy,
+                enabled = selectedUri != null && !controlsBusy,
             ) {
                 Text("Load Model")
             }
@@ -172,7 +199,7 @@ private fun PocketAgentsScreen() {
             onValueChange = { prompt = it },
             label = { Text("Prompt") },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isBusy,
+            enabled = !controlsBusy,
         )
         Button(
             onClick = {
@@ -213,7 +240,7 @@ private fun PocketAgentsScreen() {
                     }
                 }
             },
-            enabled = isModelLoaded && prompt.isNotBlank() && !isBusy,
+            enabled = isModelLoaded && prompt.isNotBlank() && !controlsBusy,
         ) {
             Text(if (isBusy && isModelLoaded) "Generating…" else "Generate")
         }
@@ -231,6 +258,89 @@ private fun PocketAgentsScreen() {
 }
 
 private const val MAX_GENERATED_TOKENS = 512
+
+private fun batteryTemperatureC(context: Context): Double {
+    val battery = context.registerReceiver(null, android.content.IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    return battery?.getIntExtra("temperature", 0)?.div(10.0) ?: 0.0
+}
+
+private fun approximateGgufTier(availableBytes: Long): String = when {
+    availableBytes < 1L * GIB -> "up to about 0.5B parameters at Q4"
+    availableBytes < 2L * GIB -> "about 0.5B–1B parameters at Q4"
+    availableBytes < 3L * GIB -> "about 1B–1.5B parameters at Q4"
+    availableBytes < 4L * GIB -> "about 1B–3B parameters at Q4"
+    else -> "about 3B parameters at Q4; larger models require measurement"
+}
+
+private fun runMobileNetBenchmark(context: Context): String {
+    return try {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val memoryInfo = ActivityManager.MemoryInfo().also(activityManager::getMemoryInfo)
+        val beforeTemp = batteryTemperatureC(context)
+        val loadStart = SystemClock.elapsedRealtimeNanos()
+        val descriptor = context.assets.openFd("mobilenet_v1.tflite")
+        val model = FileInputStream(descriptor.fileDescriptor).channel.map(
+            FileChannel.MapMode.READ_ONLY,
+            descriptor.startOffset,
+            descriptor.declaredLength,
+        )
+        val interpreter = Interpreter(model, Interpreter.Options().setNumThreads(4))
+        val loadMs = (SystemClock.elapsedRealtimeNanos() - loadStart) / 1_000_000.0
+        val input = ByteBuffer.allocateDirect(224 * 224 * 3).order(ByteOrder.nativeOrder())
+        val inferenceOutput = ByteBuffer.allocateDirect(1001).order(ByteOrder.nativeOrder())
+        repeat(input.capacity()) { input.put((it % 256).toByte()) }
+        input.rewind()
+
+        val firstStart = SystemClock.elapsedRealtimeNanos()
+        interpreter.run(input, inferenceOutput)
+        val firstMs = (SystemClock.elapsedRealtimeNanos() - firstStart) / 1_000_000.0
+        val start = SystemClock.elapsedRealtime()
+        val cpuStart = android.os.Process.getElapsedCpuTime()
+        val latencies = ArrayList<Double>()
+        var peakPssKb = 0
+        while (SystemClock.elapsedRealtime() - start < BENCHMARK_DURATION_MS) {
+            input.rewind()
+            inferenceOutput.rewind()
+            val inferenceStart = SystemClock.elapsedRealtimeNanos()
+            interpreter.run(input, inferenceOutput)
+            latencies += (SystemClock.elapsedRealtimeNanos() - inferenceStart) / 1_000_000.0
+            if (latencies.size % 10 == 0) {
+                val processMemory = Debug.MemoryInfo()
+                Debug.getMemoryInfo(processMemory)
+                peakPssKb = maxOf(peakPssKb, processMemory.totalPss)
+            }
+        }
+        val elapsedMs = SystemClock.elapsedRealtime() - start
+        val cpuMs = android.os.Process.getElapsedCpuTime() - cpuStart
+        interpreter.close()
+        descriptor.close()
+        val averageMs = latencies.average()
+        val tailCount = maxOf(1, latencies.size / 6)
+        val finalAverageMs = latencies.takeLast(tailCount).average()
+        val afterTemp = batteryTemperatureC(context)
+        val throughput = latencies.size * 1000.0 / elapsedMs
+        val result = """{"model":"MobileNet_V1_1.0_224_uint8","modelBytes":4276352,"threads":4,"durationMs":$elapsedMs,"loadMs":${"%.3f".format(Locale.US, loadMs)},"firstInferenceMs":${"%.3f".format(Locale.US, firstMs)},"inferences":${latencies.size},"averageMs":${"%.3f".format(Locale.US, averageMs)},"throughputPerSec":${"%.3f".format(Locale.US, throughput)},"final10sAverageMs":${"%.3f".format(Locale.US, finalAverageMs)},"processCpuPercentOfOneCore":${"%.1f".format(Locale.US, cpuMs * 100.0 / elapsedMs)},"peakPssKb":$peakPssKb,"availableRamBytes":${memoryInfo.availMem},"temperatureBeforeC":$beforeTemp,"temperatureAfter60sC":$afterTemp}"""
+        context.openFileOutput("benchmark-result.json", Context.MODE_PRIVATE).use {
+            it.write(result.toByteArray())
+        }
+        Log.i(TAG_BENCHMARK, result)
+        "Done: %.1f inf/s, %.1f ms average\nBattery: %.1f°C → %.1f°C\nApproximate GGUF tier: %s\nRAM-based estimate only; MobileNet speed does not predict LLM speed.".format(
+            Locale.US,
+            throughput,
+            averageMs,
+            beforeTemp,
+            afterTemp,
+            approximateGgufTier(memoryInfo.availMem),
+        )
+    } catch (error: Throwable) {
+        Log.e(TAG_BENCHMARK, "Benchmark failed", error)
+        "Benchmark failed: ${error.message ?: error.javaClass.simpleName}"
+    }
+}
+
+private const val GIB = 1024L * 1024L * 1024L
+private const val BENCHMARK_DURATION_MS = 60_000L
+private const val TAG_BENCHMARK = "PocketBenchmark"
 
 private fun displayName(context: Context, uri: Uri): String {
     var cursor: Cursor? = null

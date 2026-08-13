@@ -33,6 +33,8 @@ The test model is available on the device at `Download/models/LFM2.5-1.2B-Instru
 3. Enter a prompt, or retain the default `What is 2+2?`.
 4. Tap **Generate** and read the streamed local result.
 
+The **Run Device Benchmark** button retains the original bundled 60-second MobileNet V1 CPU workload. It reports throughput, average latency, battery-temperature change, and a conservative GGUF parameter-size tier based on currently available RAM. The size tier is only a starting estimate: quantization, architecture, context length, KV cache, and runtime overhead all affect whether a model fits, while MobileNet throughput does not directly predict LLM token speed.
+
 Performance events use the `PocketLlamaMetrics` log tag:
 
 ```powershell
