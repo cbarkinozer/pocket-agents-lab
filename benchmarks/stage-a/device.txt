@@ -1,0 +1,3 @@
+﻿List of devices attached
+R68T800LZ0H            device product:a32tur model:SM_A325F device:a32 transport_id:4
+

@@ -1,0 +1,85 @@
+﻿Tasks: 783 total,   1 running, 782 sleeping,   0 stopped,   0 zombie
+  Mem:  5791276K total,  5090224K used,   701052K free,     3852K buffers
+ Swap:  4194300K total,  1040640K used,  3153660K free,  2766232K cached
+800%cpu   6%user   0%nice  24%sys 767%idle   0%iow   0%irq   3%sirq   0%host
+  PID USER         PR  NI VIRT  RES  SHR S[%CPU] %MEM     TIME+ ARGS
+ 2740 shell        20   0 2.0G 5.1M 4.0M R 24.2   0.0   0:00.09 top -b -n 1 -m 80
+ 1797 shell        20   0 2.0G 3.5M 2.8M S  6.0   0.0   0:03.29 process-tracker --interval 1000
+32346 shell        20   0 2.2G 7.1M 4.5M S  3.0   0.1   0:01.91 adbd --root_seclabel=u:r:su:s0
+12778 root         10 -10    0    0    0 S  3.0   0.0   0:39.12 [hif_thread]
+ 1437 system       18  -2  14G 355M 189M S  3.0   6.2  14:26.77 system_server
+ 2631 u0_a210      20   0 5.7G  98M  54M S  0.0   1.7   0:00.27 com.google.android.configupdater
+ 2598 u0_a94       20   0 5.7G 102M  58M S  0.0   1.8   0:00.26 com.android.providers.calendar
+ 2259 root         20   0    0    0    0 I  0.0   0.0   0:00.38 [kworker/2:1]
+ 2080 system       20   0 5.7G 104M  60M S  0.0   1.8   0:00.30 com.samsung.android.dqagent
+ 2017 root         20   0    0    0    0 I  0.0   0.0   0:00.00 [kworker/3:2]
+ 2005 root         20   0    0    0    0 I  0.0   0.0   0:00.00 [kworker/4:3]
+ 1659 vendor_intelligenceservice 20 0 5.9G 115M 67M S 0.0 2.0 0:00.85 com.samsung.android.rubin.app
+ 1549 u0_a199      20   0 6.0G 118M  69M S  0.0   2.0   0:01.31 com.sec.android.daemonapp
+ 1364 u0_a57       20   0 5.8G  80M  77M S  0.0   1.4   0:00.57 com.samsung.android.dynamiclock
+ 1265 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [dio/dm-47]
+  816 u0_a216      20   0 6.8G 261M 191M S  0.0   4.6   0:12.26 com.google.android.gms
+  532 u0_a49       20   0 6.2G  71M  67M S  0.0   1.2   0:00.32 com.samsung.android.app.aodservice
+32749 u0_a83       20   0 5.7G  85M  66M S  0.0   1.5   0:00.35 com.samsung.android.mateagent
+32716 root         20   0    0    0    0 I  0.0   0.0   0:00.26 [kworker/1:0]
+32688 u0_a83       20   0 5.8G 109M  65M S  0.0   1.9   0:00.37 com.samsung.android.mateagent:service
+32627 u0_a66       20   0 5.6G  92M  49M S  0.0   1.6   0:00.15 com.google.android.packageinstaller
+32532 root         20   0    0    0    0 I  0.0   0.0   0:00.00 [kworker/0:2]
+32386 u0_a75       20   0 5.7G  68M  56M S  0.0   1.2   0:00.30 com.samsung.android.mdx
+32347 u0_a126      20   0 6.3G 128M  73M S  0.0   2.2   0:01.78 com.microsoft.appmanager
+32268 u0_a72       20   0 6.6G 106M  86M S  0.0   1.8   1:24.23 com.sec.android.app.samsungapps
+31732 u0_a220      20   0 7.0G 187M 120M S  0.0   3.3   0:04.34 com.google.android.apps.tachyon
+31566 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+31534 system       20   0 6.8G 226M 147M S  0.0   3.9   0:25.13 com.android.settings
+31506 root         20   0    0    0    0 I  0.0   0.0   0:00.90 [kworker/2:2]
+31369 root         20   0    0    0    0 I  0.0   0.0   0:00.34 [kworker/6:2]
+30893 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+30583 u0_a218      20   0 6.0G 118M  58M S  0.0   2.0   0:01.11 com.android.vending:instant_app_installer
+30547 root          0 -20    0    0    0 I  0.0   0.0   0:03.37 [kworker/u17:4]
+30408 u0_a71       20   0 6.3G  57M  53M S  0.0   1.0   0:00.78 com.samsung.android.game.gamehome
+30088 u0_a218      20   0 6.9G  82M  82M S  0.0   1.4   0:21.47 com.android.vending:background
+29976 u0_a218      20   0 7.7G 230M 132M S  0.0   4.0   1:36.26 com.android.vending
+29480 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+29093 u0_a215      20   0 5.7G  85M  44M S  0.0   1.5   0:00.32 com.google.android.apps.turbo:aab
+28852 root         20   0    0    0    0 I  0.0   0.0   0:00.37 [kworker/3:1]
+28658 u0_a163      20   0 5.7G  58M  54M S  0.0   1.0   0:00.44 com.sec.android.app.clockpackage
+28632 u0_a49       20   0 5.8G  93M  52M S  0.0   1.6   0:00.61 com.samsung.android.app.routines:RoutineUIProcess
+28591 system       20   0 5.7G  85M  44M S  0.0   1.4   0:00.27 com.samsung.android.provider.filterprovider
+28489 u0_a215      20   0 5.7G  87M  45M S  0.0   1.5   0:00.51 com.google.android.apps.turbo
+28284 system       20   0 5.7G  68M  56M S  0.0   1.2   0:01.13 com.samsung.android.forest
+28070 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+28005 vendor_smds  20   0 5.7G  88M  47M S  0.0   1.5   0:00.38 com.samsung.android.sm.devicesecurity
+27867 root         20   0    0    0    0 I  0.0   0.0   0:04.74 [kworker/u16:0]
+27338 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+27163 u0_a212      20   0 6.0G  99M  54M S  0.0   1.7   0:01.52 com.google.android.apps.restore
+26536 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+26320 u0_i9002     20   0 1.3G  34M  33M S  0.0   0.6   0:08.06 com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+26247 u0_a213      20   0 6.0G 101M  56M S  0.0   1.7   0:04.05 com.google.android.as
+26216 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+25834 system       20   0 2.1G 3.2M 3.2M S  0.0   0.0   0:00.03 vendor.samsung.hardware.authfw@1.0-service
+25787 vendor_spass 20   0 5.7G  59M  44M S  0.0   1.0   0:00.32 com.samsung.android.authfw
+25725 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+24654 root         20   0    0    0    0 I  0.0   0.0   0:01.08 [kworker/2:0]
+23646 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+23585 u0_a216      20   0 6.5G 143M 114M S  0.0   2.5   0:13.21 com.google.android.gms.unstable
+23339 u0_a216      20   0 6.9G 235M 139M S  0.0   4.1   4:00.69 com.google.android.gms.persistent
+22551 u0_a65       20   0 5.9G  82M  58M S  0.0   1.4   0:05.09 com.samsung.android.game.gos
+22487 u0_a219      20   0 7.9G 180M 134M S  0.0   3.1   0:19.74 com.google.android.googlequicksearchbox:search
+20818 system       20   0 5.8G  83M  43M S  0.0   1.4   0:00.15 android:drmService
+18438 u0_a236      20   0  23G 163M 156M S  0.0   2.8   8:02.28 com.dti.samsung
+18224 u0_a259      20   0 6.0G  94M  73M S  0.0   1.6   0:24.31 com.google.android.permissioncontroller
+15992 root         20   0    0    0    0 I  0.0   0.0   0:01.28 [kworker/0:0]
+15218 root         20   0    0    0    0 I  0.0   0.0   0:00.67 [kworker/4:2]
+14248 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+13208 vendor_cmhservice 20 0 6.4G 86M 46M S 0.0   1.5   0:00.81 com.samsung.cmh:CMH
+12910 root         20   0    0    0    0 I  0.0   0.0   0:00.87 [kworker/7:3]
+12804 wifi         20   0 2.3G 4.1M 3.9M S  0.0   0.0   0:00.27 wpa_supplicant -O/data/vendor/wifi/wpa/sockets -dd -g@android:wpa_wlan0
+12779 root         10 -10    0    0    0 S  0.0   0.0   0:37.39 [rx_thread]
+12777 root         10 -10    0    0    0 S  0.0   0.0   0:32.58 [main_thread]
+11207 u0_a97       20   0 7.2G 107M  99M S  0.0   1.8   0:03.55 com.osp.app.signin
+10826 u0_a217      20   0 6.2G 102M  58M S  0.0   1.8   0:01.65 com.google.android.apps.messaging:rcs
+ 9713 radio        20   0 5.7G  83M  42M S  0.0   1.4   0:00.18 com.sec.phone
+ 9609 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 8224 u0_a53       20   0 6.6G 127M  82M S  0.0   2.2   0:02.82 com.samsung.android.app.cocktailbarservice
+ 7950 u0_a78       20   0 6.0G  98M  50M S  0.0   1.7   0:02.43 com.samsung.android.server.wifi.mobilewips
+ 7886 u0_a197      20   0 7.3G 176M 109M S  0.0   3.1   0:16.35 com.samsung.android.honeyboard

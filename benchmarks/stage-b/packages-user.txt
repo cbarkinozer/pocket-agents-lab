@@ -1,0 +1,4 @@
+﻿package:com.sec.android.easyMover
+package:com.google.android.apps.docs
+package:com.pocketagentslab
+package:com.facebook.katana

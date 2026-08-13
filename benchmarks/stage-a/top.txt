@@ -1,0 +1,85 @@
+﻿Tasks: 823 total,   3 running, 820 sleeping,   0 stopped,   0 zombie
+  Mem:  5791280K total,  5325072K used,   466208K free,     9676K buffers
+ Swap:  4194300K total,   209152K used,  3985148K free,  2760544K cached
+800%cpu 269%user 331%nice 231%sys  53%idle   6%iow   0%irq  17%sirq   0%host
+  PID USER         PR  NI VIRT  RES  SHR S[%CPU] %MEM     TIME+ ARGS
+ 4701 u0_a219      20   0 7.3G 236M 164M S  258   4.1   0:04.82 com.google.android.googlequicksearchbox:search
+ 1428 system       18  -2  14G 754M 513M S  177  13.3   1:39.42 system_server
+ 2793 u0_a216      20   0 7.0G 289M 195M S  113   5.1   0:20.22 com.google.android.gms.persistent
+ 5266 u0_a216      20   0 7.0G 275M 202M D 91.6   4.8   0:07.20 com.google.android.gms
+ 8454 u0_a227       0 -20 1.7G  34M  13M R 55.5   0.5   0:00.03 zygote
+ 8450 shell        20   0 2.0G 5.4M 4.1M R 25.0   0.0   0:00.11 top -b -n 1 -m 80
+ 8204 u0_a212      20   0 6.1G 129M  78M S 19.4   2.2   0:00.54 com.google.android.apps.restore
+ 1088 media        20   0  71M  30M  25M S 13.8   0.5   0:03.04 mediaserver
+ 3107 u0_a253      20   0 6.1G 131M  75M S 11.1   2.3   0:04.78 com.google.android.providers.media.module
+  542 lmkd         -2   0 2.1G 3.6M 2.9M S 11.1   0.0   0:03.99 lmkd
+  330 root         -2   0    0    0    0 D 11.1   0.0   0:05.98 [mmc-cmdqd/0]
+ 1847 u0_a49       20   0 7.8G 383M 272M S  8.3   6.7   0:13.93 com.android.systemui
+ 3224 system       20   0 6.2G 130M  78M S  5.5   2.2   0:01.90 com.sec.android.sdhms
+ 1077 mediaex      20   0 2.7G  33M  26M S  5.5   0.5   0:02.15 media.extractor aextractor
+  914 system       -3  -8 3.3G  63M  45M S  5.5   1.1   0:11.86 surfaceflinger
+  837 statsd       20   0 2.2G 6.1M 4.9M S  5.5   0.1   0:01.97 statsd
+  541 logd         30  10 2.1G 8.7M 4.1M S  5.5   0.1   0:03.58 logd
+ 6404 shell        20   0 2.0G 3.5M 2.8M S  2.7   0.0   0:00.17 process-tracker --interval 1000
+ 3405 u0_a216      20   0 5.8G 108M  61M S  2.7   1.9   0:00.49 com.google.process.gservices
+ 3054 u0_a219      20   0 6.9G 205M 144M S  2.7   3.6   0:03.63 com.google.android.googlequicksearchbox:interactor
+ 2206 nfc          20   0 5.9G 118M  70M S  2.7   2.0   0:00.56 com.android.nfc
+ 1535 root         20   0    0    0    0 R  2.7   0.0   0:01.00 [kworker/u16:13]
+ 1533 root         20   0    0    0    0 I  2.7   0.0   0:00.74 [kworker/u16:11]
+ 1050 cameraserver 20   0 2.9G  35M  29M S  2.7   0.6   0:00.96 cameraserver
+  855 system       -3  -8 2.4G  13M  12M S  2.7   0.2   0:04.54 android.hardware.graphics.composer@2.1-service
+  543 system       20   0 2.1G 5.3M 4.5M S  2.7   0.0   0:02.35 servicemanager
+    1 root         20   0 2.2G  12M  10M S  2.7   0.2   0:04.08 init second_stage
+ 8364 u0_a210      20   0 5.8G 100M  54M S  0.0   1.7   0:00.15 com.google.android.configupdater
+ 8333 u0_a215      20   0 5.9G 102M  55M S  0.0   1.7   0:00.14 com.google.android.apps.turbo:ssb
+ 8311 u0_a215      20   0 5.9G 103M  56M S  0.0   1.8   0:00.15 com.google.android.apps.turbo:aab
+ 8238 u0_a220      20   0 6.5G 169M 106M S  0.0   2.9   0:00.79 com.google.android.apps.tachyon
+ 8163 radio        20   0 5.8G 109M  62M S  0.0   1.9   0:00.20 com.samsung.android.app.telephonyui:callsettingsprovider
+ 8145 u0_a215      20   0 5.8G 102M  55M S  0.0   1.8   0:00.25 com.google.android.apps.turbo
+ 8127 radio        20   0 5.7G  98M  52M S  0.0   1.7   0:00.14 com.samsung.android.callbgprovider
+ 8099 system       20   0 5.8G 109M  62M S  0.0   1.9   0:00.27 com.samsung.android.dqagent
+ 8056 u0_a235      20   0 6.4G 121M  75M S  0.0   2.1   0:00.15 com.google.android.apps.maps:server_recovery_process
+ 8055 u0_a73       20   0 5.8G 106M  59M S  0.0   1.8   0:00.23 com.samsung.android.kgclient
+ 8003 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 7987 u0_a127      20   0 5.7G  96M  50M S  0.0   1.7   0:00.12 com.sec.android.app.DataCreate
+ 7918 vendor_cmhservice 20 0 6.5G 107M 58M S 0.0  1.8   0:00.36 com.samsung.cmh:CMH
+ 7840 u0_a60       20   0 5.8G 101M  54M S  0.0   1.7   0:00.19 com.facebook.system
+ 7806 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 7766 u0_a235      20   0 7.3G 182M 124M S  0.0   3.2   0:02.06 com.google.android.apps.maps
+ 7730 u0_a62       20   0 5.9G 108M  62M S  0.0   1.9   0:00.41 com.facebook.services
+ 7700 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 7666 u0_a177      20   0 6.0G 117M  69M S  0.0   2.0   0:00.62 com.facebook.appmanager
+ 7603 u0_a92       20   0 7.2G 175M 117M S  0.0   3.1   0:02.11 com.microsoft.skydrive
+ 7601 u0_a49       20   0 5.9G 145M  92M S  0.0   2.5   0:00.78 com.android.systemui:edgelighting
+ 7570 shell        20   0 5.8G  98M  52M S  0.0   1.7   0:00.12 com.android.shell
+ 7523 u0_a255      20   0 5.8G 113M  65M S  0.0   1.9   0:00.15 com.google.android.cellbroadcastreceiver
+ 7497 u0_a178      20   0 5.8G 105M  59M S  0.0   1.8   0:00.17 com.samsung.android.net.wifi.wifiguider
+ 7464 u0_a108      20   0 6.5G 117M  69M S  0.0   2.0   0:00.42 com.sec.android.gallery3d
+ 7449 u0_a207      20   0 5.8G  98M  52M S  0.0   1.7   0:00.12 com.google.android.apps.carrier.carrierwifi
+ 7379 u0_a136      20   0 5.8G  99M  53M S  0.0   1.7   0:00.15 com.sec.android.easyMover.Agent
+ 7373 u0_a97       20   0 6.6G 143M  89M S  0.0   2.5   0:00.75 com.osp.app.signin
+ 7205 u0_a111      20   0 6.3G 115M  68M S  0.0   2.0   0:00.34 com.sec.android.app.myfiles
+ 7175 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 7142 u0_a59       20   0 5.8G  98M  52M S  0.0   1.7   0:00.14 com.android.externalstorage
+ 7099 system       20   0 5.8G 113M  66M S  0.0   2.0   0:00.33 com.samsung.android.forest
+ 7096 vendor_samsungcloud 20 0 7.1G 183M 124M S 0.0 3.2 0:01.14 com.samsung.android.scloud
+ 6991 u0_a48       20   0 5.8G 102M  55M S  0.0   1.7   0:00.11 com.sec.android.provider.badge
+ 6587 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 6574 u0_a216      20   0 6.7G 258M 198M S  0.0   4.5   0:03.66 com.google.android.gms.unstable
+ 6525 system       10 -10 7.0G 430M 343M S  0.0   7.6   0:03.04 com.android.settings
+ 6420 u0_a71       20   0 6.6G 132M  81M S  0.0   2.3   0:01.02 com.samsung.android.game.gamehome
+ 6294 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 6279 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 6052 system       20   0 5.8G 120M  71M S  0.0   2.1   0:00.30 com.samsung.android.stickercenter
+ 5461 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kbase_event]
+ 5237 u0_a109      20   0 5.8G 116M  68M S  0.0   2.0   0:00.36 com.android.settings.intelligence
+ 5229 u0_a163      20   0 5.9G 117M  69M S  0.0   2.0   0:00.43 com.sec.android.app.clockpackage
+ 5178 u0_a236      20   0 6.5G 152M  82M S  0.0   2.6   0:11.59 com.dti.samsung
+ 5148 u0_a57       20   0 6.1G 127M  78M S  0.0   2.2   0:00.61 com.samsung.android.dynamiclock
+ 5081 u0_a218      20   0 6.8G 118M 115M S  0.0   2.0   0:01.92 com.android.vending:background
+ 4864 u0_a53       20   0 6.7G 155M 102M S  0.0   2.7   0:00.61 com.samsung.android.app.cocktailbarservice
+ 4669 u0_a113      20   0 5.8G  99M  52M S  0.0   1.7   0:00.12 com.samsung.android.smartcallprovider
+ 4540 u0_a54       20   0 6.0G 119M  67M S  0.0   2.1   0:00.45 android.process.media
+ 4456 u0_a216      20   0 5.8G 106M  60M S  0.0   1.8   0:00.17 com.google.process.gapps
+ 4437 u0_a197      20   0 6.9G 214M 119M S  0.0   3.7   0:06.06 com.samsung.android.honeyboard
+ 4379 u0_a101      20   0 6.7G 126M  74M S  0.0   2.2   0:00.71 com.samsung.android.mobileservice

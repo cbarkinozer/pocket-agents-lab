@@ -1,0 +1,7 @@
+﻿adb.exe : cat: /sys/class/thermal/thermal_zone*/temp: No such file or directory
+At C:\repos\pocket-agents-lab\tools\Collect-DeviceSnapshot.ps1:21 char:5
++     & $adb @Arguments 2>&1 | Out-File -LiteralPath (Join-Path $output ...
++     ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (cat: /sys/class...le or directory:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

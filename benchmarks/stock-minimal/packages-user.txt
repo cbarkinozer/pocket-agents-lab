@@ -1,0 +1,8 @@
+﻿package:com.sec.android.easyMover
+package:com.oakever.arrows
+package:com.google.android.apps.docs
+package:com.wood.block.sudoku.puzzle.bm
+package:com.facebook.katana
+package:com.oakever.tiletrip
+package:com.block.juggle
+package:net.peakgames.Yuzbir

@@ -1,0 +1,1 @@
+{"model":"MobileNet_V1_1.0_224_uint8","modelBytes":4276352,"threads":4,"durationMs":60008,"loadMs":298.239,"firstInferenceMs":63.496,"inferences":950,"averageMs":58.439,"throughputPerSec":15.831,"final10sAverageMs":57.159,"processCpuPercentOfOneCore":97.3,"peakPssKb":82746,"temperatureBeforeC":37.4,"temperatureAfter60sC":37.6}

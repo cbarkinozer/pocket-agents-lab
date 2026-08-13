@@ -1,0 +1,20 @@
+﻿{
+    "label":  "stage-a",
+    "capturedUtc":  "2026-08-13T21:57:58.9647526Z",
+    "serial":  "R68T800LZ0H",
+    "model":  "SM-A325F",
+    "android":  "13",
+    "abi":  "arm64-v8a",
+    "memTotalKb":  5791280,
+    "memAvailableKb":  3084276,
+    "memFreeKb":  501364,
+    "buffersKb":  9680,
+    "cachedKb":  2841032,
+    "swapTotalKb":  4194300,
+    "swapFreeKb":  3980028,
+    "swapUsedKb":  214272,
+    "processCount":  821,
+    "batteryTemperatureC":  37.2,
+    "batteryLevel":  22,
+    "topHeader":  "Tasks: 820 total,   1 running, 819 sleeping,   0 stopped,   0 zombie\n  Mem:  5791280K total,  5266764K used,   524516K free,     9684K buffers\n Swap:  4194300K total,   213760K used,  3980540K free,  2773620K cached\n800%cpu  94%user 148%nice 212%sys 342%idle   3%iow   0%irq   0%sirq   0%host\n  PID USER         PR  NI VIRT  RES  SHR S[%CPU] %MEM     TIME+ ARGS"
+}

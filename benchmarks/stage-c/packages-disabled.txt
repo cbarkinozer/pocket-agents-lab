@@ -1,0 +1,13 @@
+﻿package:com.google.audio.hearing.visualization.accessibility.scribe
+package:com.google.android.gm
+package:com.google.android.apps.maps
+package:com.google.android.apps.docs
+package:com.google.android.printservice.recommendation
+package:com.google.ar.core
+package:com.google.android.youtube
+package:com.samsung.cmfa.AuthTouch
+package:com.google.android.apps.tachyon
+package:com.google.android.googlequicksearchbox
+package:com.google.android.projection.gearhead
+package:com.samsung.android.cmfa.framework
+package:com.samsung.android.peripheral.framework

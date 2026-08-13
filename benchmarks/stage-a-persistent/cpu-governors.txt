@@ -1,0 +1,14 @@
+﻿schedutil
+schedutil
+adb.exe : cat: /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor: Permission denied
+At C:\repos\pocket-agents-lab\tools\Collect-DeviceSnapshot.ps1:21 char:5
++     & $adb @Arguments 2>&1 | Out-File -LiteralPath (Join-Path $output ...
++     ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (cat: /sys/devic...rmission denied:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+cat: /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor: Permission denied
+cat: /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor: Permission denied
+cat: /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor: Permission denied
+cat: /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor: Permission denied
+cat: /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor: Permission denied

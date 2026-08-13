@@ -1,0 +1,53 @@
+$adb = Join-Path $env:LOCALAPPDATA "Android\Sdk\platform-tools\adb.exe"
+$packages = @(
+    "com.dti.samsung",
+    "com.facebook.appmanager",
+    "com.facebook.katana",
+    "com.facebook.services",
+    "com.facebook.system",
+    "com.microsoft.appmanager",
+    "com.microsoft.skydrive",
+    "com.samsung.android.app.dofviewer",
+    "com.samsung.android.app.dressroom",
+    "com.samsung.android.app.spage",
+    "com.samsung.android.ardrawing",
+    "com.samsung.android.aremoji",
+    "com.samsung.android.arzone",
+    "com.samsung.android.game.gamehome",
+    "com.samsung.android.game.gametools",
+    "com.samsung.android.kidsinstaller",
+    "com.samsung.android.stickercenter",
+    "com.samsung.android.visualars",
+    "com.samsung.storyservice",
+    "com.samsung.android.app.reminder",
+    "com.samsung.android.app.routines",
+    "com.samsung.android.beaconmanager",
+    "com.samsung.android.easysetup",
+    "com.samsung.android.mateagent",
+    "com.samsung.android.mdx",
+    "com.samsung.android.mdx.kit",
+    "com.samsung.android.mdx.quickboard",
+    "com.samsung.android.mobileservice",
+    "com.samsung.android.scloud",
+    "com.samsung.android.themestore",
+    "com.samsung.android.app.watchmanagerstub",
+    "com.samsung.android.allshare.service.fileshare",
+    "com.samsung.android.allshare.service.mediashare",
+    "com.samsung.android.privateshare",
+    "com.samsung.android.smartmirroring",
+    "com.google.android.apps.maps",
+    "com.google.android.youtube",
+    "com.google.android.apps.docs",
+    "com.google.android.apps.tachyon",
+    "com.google.android.gm",
+    "com.google.android.googlequicksearchbox",
+    "com.google.android.printservice.recommendation",
+    "com.google.android.projection.gearhead",
+    "com.google.ar.core",
+    "com.google.audio.hearing.visualization.accessibility.scribe"
+)
+foreach ($package in $packages) {
+    & $adb shell cmd package install-existing --user 0 $package
+    & $adb shell pm enable --user 0 $package
+}
+Write-Host "Facebook (com.facebook.katana) was a data app on this handset and must be reinstalled from an app store if wanted."
