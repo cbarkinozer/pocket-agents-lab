@@ -1,0 +1,10 @@
+prefix=C:/Program Files (x86)/ai-chat
+exec_prefix=C:/Program Files (x86)/ai-chat
+libdir=C:/Program Files (x86)/ai-chat/lib
+includedir=C:/Program Files (x86)/ai-chat/include
+
+Name: llama
+Description: Port of Facebook's LLaMA model in C/C++
+Version: 0.1.0-dev
+Libs: -L${libdir} -lggml -lggml-base -lllama
+Cflags: -I${includedir}

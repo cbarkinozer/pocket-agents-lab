@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "build-llama/common",
+		"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp/common"
+	}
+}

@@ -1,0 +1,387 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "build-llama",
+					"childIndexes" : 
+					[
+						2,
+						5,
+						6,
+						7
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-build-llama-Release-ae1852fb7cbbb9ecd51b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp"
+				},
+				{
+					"build" : "build-llama/ggml",
+					"childIndexes" : 
+					[
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-build-llama.ggml-Release-6a380ab370dcae09f0a1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp/ggml"
+				},
+				{
+					"build" : "build-llama/ggml/src",
+					"childIndexes" : 
+					[
+						4
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-build-llama.ggml.src-Release-43fd3af5004ce1fae5eb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp/ggml/src",
+					"targetIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				},
+				{
+					"build" : "build-llama/ggml/src/ggml-cpu",
+					"jsonFile" : "directory-build-llama.ggml.src.ggml-cpu-Release-4e69f4e7184774c74f53.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 2,
+					"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp/ggml/src/ggml-cpu"
+				},
+				{
+					"build" : "build-llama/src",
+					"jsonFile" : "directory-build-llama.src-Release-886a7023cc66d9b1c7dc.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp/src",
+					"targetIndexes" : 
+					[
+						18
+					]
+				},
+				{
+					"build" : "build-llama/common",
+					"jsonFile" : "directory-build-llama.common-Release-620a78522bc1f15ce353.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp/common",
+					"targetIndexes" : 
+					[
+						19,
+						20
+					]
+				},
+				{
+					"build" : "build-llama/vendor/cpp-httplib",
+					"jsonFile" : "directory-build-llama.vendor.cpp-httplib-Release-d638d518e92c36ac12f5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp/vendor/cpp-httplib",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "ai-chat",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2
+					],
+					"directoryIndexes" : 
+					[
+						1,
+						5,
+						6,
+						7
+					],
+					"name" : "llama.cpp",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						18,
+						19,
+						20
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3,
+						4
+					],
+					"name" : "ggml",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ai-chat::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ai-chat-Release-93495309412d00a37c51.json",
+					"name" : "ai-chat",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "cpp-httplib::@e1f36686b082eccf6cbc",
+					"jsonFile" : "target-cpp-httplib-Release-b4e20c4fba7f3ef95962.json",
+					"name" : "cpp-httplib",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-Release-a47a7033fc7439f99b9d.json",
+					"name" : "ggml",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-base::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-base-Release-d694e5481503aaa8f929.json",
+					"name" : "ggml-base",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv8.0_1::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv8.0_1-Release-fa1f64d34f393181f15a.json",
+					"name" : "ggml-cpu-android_armv8.0_1",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv8.0_1-feats::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv8.0_1-feats-Release-857dcf2ae2ee66cb4602.json",
+					"name" : "ggml-cpu-android_armv8.0_1-feats",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv8.2_1::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv8.2_1-Release-50c271953df90ca4fe6c.json",
+					"name" : "ggml-cpu-android_armv8.2_1",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv8.2_1-feats::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv8.2_1-feats-Release-9d9cfcd79ebc09e65121.json",
+					"name" : "ggml-cpu-android_armv8.2_1-feats",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv8.2_2::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv8.2_2-Release-84c02831ceba8fc0db9e.json",
+					"name" : "ggml-cpu-android_armv8.2_2",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv8.2_2-feats::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv8.2_2-feats-Release-c0daa3a9e77aa78c7375.json",
+					"name" : "ggml-cpu-android_armv8.2_2-feats",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv8.6_1::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv8.6_1-Release-a58f2613a8f56f30780c.json",
+					"name" : "ggml-cpu-android_armv8.6_1",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv8.6_1-feats::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv8.6_1-feats-Release-6a7e0d55cd96ecc1c66b.json",
+					"name" : "ggml-cpu-android_armv8.6_1-feats",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv9.0_1::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv9.0_1-Release-f4f3670ab2f95acb96ab.json",
+					"name" : "ggml-cpu-android_armv9.0_1",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv9.0_1-feats::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv9.0_1-feats-Release-abd6eda05f21f939598f.json",
+					"name" : "ggml-cpu-android_armv9.0_1-feats",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv9.2_1::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv9.2_1-Release-1f91fd106e55f5a9cb30.json",
+					"name" : "ggml-cpu-android_armv9.2_1",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv9.2_1-feats::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv9.2_1-feats-Release-6eee2471ba6281558307.json",
+					"name" : "ggml-cpu-android_armv9.2_1-feats",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv9.2_2::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv9.2_2-Release-efd44c7b3c6642d3f422.json",
+					"name" : "ggml-cpu-android_armv9.2_2",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu-android_armv9.2_2-feats::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-android_armv9.2_2-feats-Release-41914fbcf8719d023ad4.json",
+					"name" : "ggml-cpu-android_armv9.2_2-feats",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "llama::@b791850eb95f38641ccb",
+					"jsonFile" : "target-llama-Release-cb167fddd72391c8c77a.json",
+					"name" : "llama",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "llama-common::@8bf2afb4d8037c7b7d92",
+					"jsonFile" : "target-llama-common-Release-eba16d76b5413f99413b.json",
+					"name" : "llama-common",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "llama-common-base::@8bf2afb4d8037c7b7d92",
+					"jsonFile" : "target-llama-common-base-Release-8dc9ac3b1c59d7965854.json",
+					"name" : "llama-common-base",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Repos/pocket-agents-lab/llama-android/.cxx/Release/5s2v2k4l/arm64-v8a",
+		"source" : "C:/Repos/pocket-agents-lab/llama-android/src/main/cpp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

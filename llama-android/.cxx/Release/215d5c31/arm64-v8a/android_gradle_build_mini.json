@@ -1,0 +1,175 @@
+{
+  "buildFiles": [
+    "C:\\Repos\\pocket-agents-lab\\llama-android\\src\\main\\cpp\\CMakeLists.txt",
+    "C:\\Repos\\pocket-agents-lab\\third_party\\llama.cpp\\CMakeLists.txt",
+    "C:\\Repos\\pocket-agents-lab\\third_party\\llama.cpp\\common\\CMakeLists.txt",
+    "C:\\Repos\\pocket-agents-lab\\third_party\\llama.cpp\\ggml\\CMakeLists.txt",
+    "C:\\Repos\\pocket-agents-lab\\third_party\\llama.cpp\\ggml\\src\\CMakeLists.txt",
+    "C:\\Repos\\pocket-agents-lab\\third_party\\llama.cpp\\ggml\\src\\ggml-cpu\\CMakeLists.txt",
+    "C:\\Repos\\pocket-agents-lab\\third_party\\llama.cpp\\src\\CMakeLists.txt",
+    "C:\\Repos\\pocket-agents-lab\\third_party\\llama.cpp\\vendor\\cpp-httplib\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\cbark\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\cbark\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "ggml-cpu-android_armv8.0_1::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv8.0_1",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-cpu-android_armv8.0_1.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv8.2_2-feats::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv8.2_2-feats",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    },
+    "ggml-cpu-android_armv9.2_2-feats::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv9.2_2-feats",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    },
+    "cpp-httplib::@e1f36686b082eccf6cbc": {
+      "artifactName": "cpp-httplib",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\build-llama\\vendor\\cpp-httplib\\libcpp-httplib.a",
+      "runtimeFiles": []
+    },
+    "ai-chat::@6890427a1f51a3e7e1df": {
+      "artifactName": "ai-chat",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\build\\intermediates\\cxx\\Release\\215d5c31\\obj\\arm64-v8a\\libai-chat.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libllama-common.so",
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libllama.so",
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml.so",
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv8.2_2::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv8.2_2",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-cpu-android_armv8.2_2.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "llama::@b791850eb95f38641ccb": {
+      "artifactName": "llama",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libllama.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml.so",
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv8.6_1::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv8.6_1",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-cpu-android_armv8.6_1.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv9.2_1-feats::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv9.2_1-feats",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    },
+    "ggml::@23533c6d68a59d54598d": {
+      "artifactName": "ggml",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv8.2_1::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv8.2_1",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-cpu-android_armv8.2_1.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv8.6_1-feats::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv8.6_1-feats",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    },
+    "ggml-cpu-android_armv9.0_1::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv9.0_1",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-cpu-android_armv9.0_1.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv9.2_2::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv9.2_2",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-cpu-android_armv9.2_2.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv9.2_1::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv9.2_1",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-cpu-android_armv9.2_1.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-cpu-android_armv8.0_1-feats::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv8.0_1-feats",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    },
+    "ggml-cpu-android_armv8.2_1-feats::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv8.2_1-feats",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    },
+    "llama-common::@8bf2afb4d8037c7b7d92": {
+      "artifactName": "llama-common",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libllama-common.so",
+      "runtimeFiles": [
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libllama.so",
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml.so",
+        "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "llama-common-base::@8bf2afb4d8037c7b7d92": {
+      "artifactName": "llama-common-base",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\build-llama\\common\\libllama-common-base.a",
+      "runtimeFiles": []
+    },
+    "ggml-base::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-base",
+      "abi": "arm64-v8a",
+      "output": "C:\\Repos\\pocket-agents-lab\\llama-android\\.cxx\\Release\\215d5c31\\arm64-v8a\\bin\\libggml-base.so",
+      "runtimeFiles": []
+    },
+    "ggml-cpu-android_armv9.0_1-feats::@23533c6d68a59d54598d": {
+      "artifactName": "ggml-cpu-android_armv9.0_1-feats",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    }
+  }
+}

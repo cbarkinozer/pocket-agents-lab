@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PocketAgentsLab"
 include(":app")
-
+include(":llama-android")

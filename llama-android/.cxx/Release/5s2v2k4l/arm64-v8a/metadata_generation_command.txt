@@ -1,0 +1,27 @@
+                        -HC:\Repos\pocket-agents-lab\llama-android\src\main\cpp
+-DCMAKE_SYSTEM_NAME=Android
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+-DCMAKE_SYSTEM_VERSION=24
+-DANDROID_PLATFORM=android-24
+-DANDROID_ABI=arm64-v8a
+-DCMAKE_ANDROID_ARCH_ABI=arm64-v8a
+-DANDROID_NDK=C:\Users\cbark\AppData\Local\Android\Sdk\ndk\26.3.11579264
+-DCMAKE_ANDROID_NDK=C:\Users\cbark\AppData\Local\Android\Sdk\ndk\26.3.11579264
+-DCMAKE_TOOLCHAIN_FILE=C:\Users\cbark\AppData\Local\Android\Sdk\ndk\26.3.11579264\build\cmake\android.toolchain.cmake
+-DCMAKE_MAKE_PROGRAM=C:\Users\cbark\AppData\Local\Android\Sdk\cmake\3.22.1\bin\ninja.exe
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=C:\Repos\pocket-agents-lab\llama-android\build\intermediates\cxx\Release\5s2v2k4l\obj\arm64-v8a
+-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=C:\Repos\pocket-agents-lab\llama-android\build\intermediates\cxx\Release\5s2v2k4l\obj\arm64-v8a
+-BC:\Repos\pocket-agents-lab\llama-android\.cxx\Release\5s2v2k4l\arm64-v8a
+-GNinja
+-DCMAKE_BUILD_TYPE=Release
+-DBUILD_SHARED_LIBS=ON
+-DLLAMA_BUILD_APP=OFF
+-DLLAMA_BUILD_COMMON=ON
+-DLLAMA_OPENSSL=OFF
+-DGGML_NATIVE=OFF
+-DGGML_BACKEND_DL=ON
+-DGGML_CPU_ALL_VARIANTS=ON
+-DGGML_LLAMAFILE=OFF
+-DGGML_OPENMP=OFF
+                        Build command args: []
+                        Version: 2

@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "build-llama/vendor/cpp-httplib",
+		"source" : "C:/Repos/pocket-agents-lab/third_party/llama.cpp/vendor/cpp-httplib"
+	}
+}
