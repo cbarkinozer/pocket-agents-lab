@@ -21,6 +21,21 @@ class AgentBackendTest {
     }
 
     @Test
+    fun copiedRoutingJokeBecomesClarificationInsteadOfFakeAnswer() = runBlocking {
+        val fixture = fixture(
+            """{"action":"answer","text":"Why did the byte cross the road?"}""",
+        )
+
+        val result = fixture.backend.run("Please inspect this thing")
+
+        assertEquals(CLARIFICATION_MESSAGE, result.answer)
+        assertEquals("clarify:copied-example", result.route)
+        assertTrue(fixture.toolCalls.isEmpty())
+        assertTrue(fixture.prompts.single().contains(CLARIFICATION_MESSAGE))
+        assertTrue(!fixture.prompts.single().contains("byte cross"))
+    }
+
+    @Test
     fun storageRequestRunsToolThenRequiresFinalAnswer() = runBlocking {
         val fixture = fixture(
             """{"action":"tool","name":"get_storage_info","args":{}}""",

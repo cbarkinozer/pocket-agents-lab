@@ -56,6 +56,11 @@ For the tested 1.2B model, the parser also safely normalizes the common shorthan
 only when `action` exactly matches one of the three allowlisted read-only tools and `args` is empty;
 all other invented actions remain rejected. The UI marks repaired routes as `normalized`.
 
+Unclear requests are instructed to return a fixed clarification asking the user to rephrase.
+The router prompt contains no joke answer to copy. As a regression guard, if the tested tiny
+model emits the old byte-crossing example for a request that did not ask for a joke, the backend
+labels the route `clarify:copied-example` and displays the clarification instead of fake output.
+
 If a small model copies the final-answer placeholder instead of interpreting a successful tool
 result, the backend displays a deterministic answer derived from that same read-only JSON and
 marks the route `fallback answer`. This keeps device facts visible without inventing data while

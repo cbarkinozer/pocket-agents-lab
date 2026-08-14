@@ -5,6 +5,8 @@ import java.util.Locale
 
 internal const val AGENT_DECISION_TOKENS = 128
 internal const val AGENT_ANSWER_TOKENS = 256
+internal const val CLARIFICATION_MESSAGE =
+    "I could not understand what you meant. Please rephrase your request."
 
 internal val READ_ONLY_TOOLS = setOf(
     "get_device_info",
@@ -59,9 +61,12 @@ internal class AgentBackend(
     suspend fun complete(userPrompt: String, selection: AgentSelection): AgentRunResult {
         val decision = selection.decision
         if (decision.action == "answer") {
+            val directAnswer = decision.text.orEmpty().trim()
+            val copiedExample = directAnswer.isBlank() ||
+                (isCopiedRoutingExample(directAnswer) && !userPrompt.contains("joke", ignoreCase = true))
             return AgentRunResult(
-                answer = decision.text.orEmpty(),
-                route = "answer",
+                answer = if (copiedExample) CLARIFICATION_MESSAGE else directAnswer,
+                route = if (copiedExample) "clarify:copied-example" else "answer",
                 generatedPieces = selection.generatedPieces,
             ).also { onProgress(AgentProgress(1.0f, "Complete")) }
         }
@@ -194,7 +199,8 @@ internal fun buildRoutingPrompt(userPrompt: String): String = """Return exactly 
 For current device facts choose one tool using {"action":"tool","name":"TOOL_NAME","args":{}}.
 Allowed TOOL_NAME values: get_device_info, get_battery_info, get_storage_info.
 For a phone health check use {"action":"workflow","name":"phone_health_check","args":{}}.
-For anything else use {"action":"answer","text":"YOUR ANSWER"}.
+For a clear request that needs no device data, answer it using {"action":"answer","text":"..."}.
+If the request is unclear or you are not confident what it means, use {"action":"answer","text":"I could not understand what you meant. Please rephrase your request."}.
 Examples:
 User: How much storage is free?
 Output: {"action":"tool","name":"get_storage_info","args":{}}
@@ -204,8 +210,6 @@ User: What Android version is this?
 Output: {"action":"tool","name":"get_device_info","args":{}}
 User: Check my phone's health and suggest improvements.
 Output: {"action":"workflow","name":"phone_health_check","args":{}}
-User: Tell me a joke.
-Output: {"action":"answer","text":"Why did the byte cross the bus?"}
 User: $userPrompt
 Output:"""
 
@@ -293,6 +297,12 @@ private fun isPlaceholderAnswer(answer: String): Boolean =
     answer.isBlank() ||
         answer.equals("YOUR NATURAL-LANGUAGE ANSWER", ignoreCase = true) ||
         answer.equals("YOUR ANSWER", ignoreCase = true)
+
+private fun isCopiedRoutingExample(answer: String): Boolean {
+    val normalized = answer.lowercase(Locale.US)
+    return normalized.contains("why did the byte cross the bus") ||
+        normalized.contains("why did the byte cross the road")
+}
 
 private fun deterministicToolAnswer(toolName: String, rawResult: String): String {
     val result = JSONObject(rawResult)
