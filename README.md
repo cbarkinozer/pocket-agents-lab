@@ -1812,6 +1812,8 @@ Start conservatively with a fixed tiny dataset and a 250M–500M model, running 
 
 Measure training RAM, samples/second, total time, energy, temperature, throttling, adapter size, and held-out quality improvement. Compare the benefit with the cost and verify that training does not make the base model worse outside the target task.
 
+Before on-device training, test the learning hypothesis in a controlled sequence: supervised fine-tuning (preferably parameter-efficient LoRA/QLoRA), then offline preference tuning such as DPO, and only later RL-style optimization if deterministic rewards and rollback are reliable. Train and validation data must remain separate from the frozen mobile benchmark. See [`docs/model-adaptation-roadmap.md`](docs/model-adaptation-roadmap.md).
+
 ## Track 4 — Periodic On-the-Run Adaptation
 
 Explore opt-in collection of user corrections, successful tool calls, failed actions, and preferences. A safer initial loop is:
@@ -1878,7 +1880,8 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 10. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
 11. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.
 12. [ ] Design Edge Score only after enough raw results exist to test weighting, quality gates, stability, and ranking sensitivity.
-13. [ ] Attempt on-device LoRA/QLoRA and custom/minimal runtimes only after inference, thermal, energy, and recovery tooling are reliable.
+13. [ ] After frozen baselines, test SFT with LoRA/QLoRA, then DPO if SFT improves held-out results; consider RL-style optimization only after deterministic rewards and regression controls exist.
+14. [ ] Attempt on-device adapter training and custom/minimal runtimes only after inference, thermal, energy, and recovery tooling are reliable.
 
 The immediate priority is measurement, not semantic search. See [`docs/tool-agent-evaluation.md`](docs/tool-agent-evaluation.md) for the pinned protocol, thermal rule, wireless ADB setup, CSV schema, and the single constrained repair policy.
 
