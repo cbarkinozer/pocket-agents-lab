@@ -55,6 +55,11 @@ For the tested 1.2B model, the parser also safely normalizes the common shorthan
 only when `action` exactly matches one of the three allowlisted read-only tools and `args` is empty;
 all other invented actions remain rejected. The UI marks repaired routes as `normalized`.
 
+If a small model copies the final-answer placeholder instead of interpreting a successful tool
+result, the backend displays a deterministic answer derived from that same read-only JSON and
+marks the route `fallback answer`. This keeps device facts visible without inventing data while
+preserving the model's failure as an observable metric.
+
 ## Backend tests
 
 The agent state machine lives in `AgentBackend.kt` and has no Compose dependency. JVM tests use

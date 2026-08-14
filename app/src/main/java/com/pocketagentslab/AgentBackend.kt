@@ -1,6 +1,7 @@
 package com.pocketagentslab
 
 import org.json.JSONObject
+import java.util.Locale
 
 internal const val AGENT_DECISION_TOKENS = 128
 internal const val AGENT_ANSWER_TOKENS = 256
@@ -69,9 +70,15 @@ internal class AgentBackend(
         require(finalDecision.action == "answer") {
             "Final response must use action=answer, got action=${finalDecision.action}"
         }
+        val modelAnswer = finalDecision.text.orEmpty().trim()
+        val usedFallback = isPlaceholderAnswer(modelAnswer)
         return AgentRunResult(
-            answer = finalDecision.text.orEmpty(),
-            route = "tool:$toolName" + if (decision.schemaRepaired) " (normalized)" else "",
+            answer = if (usedFallback) deterministicToolAnswer(toolName, toolResult) else modelAnswer,
+            route = buildString {
+                append("tool:$toolName")
+                if (decision.schemaRepaired) append(" (normalized)")
+                if (usedFallback) append(" (fallback answer)")
+            },
             generatedPieces = selection.generatedPieces + generated.pieces,
         )
     }
@@ -133,10 +140,42 @@ internal fun buildFinalAnswerPrompt(
     toolName: String,
     toolResult: String,
 ): String = """Return exactly one compact JSON object and nothing else.
-The only permitted shape for this response is:
-{"action":"answer","text":"YOUR NATURAL-LANGUAGE ANSWER"}
+Use action "answer" and put your concise interpretation of the actual tool result in "text".
+Example structure: {"action":"answer","text":"You have 12 GB available out of 64 GB."}
+Do not copy the example sentence. Calculate the answer from the tool result below.
 Do not use action=tool, action=explain, or any other action. The tool has already run.
 Original user question: $userPrompt
 Tool used: $toolName
 Tool result: $toolResult
 Output:"""
+
+private fun isPlaceholderAnswer(answer: String): Boolean =
+    answer.isBlank() ||
+        answer.equals("YOUR NATURAL-LANGUAGE ANSWER", ignoreCase = true) ||
+        answer.equals("YOUR ANSWER", ignoreCase = true)
+
+private fun deterministicToolAnswer(toolName: String, rawResult: String): String {
+    val result = JSONObject(rawResult)
+    return when (toolName) {
+        "get_storage_info" -> {
+            val available = result.getLong("availableBytes").toGib()
+            val total = result.getLong("totalBytes").toGib()
+            "You have $available GB available out of $total GB of internal storage."
+        }
+        "get_battery_info" -> {
+            val level = result.optDouble("levelPercent", Double.NaN)
+            val temperature = result.getDouble("temperatureC")
+            val levelText = if (level.isNaN()) "an unknown charge level" else "${formatOne(level)}% charge"
+            "The battery is at $levelText and ${formatOne(temperature)}°C."
+        }
+        "get_device_info" ->
+            "This is a ${result.getString("manufacturer")} ${result.getString("model")}, " +
+                "running Android ${result.getString("androidVersion")} on " +
+                "${result.getString("cpuAbi")}."
+        else -> error("Unknown tool: $toolName")
+    }
+}
+
+private fun Long.toGib(): String = formatOne(this / 1024.0 / 1024.0 / 1024.0)
+
+private fun formatOne(value: Double): String = "%.1f".format(Locale.US, value)

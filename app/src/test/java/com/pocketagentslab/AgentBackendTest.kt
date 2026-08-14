@@ -32,7 +32,7 @@ class AgentBackendTest {
         assertEquals("tool:get_storage_info", result.route)
         assertEquals(listOf("get_storage_info"), fixture.toolCalls)
         assertEquals(2, fixture.prompts.size)
-        assertTrue(fixture.prompts[1].contains("only permitted shape"))
+        assertTrue(fixture.prompts[1].contains("Use action \"answer\""))
         assertTrue(fixture.prompts[1].contains("20"))
     }
 
@@ -60,6 +60,20 @@ class AgentBackendTest {
         val result = fixture.backend.complete("How much storage?", selection)
         assertEquals("tool:get_storage_info (normalized)", result.route)
         assertEquals(listOf("get_storage_info"), fixture.toolCalls)
+    }
+
+    @Test
+    fun copiedFinalPlaceholderFallsBackToRealToolData() = runBlocking {
+        val fixture = fixture(
+            """{"action":"tool","name":"get_storage_info","args":{}}""",
+            """{"action":"answer","text":"YOUR NATURAL-LANGUAGE ANSWER"}""",
+            toolResult = """{"totalBytes":68719476736,"availableBytes":21474836480,"usedBytes":47244640256}""",
+        )
+
+        val result = fixture.backend.run("How much storage do I have?")
+
+        assertEquals("You have 20.0 GB available out of 64.0 GB of internal storage.", result.answer)
+        assertEquals("tool:get_storage_info (fallback answer)", result.route)
     }
 
     @Test
@@ -119,7 +133,10 @@ class AgentBackendTest {
         }
     }
 
-    private fun fixture(vararg responses: String): Fixture {
+    private fun fixture(
+        vararg responses: String,
+        toolResult: String = """{"availableBytes":20000000000}""",
+    ): Fixture {
         val queued = ArrayDeque(responses.toList())
         val prompts = mutableListOf<String>()
         val toolCalls = mutableListOf<String>()
@@ -130,7 +147,7 @@ class AgentBackendTest {
             },
             tools = ReadOnlyToolExecutor { name ->
                 toolCalls += name
-                """{"availableBytes":20000000000}"""
+                toolResult
             },
         )
         return Fixture(backend, prompts, toolCalls)
