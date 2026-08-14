@@ -50,6 +50,11 @@ the `PocketAgent` tag. Each test starts with a fresh model context so earlier pr
 pollute later routing measurements; the compact routing contract and examples are repeated in
 each request because small models do not always retain system-prompt constraints reliably.
 
+For the tested 1.2B model, the parser also safely normalizes the common shorthand
+`{"action":"get_storage_info","args":{}}` into the canonical tool envelope. This repair applies
+only when `action` exactly matches one of the three allowlisted read-only tools and `args` is empty;
+all other invented actions remain rejected. The UI marks repaired routes as `normalized`.
+
 ## Backend tests
 
 The agent state machine lives in `AgentBackend.kt` and has no Compose dependency. JVM tests use

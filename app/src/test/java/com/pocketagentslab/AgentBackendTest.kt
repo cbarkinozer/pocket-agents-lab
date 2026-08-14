@@ -38,12 +38,28 @@ class AgentBackendTest {
 
     @Test
     fun unknownActionNeverExecutesTool() = runBlocking {
-        val fixture = fixture("""{"action":"get_storage_info","args":{}}""")
+        val fixture = fixture("""{"action":"erase_storage","args":{}}""")
 
-        expectFailure("Unknown action: get_storage_info") {
+        expectFailure("Unknown action: erase_storage") {
             fixture.backend.run("How much storage?")
         }
         assertTrue(fixture.toolCalls.isEmpty())
+    }
+
+    @Test
+    fun allowlistedToolShorthandIsSafelyNormalized() = runBlocking {
+        val fixture = fixture(
+            """{"action":"get_storage_info","args":{}}""",
+            """{"action":"answer","text":"You have 20 GB available."}""",
+        )
+
+        val selection = fixture.backend.select("How much storage?")
+        assertTrue(selection.decision.schemaRepaired)
+        assertEquals("get_storage_info", selection.decision.toolName)
+
+        val result = fixture.backend.complete("How much storage?", selection)
+        assertEquals("tool:get_storage_info (normalized)", result.route)
+        assertEquals(listOf("get_storage_info"), fixture.toolCalls)
     }
 
     @Test

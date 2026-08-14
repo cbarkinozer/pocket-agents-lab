@@ -15,6 +15,7 @@ internal data class AgentDecision(
     val action: String,
     val text: String? = null,
     val toolName: String? = null,
+    val schemaRepaired: Boolean = false,
 )
 
 internal data class GeneratedText(val text: String, val pieces: Int)
@@ -70,7 +71,7 @@ internal class AgentBackend(
         }
         return AgentRunResult(
             answer = finalDecision.text.orEmpty(),
-            route = "tool:$toolName",
+            route = "tool:$toolName" + if (decision.schemaRepaired) " (normalized)" else "",
             generatedPieces = selection.generatedPieces + generated.pieces,
         )
     }
@@ -97,6 +98,15 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
             require(name in READ_ONLY_TOOLS) { "Unknown tool: $name" }
             require(json.getJSONObject("args").length() == 0) { "Tools accept no arguments" }
             AgentDecision(action = action, toolName = name)
+        }
+        in READ_ONLY_TOOLS -> {
+            require(json.length() == 2 && json.has("args")) { "Invalid shorthand tool schema" }
+            require(json.getJSONObject("args").length() == 0) { "Tools accept no arguments" }
+            AgentDecision(
+                action = "tool",
+                toolName = action,
+                schemaRepaired = true,
+            )
         }
         else -> error("Unknown action: $action")
     }
