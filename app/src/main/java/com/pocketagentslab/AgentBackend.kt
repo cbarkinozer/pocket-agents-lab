@@ -215,6 +215,11 @@ TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
 Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
 No live phone data needed: {"action":"answer","text":"..."}
 Unclear: {"action":"answer","text":"$CLARIFICATION_MESSAGE"}
+Examples:
+Battery level -> {"action":"tool","name":"get_battery_info","args":{}}
+Free space -> {"action":"tool","name":"get_storage_info","args":{}}
+Android version -> {"action":"tool","name":"get_device_info","args":{}}
+Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
 Request: $userPrompt
 JSON:"""
 

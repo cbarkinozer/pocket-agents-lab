@@ -307,8 +307,9 @@ private fun PocketAgentsScreen() {
                                 "running ${progress.completed + 1}/${progress.total} ($it)"
                             } ?: "${progress.completed}/${progress.total}"
                             agentTestStatus = "$position | " +
-                                "correct ${progress.correct} | first-pass JSON ${progress.firstPassValid} | " +
-                                "repaired ${progress.repaired} | ${progress.elapsedMs / 1000}s"
+                                "correct ${progress.correct} | strict ${progress.strictFirstPass} | " +
+                                "normalized ${progress.normalizedFirstPass} | repaired ${progress.repaired} | " +
+                                "accepted ${progress.finalAccepted} | ${progress.elapsedMs / 1000}s"
                         }
                     } catch (error: Throwable) {
                         Log.e(TAG_AGENT, "Agent tests failed", error)
@@ -482,7 +483,9 @@ private data class AgentEvaluationProgress(
     val completed: Int,
     val total: Int,
     val correct: Int,
-    val firstPassValid: Int,
+    val strictFirstPass: Int,
+    val normalizedFirstPass: Int,
+    val finalAccepted: Int,
     val repaired: Int,
     val elapsedMs: Long,
     val currentCase: String? = null,
@@ -498,7 +501,10 @@ private suspend fun runAgentTests(
     require(initialTemperatureC <= AGENT_EVAL_MAX_START_TEMPERATURE_C) {
         "Battery is ${formatMetric(initialTemperatureC)} C; cool to $AGENT_EVAL_MAX_START_TEMPERATURE_C C or below"
     }
-    var validJson = 0
+    var strictFirstPass = 0
+    var normalizedFirstPass = 0
+    var finalAccepted = 0
+    var repairAttempts = 0
     var repairedSelections = 0
     var correctRoutes = 0
     val details = JSONArray()
@@ -511,7 +517,9 @@ private suspend fun runAgentTests(
                 completed = details.length(),
                 total = AGENT_TEST_CASES.size,
                 correct = correctRoutes,
-                firstPassValid = validJson,
+                strictFirstPass = strictFirstPass,
+                normalizedFirstPass = normalizedFirstPass,
+                finalAccepted = finalAccepted,
                 repaired = repairedSelections,
                 elapsedMs = SystemClock.elapsedRealtime() - suiteStarted,
                 currentCase = case.id,
@@ -532,7 +540,7 @@ private suspend fun runAgentTests(
         var actualWorkflow: String? = null
         var actualAction: String? = null
         var jsonValid = false
-        var repairAttempted = false
+        var schemaNormalized = false
         var errorType: String? = null
         val pssBeforeKb = Debug.getPss()
         val temperatureBeforeC = getBatteryInfo(context).getDouble("temperatureC")
@@ -542,8 +550,13 @@ private suspend fun runAgentTests(
             }
             val decision = selection.decision
             jsonValid = true
-            repairAttempted = selection.repairAttempted
-            if (!repairAttempted) validJson++ else repairedSelections++
+            schemaNormalized = decision.schemaRepaired
+            finalAccepted++
+            when {
+                selection.repairAttempted -> repairedSelections++
+                schemaNormalized -> normalizedFirstPass++
+                else -> strictFirstPass++
+            }
             actualAction = decision.action
             actualTool = decision.toolName
             actualWorkflow = decision.workflowName
@@ -552,6 +565,8 @@ private suspend fun runAgentTests(
             errorType = classifyAgentEvaluationError(error)
             Log.w(TAG_AGENT, "Test failed for: ${case.prompt}", error)
         }
+        val repairAttempted = generations.size > 1
+        if (repairAttempted) repairAttempts++
         val pssAfterKb = Debug.getPss()
         val temperatureAfterC = getBatteryInfo(context).getDouble("temperatureC")
         val latencyMs = generations.sumOf(TimedGeneration::latencyMs)
@@ -580,8 +595,23 @@ private suspend fun runAgentTests(
                 .put("actualTool", actualTool ?: JSONObject.NULL)
                 .put("expectedWorkflow", case.expectedWorkflow ?: JSONObject.NULL)
                 .put("actualWorkflow", actualWorkflow ?: JSONObject.NULL)
-                .put("validJson", jsonValid)
+                .put("finalSchemaAccepted", jsonValid)
+                .put("strictSchemaOnFirstAttempt", jsonValid && !repairAttempted && !schemaNormalized)
+                .put("schemaNormalized", schemaNormalized)
                 .put("repairAttempted", repairAttempted)
+                .put("generationAttempts", JSONArray().also { attempts ->
+                    generations.forEachIndexed { index, generation ->
+                        attempts.put(
+                            JSONObject()
+                                .put("attempt", index + 1)
+                                .put("kind", if (index == 0) "route" else "repair")
+                                .put("rawOutput", generation.text)
+                                .put("latencyMs", generation.latencyMs)
+                                .put("ttftMs", generation.ttftMs ?: JSONObject.NULL)
+                                .put("generatedPieces", generation.pieces),
+                        )
+                    }
+                })
                 .put("errorType", errorType ?: JSONObject.NULL)
                 .put("latencyMs", latencyMs)
                 .put("ttftMs", ttftMs ?: JSONObject.NULL)
@@ -599,7 +629,8 @@ private suspend fun runAgentTests(
                 actualTool != null -> "tool:$actualTool"
                 else -> actualAction.orEmpty()
             } else "invalid",
-            correct, jsonValid, repairAttempted, errorType.orEmpty(), latencyMs, ttftMs,
+            correct, jsonValid && !repairAttempted && !schemaNormalized, schemaNormalized,
+            repairAttempted, jsonValid, errorType.orEmpty(), latencyMs, ttftMs,
             pieces, formatMetric(rate), pssBeforeKb, pssAfterKb,
             formatMetric(temperatureBeforeC), formatMetric(temperatureAfterC),
         )
@@ -608,15 +639,17 @@ private suspend fun runAgentTests(
                 completed = details.length(),
                 total = AGENT_TEST_CASES.size,
                 correct = correctRoutes,
-                firstPassValid = validJson,
+                strictFirstPass = strictFirstPass,
+                normalizedFirstPass = normalizedFirstPass,
+                finalAccepted = finalAccepted,
                 repaired = repairedSelections,
                 elapsedMs = SystemClock.elapsedRealtime() - suiteStarted,
             ),
         )
     }
     val report = JSONObject()
-        .put("schemaVersion", 1)
-        .put("suite", "tool-routing-3-tools-v1")
+        .put("schemaVersion", 2)
+        .put("suite", "tool-routing-3-tools-v2")
         .put("llamaCppCommit", LLAMA_CPP_COMMIT)
         .put("buildFlags", LLAMA_BUILD_FLAGS)
         .put("modelFile", File(modelPath).name)
@@ -626,9 +659,12 @@ private suspend fun runAgentTests(
         .put("startTemperatureC", initialTemperatureC)
         .put("maxStartTemperatureC", AGENT_EVAL_MAX_START_TEMPERATURE_C)
         .put("tests", AGENT_TEST_CASES.size)
-        .put("validJson", validJson)
+        .put("strictSchemaFirstPass", strictFirstPass)
+        .put("normalizedFirstPass", normalizedFirstPass)
+        .put("repairAttempts", repairAttempts)
         .put("repairedSelections", repairedSelections)
-        .put("correctToolSelections", correctRoutes)
+        .put("finalAcceptedSelections", finalAccepted)
+        .put("correctRoutes", correctRoutes)
         .put("details", details)
     context.openFileOutput("agent-test-result.json", Context.MODE_PRIVATE).use {
         it.write(report.toString(2).toByteArray())
@@ -638,8 +674,11 @@ private suspend fun runAgentTests(
     }
     Log.i(TAG_AGENT, report.toString())
     prepareFreshAgent(engine, modelPath)
-    return "Tool selection: $correctRoutes/${AGENT_TEST_CASES.size} | " +
-        "Valid JSON: $validJson/${AGENT_TEST_CASES.size}\n" +
+    return "Completed: ${AGENT_TEST_CASES.size}/${AGENT_TEST_CASES.size}\n" +
+        "Correct route: $correctRoutes/${AGENT_TEST_CASES.size}\n" +
+        "Strict first-pass schema: $strictFirstPass/${AGENT_TEST_CASES.size} | " +
+        "Normalized: $normalizedFirstPass | Repaired: $repairedSelections | " +
+        "Final accepted: $finalAccepted/${AGENT_TEST_CASES.size}\n" +
         "Saved agent-test-result.json and agent-evaluation.csv"
 }
 
@@ -849,5 +888,5 @@ private const val LLAMA_CPP_COMMIT = "a94d563ed801d1da1b8c2432946de07d0231bb3d"
 private const val LLAMA_BUILD_FLAGS = "arm64-v8a;GGML_SYSTEM_ARCH=ARM;GGML_CPU_KLEIDIAI=OFF;GGML_OPENMP=OFF;ctx=1024;cpu-only"
 private const val AGENT_EVAL_MAX_START_TEMPERATURE_C = 35.0
 private const val AGENT_EVAL_CASE_TIMEOUT_MS = 120_000L
-private const val AGENT_EVAL_CSV_HEADER = "id,prompt,expected_route,actual_route,correct,valid_json,repair_attempted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
+private const val AGENT_EVAL_CSV_HEADER = "id,prompt,expected_route,actual_route,correct,strict_schema_first_attempt,schema_normalized,repair_attempted,final_schema_accepted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
 private const val TAG_HEALTH = "PocketHealth"

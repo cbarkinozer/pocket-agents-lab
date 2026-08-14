@@ -1868,15 +1868,16 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 1. [x] Establish the Galaxy A32 hardware and software baseline and preserve the findings in `docs/`.
 2. [x] Integrate CPU-only llama.cpp for `arm64-v8a` with GGUF selection, model loading, generation, and timing telemetry.
 3. [x] Pin the llama.cpp commit/build flags and define the first versioned 50-prompt, JSON/CSV tool-routing harness with warm context reset, progress, and cancellation.
-4. [ ] Run `tool-routing-3-tools-v1` on the A32 and publish accuracy, first-pass validity, repair rate, latency, PSS, and thermal results.
-5. [ ] Add authoritative native token counts and repeatable cold-load/warm-generation measurements for model-load time, TTFT, token/s, peak RAM, CPU, battery, and thermal samples.
-6. [ ] Stress-test the agent at 3 -> 5 -> 10 tools with similar and irrelevant distractors; preserve each versioned suite and identify the empirical breaking point.
-7. [ ] Turn Phone Health into the first evaluated end-to-end PoC: deterministic orchestration and facts, model selection/explanation only, scored correctness plus latency and resource cost.
-8. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
-9. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
-10. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.
-11. [ ] Design Edge Score only after enough raw results exist to test weighting, quality gates, stability, and ranking sensitivity.
-12. [ ] Attempt on-device LoRA/QLoRA and custom/minimal runtimes only after inference, thermal, energy, and recovery tooling are reliable.
+4. [x] Preserve Run 001 of `tool-routing-3-tools-v1`: 13/50 correct routes, 29/50 final accepted selections, 42.3 s average latency, about 825-851 MB PSS, and 30.4-36.7 C observed temperature.
+5. [ ] Run the corrected `tool-routing-3-tools-v2` at least three times with strict/normalized/repaired schema accounting and raw generation capture.
+6. [ ] Add authoritative native token counts and repeatable cold-load/warm-generation measurements for model-load time, TTFT, token/s, peak RAM, CPU, battery, and thermal samples.
+7. [ ] Stress-test the agent at 3 -> 5 -> 10 tools with similar and irrelevant distractors; preserve each versioned suite and identify the empirical breaking point.
+8. [ ] Turn Phone Health into the first evaluated end-to-end PoC: deterministic orchestration and facts, model selection/explanation only, scored correctness plus latency and resource cost.
+9. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
+10. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
+11. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.
+12. [ ] Design Edge Score only after enough raw results exist to test weighting, quality gates, stability, and ranking sensitivity.
+13. [ ] Attempt on-device LoRA/QLoRA and custom/minimal runtimes only after inference, thermal, energy, and recovery tooling are reliable.
 
 The immediate priority is measurement, not semantic search. See [`docs/tool-agent-evaluation.md`](docs/tool-agent-evaluation.md) for the pinned protocol, thermal rule, wireless ADB setup, CSV schema, and the single constrained repair policy.
 
