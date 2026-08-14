@@ -27,6 +27,7 @@ internal data class GeneratedText(val text: String, val pieces: Int)
 internal data class AgentSelection(
     val decision: AgentDecision,
     val generatedPieces: Int,
+    val repairAttempted: Boolean = false,
 )
 
 internal data class AgentRunResult(
@@ -55,7 +56,20 @@ internal class AgentBackend(
     suspend fun select(userPrompt: String): AgentSelection {
         onProgress(AgentProgress(0.15f, "Selecting an action with the local model…"))
         val generated = generator.generate(buildRoutingPrompt(userPrompt), AGENT_DECISION_TOKENS)
-        return AgentSelection(parseAgentDecision(generated.text), generated.pieces)
+        return try {
+            AgentSelection(parseAgentDecision(generated.text), generated.pieces)
+        } catch (validationError: Throwable) {
+            onProgress(AgentProgress(0.22f, "Repairing one invalid routing response…"))
+            val repaired = generator.generate(
+                buildRoutingRepairPrompt(generated.text, validationError.message.orEmpty()),
+                AGENT_DECISION_TOKENS,
+            )
+            AgentSelection(
+                decision = parseAgentDecision(repaired.text),
+                generatedPieces = generated.pieces + repaired.pieces,
+                repairAttempted = true,
+            )
+        }
     }
 
     suspend fun complete(userPrompt: String, selection: AgentSelection): AgentRunResult {
@@ -253,6 +267,18 @@ internal fun evaluatePhoneHealth(
         .put("androidVersion", device.getString("androidVersion"))
         .put("cpuAbi", device.getString("cpuAbi"))
 }
+
+internal fun buildRoutingRepairPrompt(invalidOutput: String, validationError: String): String =
+    """Repair the invalid routing response below. Return exactly one corrected compact JSON object and nothing else.
+Validator error: $validationError
+Allowed actions and schemas:
+{"action":"answer","text":"..."}
+{"action":"tool","name":"get_device_info","args":{}}
+{"action":"tool","name":"get_battery_info","args":{}}
+{"action":"tool","name":"get_storage_info","args":{}}
+{"action":"workflow","name":"phone_health_check","args":{}}
+Invalid response: $invalidOutput
+Corrected JSON:"""
 
 internal fun buildHealthExplanationPrompt(userPrompt: String, diagnosis: JSONObject): String =
     """Return exactly one compact JSON object with action "answer" and a concise text explanation.

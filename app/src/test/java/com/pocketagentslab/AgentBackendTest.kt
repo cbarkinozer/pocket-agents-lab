@@ -54,7 +54,10 @@ class AgentBackendTest {
 
     @Test
     fun unknownActionNeverExecutesTool() = runBlocking {
-        val fixture = fixture("""{"action":"erase_storage","args":{}}""")
+        val fixture = fixture(
+            """{"action":"erase_storage","args":{}}""",
+            """{"action":"erase_storage","args":{}}""",
+        )
 
         expectFailure("Unknown action: erase_storage") {
             fixture.backend.run("How much storage?")
@@ -134,7 +137,10 @@ class AgentBackendTest {
 
     @Test
     fun unknownToolNeverExecutesTool() = runBlocking {
-        val fixture = fixture("""{"action":"tool","name":"delete_files","args":{}}""")
+        val fixture = fixture(
+            """{"action":"tool","name":"delete_files","args":{}}""",
+            """{"action":"tool","name":"delete_files","args":{}}""",
+        )
 
         expectFailure("Unknown tool: delete_files") {
             fixture.backend.run("Clean my phone")
@@ -144,7 +150,7 @@ class AgentBackendTest {
 
     @Test
     fun malformedJsonNeverExecutesTool() = runBlocking {
-        val fixture = fixture("I would call get_storage_info")
+        val fixture = fixture("I would call get_storage_info", "still not JSON")
 
         expectFailure("bare JSON object") {
             fixture.backend.run("How much storage?")
@@ -153,8 +159,24 @@ class AgentBackendTest {
     }
 
     @Test
+    fun invalidJsonGetsExactlyOneConstrainedRepairAttempt() = runBlocking {
+        val fixture = fixture(
+            "I would call get_storage_info",
+            """{"action":"tool","name":"get_storage_info","args":{}}""",
+        )
+
+        val selection = fixture.backend.select("How much storage is free?")
+
+        assertTrue(selection.repairAttempted)
+        assertEquals("get_storage_info", selection.decision.toolName)
+        assertEquals(2, fixture.prompts.size)
+        assertTrue(fixture.prompts[1].contains("Model did not return a bare JSON object"))
+    }
+
+    @Test
     fun toolArgumentsAreRejected() = runBlocking {
         val fixture = fixture(
+            """{"action":"tool","name":"get_storage_info","args":{"path":"/data"}}""",
             """{"action":"tool","name":"get_storage_info","args":{"path":"/data"}}""",
         )
 

@@ -1,0 +1,71 @@
+# Tool-agent evaluation protocol
+
+The next result this project targets is a reproducible statement of the form:
+
+> On a Galaxy A32, model X at quantization Y selected the correct route on N/50 requests, with measured latency, output rate, RAM, and temperature.
+
+## Version 1 suite
+
+The Android app's **Run Agent Tests** button runs `tool-routing-3-tools-v1`: 50 fixed prompts, with ten prompts in each class:
+
+- `get_storage_info`
+- `get_device_info`
+- `get_battery_info`
+- direct answer (no tool)
+- `phone_health_check` workflow
+
+Several prompts mention a distractor (for example, battery versus storage). The suite tests only route selection. It deliberately does not execute tools or generate final explanations, so routing accuracy is not confounded with tool execution and answer quality.
+
+Every prompt starts with a fresh 1024-token model context. The model file remains loaded by llama.cpp between cases. Start only when battery temperature is at most 35 C; the run refuses to start above that threshold. Keep the phone unplugged, screen brightness and ambient conditions fixed, and do not interact with other apps during a run.
+
+The benchmark writes app-private files:
+
+- `agent-test-result.json`: versioned manifest, device/model/build metadata, totals, and per-case records.
+- `agent-evaluation.csv`: one row per prompt for analysis in a spreadsheet or script.
+
+Pull them with:
+
+```powershell
+adb exec-out run-as com.pocketagentslab cat files/agent-test-result.json > agent-test-result.json
+adb exec-out run-as com.pocketagentslab cat files/agent-evaluation.csv > agent-evaluation.csv
+```
+
+Recorded fields include expected and actual route, correctness, accepted JSON, whether repair was attempted, validator failure class, generation latency, approximate TTFT, generated JNI pieces, pieces/second, process PSS before/after, and battery temperature before/after. JNI pieces are not guaranteed to equal tokenizer tokens, so the CSV calls this value `exposed_pieces_per_second`; authoritative token/s requires a future JNI counter.
+
+## Validation and repair
+
+The router accepts only the allowlisted JSON schemas. If initial output is invalid:
+
+```text
+generate once -> deterministic validator reports exact error -> one constrained repair attempt -> stop
+```
+
+There is no recursive reflection or unlimited retry. Repaired selections are explicitly labeled and should be reported separately from first-pass schema validity.
+
+## Pinned runtime
+
+- llama.cpp commit: `a94d563ed801d1da1b8c2432946de07d0231bb3d`
+- ABI: `arm64-v8a`
+- CPU-only
+- context: 1024 tokens
+- `GGML_SYSTEM_ARCH=ARM`
+- `GGML_CPU_KLEIDIAI=OFF`
+- `GGML_OPENMP=OFF`
+
+The Git submodule and `llama-android/src/main/cpp/CMakeLists.txt` are the source of truth. Any changed commit or flag creates a new benchmark configuration.
+
+## Wireless ADB
+
+For Android 11+ on the same trusted Wi-Fi network, enable **Developer options -> Wireless debugging**, choose **Pair device with pairing code**, then run:
+
+```powershell
+adb pair PHONE_IP:PAIRING_PORT
+adb connect PHONE_IP:DEBUG_PORT
+adb devices
+```
+
+The pairing and debugging ports shown by Android can differ. Prefer USB for initial troubleshooting. Disable wireless debugging after the run; do not use it on an untrusted network.
+
+## Scaling experiment
+
+Do not add tools casually. Preserve this three-tool result, then create separately versioned suites for 5 and 10 tools. Add semantically similar and irrelevant distractor tools. For each suite report route accuracy, first-pass JSON validity, repair rate, final schema failure rate, latency, PSS, and temperature. The breaking point is where accuracy or reliability degrades materially under an otherwise identical protocol.

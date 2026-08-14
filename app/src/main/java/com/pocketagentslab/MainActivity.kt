@@ -332,24 +332,70 @@ For a full phone health check, select the phone_health_check workflow. Android w
 Use a tool whenever the question requires current device facts. Otherwise answer directly. Never invent tools or arguments. After a TOOL_RESULT message, return an answer JSON using that data."""
 
 private data class AgentTestCase(
+    val id: String,
     val prompt: String,
     val expectedTool: String? = null,
     val expectedWorkflow: String? = null,
 )
 
 private val AGENT_TEST_CASES = listOf(
-    AgentTestCase("How much storage do I have?", "get_storage_info"),
-    AgentTestCase("How much free space is left on this phone?", "get_storage_info"),
-    AgentTestCase("What Android version is this?", "get_device_info"),
-    AgentTestCase("What CPU ABI does this device use?", "get_device_info"),
-    AgentTestCase("Is my battery hot?", "get_battery_info"),
-    AgentTestCase("What is my battery percentage?", "get_battery_info"),
-    AgentTestCase("Tell me a joke.", null),
-    AgentTestCase("What is 2+2?", null),
-    AgentTestCase("Run a phone health check.", expectedWorkflow = PHONE_HEALTH_CHECK),
-    AgentTestCase("Check whether my phone is healthy.", expectedWorkflow = PHONE_HEALTH_CHECK),
-    AgentTestCase("Inspect my phone and suggest health improvements.", expectedWorkflow = PHONE_HEALTH_CHECK),
-    AgentTestCase("Are storage and battery temperature okay?", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("storage-01", "How much storage do I have?", "get_storage_info"),
+    AgentTestCase("storage-02", "How much free space is left on this phone?", "get_storage_info"),
+    AgentTestCase("storage-03", "Am I running out of disk space?", "get_storage_info"),
+    AgentTestCase("storage-04", "Show my internal storage usage.", "get_storage_info"),
+    AgentTestCase("storage-05", "How many gigabytes can I still save?", "get_storage_info"),
+    AgentTestCase("storage-06", "Is there room for another large model?", "get_storage_info"),
+    AgentTestCase("storage-07", "Check available space, not battery level.", "get_storage_info"),
+    AgentTestCase("storage-08", "What fraction of the phone storage is free?", "get_storage_info"),
+    AgentTestCase("storage-09", "Tell me the used and total storage.", "get_storage_info"),
+    AgentTestCase("storage-10", "Could a 2 GB file fit on this device right now?", "get_storage_info"),
+    AgentTestCase("device-01", "What Android version is this?", "get_device_info"),
+    AgentTestCase("device-02", "What CPU ABI does this device use?", "get_device_info"),
+    AgentTestCase("device-03", "Which phone model am I using?", "get_device_info"),
+    AgentTestCase("device-04", "Who manufactured this handset?", "get_device_info"),
+    AgentTestCase("device-05", "Is this device arm64-v8a?", "get_device_info"),
+    AgentTestCase("device-06", "Report the model, Android release, and architecture.", "get_device_info"),
+    AgentTestCase("device-07", "How much physical RAM does this phone expose?", "get_device_info"),
+    AgentTestCase("device-08", "Identify the current device without discussing storage.", "get_device_info"),
+    AgentTestCase("device-09", "Which Android SDK and OS version are running?", "get_device_info"),
+    AgentTestCase("device-10", "Give me this phone's hardware identity.", "get_device_info"),
+    AgentTestCase("battery-01", "Is my battery hot?", "get_battery_info"),
+    AgentTestCase("battery-02", "What is my battery percentage?", "get_battery_info"),
+    AgentTestCase("battery-03", "Is the phone charging right now?", "get_battery_info"),
+    AgentTestCase("battery-04", "Tell me the current battery temperature.", "get_battery_info"),
+    AgentTestCase("battery-05", "How much charge remains?", "get_battery_info"),
+    AgentTestCase("battery-06", "Check battery heat, not free storage.", "get_battery_info"),
+    AgentTestCase("battery-07", "Should I let the battery cool down?", "get_battery_info"),
+    AgentTestCase("battery-08", "Read the live charging state.", "get_battery_info"),
+    AgentTestCase("battery-09", "Is my current battery temperature above 40 C?", "get_battery_info"),
+    AgentTestCase("battery-10", "Give me charge level and temperature.", "get_battery_info"),
+    AgentTestCase("answer-01", "Tell me a joke."),
+    AgentTestCase("answer-02", "What is 2+2?"),
+    AgentTestCase("answer-03", "Write a five-word greeting."),
+    AgentTestCase("answer-04", "What is the capital of France?"),
+    AgentTestCase("answer-05", "Explain what an ABI is in one sentence."),
+    AgentTestCase("answer-06", "Give me a short riddle."),
+    AgentTestCase("answer-07", "Say hello without checking my device."),
+    AgentTestCase("answer-08", "What does CPU stand for?"),
+    AgentTestCase("answer-09", "Name a primary color."),
+    AgentTestCase("answer-10", "Complete this sequence: 2, 4, 6, 8, ?"),
+    AgentTestCase("health-01", "Run a phone health check.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-02", "Check whether my phone is healthy.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-03", "Inspect my phone and suggest health improvements.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-04", "Are storage and battery temperature okay?", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-05", "Give this handset a complete health assessment.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-06", "Check both free space and battery heat together.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-07", "Diagnose the phone's overall condition.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-08", "Do a device wellness check and recommend actions.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-09", "Is this phone ready for a sustained AI workload?", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("health-10", "Review device, battery, and storage health.", expectedWorkflow = PHONE_HEALTH_CHECK),
+)
+
+private data class TimedGeneration(
+    val text: String,
+    val pieces: Int,
+    val latencyMs: Long,
+    val ttftMs: Long?,
 )
 
 private suspend fun collectGeneration(flow: Flow<String>): Pair<String, Int> {
@@ -360,6 +406,20 @@ private suspend fun collectGeneration(flow: Flow<String>): Pair<String, Int> {
         pieces++
     }
     return text.toString() to pieces
+}
+
+private suspend fun collectTimedGeneration(flow: Flow<String>): TimedGeneration {
+    val started = SystemClock.elapsedRealtime()
+    var firstPieceAt: Long? = null
+    val text = StringBuilder()
+    var pieces = 0
+    flow.collect {
+        if (firstPieceAt == null) firstPieceAt = SystemClock.elapsedRealtime()
+        text.append(it)
+        pieces++
+    }
+    val finished = SystemClock.elapsedRealtime()
+    return TimedGeneration(text.toString(), pieces, finished - started, firstPieceAt?.minus(started))
 }
 
 private fun createAgentBackend(
@@ -391,50 +451,160 @@ private suspend fun runAgentTests(
     engine: InferenceEngine,
     modelPath: String,
 ): String {
+    val initialTemperatureC = getBatteryInfo(context).getDouble("temperatureC")
+    require(initialTemperatureC <= AGENT_EVAL_MAX_START_TEMPERATURE_C) {
+        "Battery is ${formatMetric(initialTemperatureC)} C; cool to $AGENT_EVAL_MAX_START_TEMPERATURE_C C or below"
+    }
     var validJson = 0
+    var repairedSelections = 0
     var correctRoutes = 0
     val details = JSONArray()
+    val csv = StringBuilder(AGENT_EVAL_CSV_HEADER).append('\n')
     for (case in AGENT_TEST_CASES) {
         prepareFreshAgent(engine, modelPath)
-        val backend = createAgentBackend(context, engine)
+        val generations = mutableListOf<TimedGeneration>()
+        val backend = AgentBackend(
+            generator = AgentGenerator { request, maxTokens ->
+                collectTimedGeneration(engine.sendUserPrompt(request, maxTokens)).also {
+                    generations += it
+                    Log.i(TAG_AGENT, "eval_model_json=${it.text}")
+                }.let { GeneratedText(it.text, it.pieces) }
+            },
+            tools = ReadOnlyToolExecutor { error("Evaluation must not execute tools") },
+        )
         var actualTool: String? = null
         var actualWorkflow: String? = null
+        var actualAction: String? = null
         var jsonValid = false
+        var repairAttempted = false
+        var errorType: String? = null
+        val pssBeforeKb = Debug.getPss()
+        val temperatureBeforeC = getBatteryInfo(context).getDouble("temperatureC")
         try {
             val selection = backend.select(case.prompt)
             val decision = selection.decision
             jsonValid = true
-            validJson++
+            repairAttempted = selection.repairAttempted
+            if (!repairAttempted) validJson++ else repairedSelections++
+            actualAction = decision.action
             actualTool = decision.toolName
             actualWorkflow = decision.workflowName
-            if (actualTool == case.expectedTool && actualWorkflow == case.expectedWorkflow) correctRoutes++
-            backend.complete(case.prompt, selection)
+            if (actualRoute(decision) == expectedRoute(case)) correctRoutes++
         } catch (error: Throwable) {
+            errorType = classifyAgentEvaluationError(error)
             Log.w(TAG_AGENT, "Test failed for: ${case.prompt}", error)
         }
+        val pssAfterKb = Debug.getPss()
+        val temperatureAfterC = getBatteryInfo(context).getDouble("temperatureC")
+        val latencyMs = generations.sumOf(TimedGeneration::latencyMs)
+        val pieces = generations.sumOf(TimedGeneration::pieces)
+        val ttftMs = generations.firstOrNull()?.ttftMs
+        val rate = if (latencyMs > 0) pieces * 1000.0 / latencyMs else 0.0
+        val correct = jsonValid && when {
+            actualWorkflow != null -> "workflow:$actualWorkflow"
+            actualTool != null -> "tool:$actualTool"
+            actualAction != null -> actualAction
+            else -> "invalid"
+        } == expectedRoute(case)
         details.put(
             JSONObject()
+                .put("id", case.id)
                 .put("prompt", case.prompt)
+                .put("expectedRoute", expectedRoute(case))
+                .put("actualRoute", when {
+                    actualWorkflow != null -> "workflow:$actualWorkflow"
+                    actualTool != null -> "tool:$actualTool"
+                    actualAction != null -> actualAction
+                    else -> JSONObject.NULL
+                })
+                .put("correct", correct)
                 .put("expectedTool", case.expectedTool ?: JSONObject.NULL)
                 .put("actualTool", actualTool ?: JSONObject.NULL)
                 .put("expectedWorkflow", case.expectedWorkflow ?: JSONObject.NULL)
                 .put("actualWorkflow", actualWorkflow ?: JSONObject.NULL)
-                .put("validJson", jsonValid),
+                .put("validJson", jsonValid)
+                .put("repairAttempted", repairAttempted)
+                .put("errorType", errorType ?: JSONObject.NULL)
+                .put("latencyMs", latencyMs)
+                .put("ttftMs", ttftMs ?: JSONObject.NULL)
+                .put("generatedPieces", pieces)
+                .put("exposedPiecesPerSecond", rate)
+                .put("pssBeforeKb", pssBeforeKb)
+                .put("pssAfterKb", pssAfterKb)
+                .put("temperatureBeforeC", temperatureBeforeC)
+                .put("temperatureAfterC", temperatureAfterC),
+        )
+        csv.appendCsvRow(
+            case.id, case.prompt, expectedRoute(case),
+            if (jsonValid) when {
+                actualWorkflow != null -> "workflow:$actualWorkflow"
+                actualTool != null -> "tool:$actualTool"
+                else -> actualAction.orEmpty()
+            } else "invalid",
+            correct, jsonValid, repairAttempted, errorType.orEmpty(), latencyMs, ttftMs,
+            pieces, formatMetric(rate), pssBeforeKb, pssAfterKb,
+            formatMetric(temperatureBeforeC), formatMetric(temperatureAfterC),
         )
     }
     val report = JSONObject()
+        .put("schemaVersion", 1)
+        .put("suite", "tool-routing-3-tools-v1")
+        .put("llamaCppCommit", LLAMA_CPP_COMMIT)
+        .put("buildFlags", LLAMA_BUILD_FLAGS)
+        .put("modelFile", File(modelPath).name)
+        .put("modelBytes", File(modelPath).length())
+        .put("quantizationFromFilename", inferQuantization(File(modelPath).name))
+        .put("device", getDeviceInfo(context))
+        .put("startTemperatureC", initialTemperatureC)
+        .put("maxStartTemperatureC", AGENT_EVAL_MAX_START_TEMPERATURE_C)
         .put("tests", AGENT_TEST_CASES.size)
         .put("validJson", validJson)
+        .put("repairedSelections", repairedSelections)
         .put("correctToolSelections", correctRoutes)
         .put("details", details)
     context.openFileOutput("agent-test-result.json", Context.MODE_PRIVATE).use {
         it.write(report.toString(2).toByteArray())
     }
+    context.openFileOutput("agent-evaluation.csv", Context.MODE_PRIVATE).use {
+        it.write(csv.toString().toByteArray())
+    }
     Log.i(TAG_AGENT, report.toString())
     prepareFreshAgent(engine, modelPath)
     return "Tool selection: $correctRoutes/${AGENT_TEST_CASES.size} | " +
-        "Valid JSON: $validJson/${AGENT_TEST_CASES.size}\nSaved agent-test-result.json"
+        "Valid JSON: $validJson/${AGENT_TEST_CASES.size}\n" +
+        "Saved agent-test-result.json and agent-evaluation.csv"
 }
+
+private fun expectedRoute(case: AgentTestCase): String = when {
+    case.expectedWorkflow != null -> "workflow:${case.expectedWorkflow}"
+    case.expectedTool != null -> "tool:${case.expectedTool}"
+    else -> "answer"
+}
+
+private fun actualRoute(decision: AgentDecision): String = when (decision.action) {
+    "workflow" -> "workflow:${decision.workflowName}"
+    "tool" -> "tool:${decision.toolName}"
+    else -> decision.action
+}
+
+private fun classifyAgentEvaluationError(error: Throwable): String = when {
+    error.message.orEmpty().contains("bare JSON") -> "invalid_json"
+    error.message.orEmpty().contains("schema") -> "invalid_schema"
+    error.message.orEmpty().contains("Unknown") -> "unknown_action_or_tool"
+    else -> "generation_or_runtime_error"
+}
+
+private fun StringBuilder.appendCsvRow(vararg fields: Any?) {
+    append(fields.joinToString(",") { field ->
+        val value = field?.toString().orEmpty()
+        "\"${value.replace("\"", "\"\"")}\""
+    }).append('\n')
+}
+
+private fun inferQuantization(filename: String): String =
+    Regex("(?i)(Q[0-9]+(?:_[A-Z0-9]+)*)").find(filename)?.value ?: "unknown"
+
+private fun formatMetric(value: Double): String = "%.3f".format(Locale.US, value)
 
 private fun executeReadOnlyTool(context: Context, name: String): JSONObject = when (name) {
     "get_device_info" -> getDeviceInfo(context)
@@ -607,4 +777,8 @@ private fun copyModelToPrivateStorage(context: Context, uri: Uri, displayName: S
 private const val TAG = "PocketLlama"
 private const val TAG_METRICS = "PocketLlamaMetrics"
 private const val TAG_AGENT = "PocketAgent"
+private const val LLAMA_CPP_COMMIT = "a94d563ed801d1da1b8c2432946de07d0231bb3d"
+private const val LLAMA_BUILD_FLAGS = "arm64-v8a;GGML_SYSTEM_ARCH=ARM;GGML_CPU_KLEIDIAI=OFF;GGML_OPENMP=OFF;ctx=1024;cpu-only"
+private const val AGENT_EVAL_MAX_START_TEMPERATURE_C = 35.0
+private const val AGENT_EVAL_CSV_HEADER = "id,prompt,expected_route,actual_route,correct,valid_json,repair_attempted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
 private const val TAG_HEALTH = "PocketHealth"

@@ -1867,14 +1867,18 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 
 1. [x] Establish the Galaxy A32 hardware and software baseline and preserve the findings in `docs/`.
 2. [x] Integrate CPU-only llama.cpp for `arm64-v8a` with GGUF selection, model loading, generation, and timing telemetry.
-3. [ ] Define a versioned benchmark-run manifest and JSON/CSV result schema.
-4. [ ] Add repeatable cold-load and warm-generation runs with model-load time, TTFT, TPS, peak RAM, CPU, battery, and thermal samples.
-5. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
-6. [ ] Benchmark several GGUF sizes and quantizations on the A32 using an identical protocol.
-7. [ ] Compare llama.cpp with at least one compatible alternative runtime using the same model family and workload.
-8. [x] Prototype a constrained Phone Health Check: three read-only tools, deterministic storage/thermal diagnosis, local SLM explanation, threshold scenario tests, and device-side latency/RAM/rate telemetry.
-9. [ ] Design Edge Score only after enough raw results exist to test weighting, gates, stability, and ranking sensitivity.
-10. [ ] Attempt on-device LoRA/QLoRA only after inference, thermal, energy, and recovery tooling are reliable.
+3. [x] Pin the llama.cpp commit/build flags and define the first versioned 50-prompt, JSON/CSV tool-routing harness.
+4. [ ] Run `tool-routing-3-tools-v1` on the A32 and publish accuracy, first-pass validity, repair rate, latency, PSS, and thermal results.
+5. [ ] Add authoritative native token counts and repeatable cold-load/warm-generation measurements for model-load time, TTFT, token/s, peak RAM, CPU, battery, and thermal samples.
+6. [ ] Stress-test the agent at 3 -> 5 -> 10 tools with similar and irrelevant distractors; preserve each versioned suite and identify the empirical breaking point.
+7. [ ] Turn Phone Health into the first evaluated end-to-end PoC: deterministic orchestration and facts, model selection/explanation only, scored correctness plus latency and resource cost.
+8. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
+9. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
+10. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.
+11. [ ] Design Edge Score only after enough raw results exist to test weighting, quality gates, stability, and ranking sensitivity.
+12. [ ] Attempt on-device LoRA/QLoRA and custom/minimal runtimes only after inference, thermal, energy, and recovery tooling are reliable.
+
+The immediate priority is measurement, not semantic search. See [`docs/tool-agent-evaluation.md`](docs/tool-agent-evaluation.md) for the pinned protocol, thermal rule, wireless ADB setup, CSV schema, and the single constrained repair policy.
 
 ---
 
