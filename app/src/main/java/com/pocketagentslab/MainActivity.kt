@@ -43,8 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.arm.aichat.AiChat
+import com.arm.aichat.ConversationReset
 import com.arm.aichat.InferenceEngine
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -93,6 +97,8 @@ private fun PocketAgentsScreen() {
     var isAgentTestRunning by remember { mutableStateOf(false) }
     var benchmarkStatus by remember { mutableStateOf("Benchmark not run") }
     var agentTestStatus by remember { mutableStateOf("Agent tests not run") }
+    var agentTestProgress by remember { mutableStateOf(0f) }
+    var agentTestJob by remember { mutableStateOf<Job?>(null) }
     var agentProgress by remember { mutableStateOf(AgentProgress(0f, "Ready")) }
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
@@ -289,22 +295,42 @@ private fun PocketAgentsScreen() {
         }
         Button(
             onClick = {
-                scope.launch {
+                agentTestJob = scope.launch {
                     isAgentTestRunning = true
+                    agentTestProgress = 0f
                     agentTestStatus = "Running ${AGENT_TEST_CASES.size} local routing tests…"
                     agentTestStatus = try {
-                        runAgentTests(context, engine, requireNotNull(loadedModelPath))
+                        runAgentTests(context, engine, requireNotNull(loadedModelPath)) { progress ->
+                            agentTestProgress = progress.completed.toFloat() / progress.total
+                            agentTestStatus = "${progress.completed}/${progress.total} | " +
+                                "correct ${progress.correct} | first-pass JSON ${progress.firstPassValid} | " +
+                                "repaired ${progress.repaired} | ${progress.elapsedMs / 1000}s"
+                        }
                     } catch (error: Throwable) {
                         Log.e(TAG_AGENT, "Agent tests failed", error)
-                        "Tests stopped: ${error.message ?: error.javaClass.simpleName}"
+                        if (error is kotlinx.coroutines.CancellationException) {
+                            "Evaluation cancelled; partial results were not saved"
+                        } else {
+                            "Tests stopped: ${error.message ?: error.javaClass.simpleName}"
+                        }
                     } finally {
                         isAgentTestRunning = false
+                        agentTestJob = null
                     }
                 }
             },
             enabled = isModelLoaded && !controlsBusy,
         ) {
             Text(if (isAgentTestRunning) "Testing agent…" else "Run Agent Tests")
+        }
+        if (isAgentTestRunning) {
+            LinearProgressIndicator(
+                progress = { agentTestProgress },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Button(onClick = { agentTestJob?.cancel() }) {
+                Text("Cancel Agent Tests")
+            }
         }
         Text(agentTestStatus)
         Text(metrics)
@@ -320,16 +346,14 @@ private fun PocketAgentsScreen() {
     }
 }
 
-private const val AGENT_SYSTEM_PROMPT = """You are a tiny offline Android agent. Return exactly one JSON object and no markdown or extra text.
-Valid responses are exactly one of these shapes:
-{"action":"answer","text":"your answer"}
+private const val AGENT_SYSTEM_PROMPT = """You are an offline Android router. Output one bare JSON object, never markdown.
+Allowed routes:
+{"action":"answer","text":"..."}
 {"action":"tool","name":"get_device_info","args":{}}
-The only tools are:
-- get_device_info(): Android version, model, ABI, and memory.
-- get_battery_info(): battery level, charging state, and temperature.
-- get_storage_info(): total, available, and used internal storage.
-For a full phone health check, select the phone_health_check workflow. Android will run all three tools and decide the diagnosis.
-Use a tool whenever the question requires current device facts. Otherwise answer directly. Never invent tools or arguments. After a TOOL_RESULT message, return an answer JSON using that data."""
+{"action":"tool","name":"get_battery_info","args":{}}
+{"action":"tool","name":"get_storage_info","args":{}}
+{"action":"workflow","name":"phone_health_check","args":{}}
+Use a tool only for current phone facts. Use the workflow for overall health. Otherwise answer. Never invent names or arguments. After tool data, return action=answer."""
 
 private data class AgentTestCase(
     val id: String,
@@ -439,17 +463,28 @@ private fun createAgentBackend(
 
 private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {
     if (engine.state.value is InferenceEngine.State.ModelReady) {
-        engine.cleanUp()
+        withContext(Dispatchers.IO) { ConversationReset.reset() }
+        return
     }
     engine.state.first { it is InferenceEngine.State.Initialized }
     engine.loadModel(modelPath)
     engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
 }
 
+private data class AgentEvaluationProgress(
+    val completed: Int,
+    val total: Int,
+    val correct: Int,
+    val firstPassValid: Int,
+    val repaired: Int,
+    val elapsedMs: Long,
+)
+
 private suspend fun runAgentTests(
     context: Context,
     engine: InferenceEngine,
     modelPath: String,
+    onProgress: (AgentEvaluationProgress) -> Unit,
 ): String {
     val initialTemperatureC = getBatteryInfo(context).getDouble("temperatureC")
     require(initialTemperatureC <= AGENT_EVAL_MAX_START_TEMPERATURE_C) {
@@ -460,7 +495,9 @@ private suspend fun runAgentTests(
     var correctRoutes = 0
     val details = JSONArray()
     val csv = StringBuilder(AGENT_EVAL_CSV_HEADER).append('\n')
+    val suiteStarted = SystemClock.elapsedRealtime()
     for (case in AGENT_TEST_CASES) {
+        currentCoroutineContext().ensureActive()
         prepareFreshAgent(engine, modelPath)
         val generations = mutableListOf<TimedGeneration>()
         val backend = AgentBackend(
@@ -544,6 +581,16 @@ private suspend fun runAgentTests(
             correct, jsonValid, repairAttempted, errorType.orEmpty(), latencyMs, ttftMs,
             pieces, formatMetric(rate), pssBeforeKb, pssAfterKb,
             formatMetric(temperatureBeforeC), formatMetric(temperatureAfterC),
+        )
+        onProgress(
+            AgentEvaluationProgress(
+                completed = details.length(),
+                total = AGENT_TEST_CASES.size,
+                correct = correctRoutes,
+                firstPassValid = validJson,
+                repaired = repairedSelections,
+                elapsedMs = SystemClock.elapsedRealtime() - suiteStarted,
+            ),
         )
     }
     val report = JSONObject()

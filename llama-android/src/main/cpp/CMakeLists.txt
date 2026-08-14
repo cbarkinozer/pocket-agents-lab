@@ -18,6 +18,24 @@ string(REPLACE
     AI_CHAT_SOURCE
     "${AI_CHAT_SOURCE}"
 )
+# Add the one lifecycle operation the official sample does not expose: return to
+# the already-decoded system-prompt boundary without unloading model weights.
+string(APPEND AI_CHAT_SOURCE [=[
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_arm_aichat_ConversationReset_resetNative(JNIEnv *, jclass) {
+    if (g_context == nullptr) {
+        return;
+    }
+    if (chat_msgs.size() > 1) {
+        chat_msgs.resize(1);
+    }
+    llama_memory_seq_rm(llama_get_memory(g_context), 0, system_prompt_position, -1);
+    current_position = system_prompt_position;
+    reset_short_term_states();
+}
+]=])
 set(GENERATED_BINDING "${CMAKE_CURRENT_BINARY_DIR}/ai_chat_pocket.cpp")
 file(WRITE "${GENERATED_BINDING}" "${AI_CHAT_SOURCE}")
 

@@ -209,23 +209,14 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
     }
 }
 
-internal fun buildRoutingPrompt(userPrompt: String): String = """Return exactly one compact JSON object. Do not answer outside JSON.
-For current device facts choose one tool using {"action":"tool","name":"TOOL_NAME","args":{}}.
-Allowed TOOL_NAME values: get_device_info, get_battery_info, get_storage_info.
-For a phone health check use {"action":"workflow","name":"phone_health_check","args":{}}.
-For a clear request that needs no device data, answer it using {"action":"answer","text":"..."}.
-If the request is unclear or you are not confident what it means, use {"action":"answer","text":"I could not understand what you meant. Please rephrase your request."}.
-Examples:
-User: How much storage is free?
-Output: {"action":"tool","name":"get_storage_info","args":{}}
-User: Is the battery hot?
-Output: {"action":"tool","name":"get_battery_info","args":{}}
-User: What Android version is this?
-Output: {"action":"tool","name":"get_device_info","args":{}}
-User: Check my phone's health and suggest improvements.
-Output: {"action":"workflow","name":"phone_health_check","args":{}}
-User: $userPrompt
-Output:"""
+internal fun buildRoutingPrompt(userPrompt: String): String = """JSON only. Select exactly one route:
+Live phone fact: {"action":"tool","name":"TOOL","args":{}}
+TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
+Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
+No live phone data needed: {"action":"answer","text":"..."}
+Unclear: {"action":"answer","text":"$CLARIFICATION_MESSAGE"}
+Request: $userPrompt
+JSON:"""
 
 internal fun evaluatePhoneHealth(
     rawDevice: String,

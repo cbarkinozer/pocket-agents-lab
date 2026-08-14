@@ -16,7 +16,9 @@ The Android app's **Run Agent Tests** button runs `tool-routing-3-tools-v1`: 50 
 
 Several prompts mention a distractor (for example, battery versus storage). The suite tests only route selection. It deliberately does not execute tools or generate final explanations, so routing accuracy is not confounded with tool execution and answer quality.
 
-Every prompt starts with a fresh 1024-token model context. The model file remains loaded by llama.cpp between cases. Start only when battery temperature is at most 35 C; the run refuses to start above that threshold. Keep the phone unplugged, screen brightness and ambient conditions fixed, and do not interact with other apps during a run.
+The model is loaded once. Before each prompt, a small JNI operation removes conversation tokens after the already-decoded system-prompt boundary; it does not unload or reread the GGUF. Every case therefore has an independent warm context without paying a 731 MB cold-load cost. Model loading must be benchmarked separately. Start only when battery temperature is at most 35 C; the run refuses to start above that threshold. Keep the phone unplugged, screen brightness and ambient conditions fixed, and do not interact with other apps during a run.
+
+The UI displays completed cases, running accuracy, first-pass JSON count, repair count, elapsed time, and a progress bar. **Cancel Agent Tests** safely cancels generation and does not save a misleading partial report.
 
 The benchmark writes app-private files:
 
