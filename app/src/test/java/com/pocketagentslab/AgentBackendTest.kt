@@ -86,6 +86,7 @@ class AgentBackendTest {
             ),
         )
         val calls = mutableListOf<String>()
+        val progress = mutableListOf<AgentProgress>()
         val backend = AgentBackend(
             generator = AgentGenerator { _, _ -> GeneratedText(responses.removeFirst(), 1) },
             tools = ReadOnlyToolExecutor { name ->
@@ -97,6 +98,7 @@ class AgentBackendTest {
                     else -> error(name)
                 }
             },
+            onProgress = progress::add,
         )
 
         val result = backend.run("Run a phone health check")
@@ -109,6 +111,10 @@ class AgentBackendTest {
         assertTrue(JSONObject(result.diagnosis!!).getJSONArray("warnings").toString().contains("low_storage"))
         assertTrue(result.answer.contains("storage is low at 5.0%"))
         assertTrue(result.answer.contains("Local SLM suggestions"))
+        assertEquals(
+            listOf(0.15f, 0.30f, 0.40f, 0.50f, 0.60f, 0.72f, 1.0f),
+            progress.map(AgentProgress::fraction),
+        )
     }
 
     @Test

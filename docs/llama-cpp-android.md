@@ -84,6 +84,12 @@ PSS before/after, generated text-piece count, exposed pieces/second, and selecte
 binding exposes decoded pieces rather than an authoritative token count, so pieces/second is the
 closest available TPS estimate and is labeled accordingly.
 
+The Compose screen exposes the backend's current action while it runs and shows coarse stage
+progress. A health workflow advances through model routing, device read, battery read, storage
+read, deterministic evaluation, local explanation, and completion. This is stage progress—not a
+prediction of remaining generation time—because llama.cpp cannot know in advance when a model
+will emit its end token.
+
 ## Backend tests
 
 The agent state machine lives in `AgentBackend.kt` and has no Compose dependency. JVM tests use

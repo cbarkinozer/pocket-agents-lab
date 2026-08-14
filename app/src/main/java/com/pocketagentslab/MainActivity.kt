@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -92,6 +93,7 @@ private fun PocketAgentsScreen() {
     var isAgentTestRunning by remember { mutableStateOf(false) }
     var benchmarkStatus by remember { mutableStateOf("Benchmark not run") }
     var agentTestStatus by remember { mutableStateOf("Agent tests not run") }
+    var agentProgress by remember { mutableStateOf(AgentProgress(0f, "Ready")) }
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
@@ -220,11 +222,14 @@ private fun PocketAgentsScreen() {
                     isBusy = true
                     output = ""
                     metrics = "Agent is deciding…"
+                    agentProgress = AgentProgress(0.05f, "Preparing a fresh local-model context…")
                     try {
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         val pssBeforeKb = Debug.getPss()
                         val started = SystemClock.elapsedRealtime()
-                        val result = createAgentBackend(context, engine).run(prompt.trim())
+                        val result = createAgentBackend(context, engine) { progress ->
+                            agentProgress = progress
+                        }.run(prompt.trim())
                         val generationMs = SystemClock.elapsedRealtime() - started
                         val pssAfterKb = Debug.getPss()
                         val piecesPerSecond = if (generationMs > 0) {
@@ -262,6 +267,7 @@ private fun PocketAgentsScreen() {
                             Log.i(TAG_HEALTH, report.toString())
                         }
                     } catch (error: Throwable) {
+                        agentProgress = AgentProgress(0f, "Stopped: ${error.message ?: "unknown error"}")
                         output = "Generation failed: ${error.message ?: error.javaClass.simpleName}"
                         Log.e(TAG, "Generation failed", error)
                     } finally {
@@ -272,6 +278,14 @@ private fun PocketAgentsScreen() {
             enabled = isModelLoaded && prompt.isNotBlank() && !controlsBusy,
         ) {
             Text(if (isBusy && isModelLoaded) "Agent working…" else "Run Agent")
+        }
+        Text("Agent activity: ${agentProgress.message}")
+        if (isBusy) {
+            LinearProgressIndicator(
+                progress = { agentProgress.fraction },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Text("Stage progress: ${(agentProgress.fraction * 100).toInt()}%")
         }
         Button(
             onClick = {
@@ -348,7 +362,11 @@ private suspend fun collectGeneration(flow: Flow<String>): Pair<String, Int> {
     return text.toString() to pieces
 }
 
-private fun createAgentBackend(context: Context, engine: InferenceEngine): AgentBackend =
+private fun createAgentBackend(
+    context: Context,
+    engine: InferenceEngine,
+    onProgress: (AgentProgress) -> Unit = {},
+): AgentBackend =
     AgentBackend(
         generator = AgentGenerator { request, maxTokens ->
             val (raw, pieces) = collectGeneration(engine.sendUserPrompt(request, maxTokens))
@@ -356,6 +374,7 @@ private fun createAgentBackend(context: Context, engine: InferenceEngine): Agent
             GeneratedText(raw, pieces)
         },
         tools = ReadOnlyToolExecutor { name -> executeReadOnlyTool(context, name).toString() },
+        onProgress = onProgress,
     )
 
 private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {

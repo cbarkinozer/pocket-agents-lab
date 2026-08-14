@@ -42,12 +42,16 @@ internal fun interface ReadOnlyToolExecutor {
     fun execute(name: String): String
 }
 
+internal data class AgentProgress(val fraction: Float, val message: String)
+
 /** UI-independent two-step agent state machine. */
 internal class AgentBackend(
     private val generator: AgentGenerator,
     private val tools: ReadOnlyToolExecutor,
+    private val onProgress: (AgentProgress) -> Unit = {},
 ) {
     suspend fun select(userPrompt: String): AgentSelection {
+        onProgress(AgentProgress(0.15f, "Selecting an action with the local model…"))
         val generated = generator.generate(buildRoutingPrompt(userPrompt), AGENT_DECISION_TOKENS)
         return AgentSelection(parseAgentDecision(generated.text), generated.pieces)
     }
@@ -59,7 +63,7 @@ internal class AgentBackend(
                 answer = decision.text.orEmpty(),
                 route = "answer",
                 generatedPieces = selection.generatedPieces,
-            )
+            ).also { onProgress(AgentProgress(1.0f, "Complete")) }
         }
 
         if (decision.action == "workflow") {
@@ -67,7 +71,9 @@ internal class AgentBackend(
         }
 
         val toolName = requireNotNull(decision.toolName)
+        onProgress(AgentProgress(0.45f, "Reading ${toolName.toDisplayName()}…"))
         val toolResult = tools.execute(toolName)
+        onProgress(AgentProgress(0.70f, "Generating a local explanation…"))
         val generated = generator.generate(
             buildFinalAnswerPrompt(userPrompt, toolName, toolResult),
             AGENT_ANSWER_TOKENS,
@@ -86,7 +92,7 @@ internal class AgentBackend(
                 if (usedFallback) append(" (fallback answer)")
             },
             generatedPieces = selection.generatedPieces + generated.pieces,
-        )
+        ).also { onProgress(AgentProgress(1.0f, "Complete")) }
     }
 
     suspend fun run(userPrompt: String): AgentRunResult = complete(userPrompt, select(userPrompt))
@@ -96,10 +102,15 @@ internal class AgentBackend(
         selection: AgentSelection,
     ): AgentRunResult {
         require(selection.decision.workflowName == PHONE_HEALTH_CHECK)
+        onProgress(AgentProgress(0.30f, "Reading device information…"))
         val device = tools.execute("get_device_info")
+        onProgress(AgentProgress(0.40f, "Reading battery information…"))
         val battery = tools.execute("get_battery_info")
+        onProgress(AgentProgress(0.50f, "Reading storage information…"))
         val storage = tools.execute("get_storage_info")
+        onProgress(AgentProgress(0.60f, "Evaluating health thresholds in Kotlin…"))
         val diagnosis = evaluatePhoneHealth(device, battery, storage)
+        onProgress(AgentProgress(0.72f, "Generating suggestions with the local model…"))
         val generated = generator.generate(
             buildHealthExplanationPrompt(userPrompt, diagnosis),
             AGENT_ANSWER_TOKENS,
@@ -120,7 +131,7 @@ internal class AgentBackend(
             route = "workflow:$PHONE_HEALTH_CHECK" + if (usedFallback) " (fallback answer)" else "",
             generatedPieces = selection.generatedPieces + generated.pieces,
             diagnosis = diagnosis.toString(),
-        )
+        ).also { onProgress(AgentProgress(1.0f, "Health check complete")) }
     }
 }
 
@@ -308,3 +319,7 @@ private fun deterministicToolAnswer(toolName: String, rawResult: String): String
 private fun Long.toGib(): String = formatOne(this / 1024.0 / 1024.0 / 1024.0)
 
 private fun formatOne(value: Double): String = "%.1f".format(Locale.US, value)
+
+private fun String.toDisplayName(): String = removePrefix("get_")
+    .removeSuffix("_info")
+    .replace('_', ' ')
