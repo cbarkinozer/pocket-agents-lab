@@ -5,9 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Debug
+import android.os.Environment
+import android.os.StatFs
 import android.os.SystemClock
 import android.provider.OpenableColumns
 import android.util.Log
@@ -41,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.arm.aichat.AiChat
 import com.arm.aichat.InferenceEngine
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,6 +55,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 import java.util.Locale
+import org.json.JSONArray
+import org.json.JSONObject
 import org.tensorflow.lite.Interpreter
 
 class MainActivity : ComponentActivity() {
@@ -83,10 +89,12 @@ private fun PocketAgentsScreen() {
     var metrics by remember { mutableStateOf("") }
     var isBusy by remember { mutableStateOf(false) }
     var isBenchmarkRunning by remember { mutableStateOf(false) }
+    var isAgentTestRunning by remember { mutableStateOf(false) }
     var benchmarkStatus by remember { mutableStateOf("Benchmark not run") }
+    var agentTestStatus by remember { mutableStateOf("Agent tests not run") }
     var isModelLoaded by remember { mutableStateOf(false) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
-    val controlsBusy = isBusy || isBenchmarkRunning
+    val controlsBusy = isBusy || isBenchmarkRunning || isAgentTestRunning
 
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
@@ -174,6 +182,7 @@ private fun PocketAgentsScreen() {
                             }
                             val started = SystemClock.elapsedRealtime()
                             engine.loadModel(modelFile.absolutePath)
+                            engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
                             val loadMs = SystemClock.elapsedRealtime() - started
                             isModelLoaded = true
                             modelStatus = "Model loaded successfully in ${loadMs} ms"
@@ -194,6 +203,8 @@ private fun PocketAgentsScreen() {
         }
         Text(modelStatus)
 
+        Text("Tiny local agent", style = MaterialTheme.typography.titleMedium)
+        Text("Read-only tools: get_device_info, get_battery_info, get_storage_info")
         OutlinedTextField(
             value = prompt,
             onValueChange = { prompt = it },
@@ -206,30 +217,25 @@ private fun PocketAgentsScreen() {
                 scope.launch {
                     isBusy = true
                     output = ""
-                    metrics = "Generating…"
+                    metrics = "Agent is deciding…"
                     try {
                         val started = SystemClock.elapsedRealtime()
-                        var generatedPieces = 0
-                        engine.sendUserPrompt(
-                            prompt.trim(),
-                            predictLength = MAX_GENERATED_TOKENS,
-                        ).collect { piece ->
-                            output += piece
-                            generatedPieces++
-                        }
+                        val result = runAgentTurn(context, engine, prompt.trim())
                         val generationMs = SystemClock.elapsedRealtime() - started
                         val piecesPerSecond = if (generationMs > 0) {
-                            generatedPieces * 1000.0 / generationMs
+                            result.generatedPieces * 1000.0 / generationMs
                         } else {
                             0.0
                         }
-                        metrics = "Generation: ${generationMs} ms  •  %.2f tokens/s".format(
+                        output = result.answer
+                        metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | %.2f pieces/s".format(
                             Locale.US,
                             piecesPerSecond,
                         )
                         Log.i(
                             TAG_METRICS,
-                            "generation_ms=$generationMs generated_token_pieces=$generatedPieces " +
+                            "agent_route=${result.route} generation_ms=$generationMs " +
+                                "generated_token_pieces=${result.generatedPieces} " +
                                 "tokens_per_second=${"%.3f".format(Locale.US, piecesPerSecond)}",
                         )
                     } catch (error: Throwable) {
@@ -242,14 +248,34 @@ private fun PocketAgentsScreen() {
             },
             enabled = isModelLoaded && prompt.isNotBlank() && !controlsBusy,
         ) {
-            Text(if (isBusy && isModelLoaded) "Generating…" else "Generate")
+            Text(if (isBusy && isModelLoaded) "Agent working…" else "Run Agent")
         }
+        Button(
+            onClick = {
+                scope.launch {
+                    isAgentTestRunning = true
+                    agentTestStatus = "Running ${AGENT_TEST_CASES.size} local routing tests…"
+                    agentTestStatus = try {
+                        runAgentTests(context, engine)
+                    } catch (error: Throwable) {
+                        Log.e(TAG_AGENT, "Agent tests failed", error)
+                        "Tests stopped: ${error.message ?: error.javaClass.simpleName}"
+                    } finally {
+                        isAgentTestRunning = false
+                    }
+                }
+            },
+            enabled = isModelLoaded && !controlsBusy,
+        ) {
+            Text(if (isAgentTestRunning) "Testing agent…" else "Run Agent Tests")
+        }
+        Text(agentTestStatus)
         Text(metrics)
         OutlinedTextField(
             value = output,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Model output") },
+            label = { Text("Agent answer") },
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 180.dp),
@@ -257,7 +283,218 @@ private fun PocketAgentsScreen() {
     }
 }
 
-private const val MAX_GENERATED_TOKENS = 512
+private const val AGENT_DECISION_TOKENS = 128
+private const val AGENT_ANSWER_TOKENS = 256
+
+private const val AGENT_SYSTEM_PROMPT = """You are a tiny offline Android agent. Return exactly one JSON object and no markdown or extra text.
+Valid responses are exactly one of these shapes:
+{"action":"answer","text":"your answer"}
+{"action":"tool","name":"get_device_info","args":{}}
+The only tools are:
+- get_device_info(): Android version, model, ABI, and memory.
+- get_battery_info(): battery level, charging state, and temperature.
+- get_storage_info(): total, available, and used internal storage.
+Use a tool whenever the question requires current device facts. Otherwise answer directly. Never invent tools or arguments. After a TOOL_RESULT message, return an answer JSON using that data."""
+
+private data class AgentDecision(
+    val action: String,
+    val text: String? = null,
+    val toolName: String? = null,
+)
+
+private data class AgentRunResult(
+    val answer: String,
+    val route: String,
+    val generatedPieces: Int,
+)
+
+private data class AgentTestCase(val prompt: String, val expectedTool: String?)
+
+private val AGENT_TEST_CASES = listOf(
+    AgentTestCase("How much storage do I have?", "get_storage_info"),
+    AgentTestCase("How much free space is left on this phone?", "get_storage_info"),
+    AgentTestCase("What Android version is this?", "get_device_info"),
+    AgentTestCase("What CPU ABI does this device use?", "get_device_info"),
+    AgentTestCase("Is my battery hot?", "get_battery_info"),
+    AgentTestCase("What is my battery percentage?", "get_battery_info"),
+    AgentTestCase("Tell me a joke.", null),
+    AgentTestCase("What is 2+2?", null),
+)
+
+private suspend fun collectGeneration(flow: Flow<String>): Pair<String, Int> {
+    val text = StringBuilder()
+    var pieces = 0
+    flow.collect {
+        text.append(it)
+        pieces++
+    }
+    return text.toString() to pieces
+}
+
+private fun parseAgentDecision(raw: String): AgentDecision {
+    val trimmed = raw.trim()
+    require(trimmed.startsWith("{") && trimmed.endsWith("}")) {
+        "Model did not return a bare JSON object"
+    }
+    val json = JSONObject(trimmed)
+    return when (val action = json.optString("action")) {
+        "answer" -> {
+            require(json.length() == 2 && json.has("text")) { "Invalid answer schema" }
+            AgentDecision(action = action, text = json.getString("text"))
+        }
+        "tool" -> {
+            require(json.length() == 3 && json.has("name") && json.has("args")) {
+                "Invalid tool schema"
+            }
+            val name = json.getString("name")
+            require(name in READ_ONLY_TOOLS) { "Unknown tool: $name" }
+            require(json.getJSONObject("args").length() == 0) { "Tools accept no arguments" }
+            AgentDecision(action = action, toolName = name)
+        }
+        else -> error("Unknown action: $action")
+    }
+}
+
+private suspend fun requestAgentDecision(
+    engine: InferenceEngine,
+    message: String,
+    predictLength: Int = AGENT_DECISION_TOKENS,
+): Pair<AgentDecision, Int> {
+    val (raw, pieces) = collectGeneration(engine.sendUserPrompt(message, predictLength))
+    Log.i(TAG_AGENT, "model_json=$raw")
+    return parseAgentDecision(raw) to pieces
+}
+
+private suspend fun runAgentTurn(
+    context: Context,
+    engine: InferenceEngine,
+    prompt: String,
+): AgentRunResult {
+    val (decision, firstPieces) = requestAgentDecision(engine, prompt)
+    if (decision.action == "answer") {
+        return AgentRunResult(decision.text.orEmpty(), "answer", firstPieces)
+    }
+
+    val toolName = requireNotNull(decision.toolName)
+    val toolResult = executeReadOnlyTool(context, toolName)
+    val followUp = "TOOL_RESULT name=$toolName result=$toolResult Return the final answer JSON now."
+    val (finalDecision, secondPieces) = requestAgentDecision(engine, followUp, AGENT_ANSWER_TOKENS)
+    require(finalDecision.action == "answer") { "Model requested another tool after receiving a result" }
+    return AgentRunResult(
+        answer = finalDecision.text.orEmpty(),
+        route = "tool:$toolName",
+        generatedPieces = firstPieces + secondPieces,
+    )
+}
+
+private suspend fun runAgentTests(context: Context, engine: InferenceEngine): String {
+    var validJson = 0
+    var correctRoutes = 0
+    val details = JSONArray()
+    for (case in AGENT_TEST_CASES) {
+        var actualTool: String? = null
+        var jsonValid = false
+        try {
+            val (decision, _) = requestAgentDecision(engine, case.prompt)
+            jsonValid = true
+            validJson++
+            actualTool = decision.toolName
+            if (actualTool == case.expectedTool) correctRoutes++
+            if (actualTool != null) {
+                val result = executeReadOnlyTool(context, actualTool)
+                requestAgentDecision(
+                    engine,
+                    "TOOL_RESULT name=$actualTool result=$result Return the final answer JSON now.",
+                    AGENT_ANSWER_TOKENS,
+                )
+            }
+        } catch (error: Throwable) {
+            Log.w(TAG_AGENT, "Test failed for: ${case.prompt}", error)
+        }
+        details.put(
+            JSONObject()
+                .put("prompt", case.prompt)
+                .put("expectedTool", case.expectedTool ?: JSONObject.NULL)
+                .put("actualTool", actualTool ?: JSONObject.NULL)
+                .put("validJson", jsonValid),
+        )
+    }
+    val report = JSONObject()
+        .put("tests", AGENT_TEST_CASES.size)
+        .put("validJson", validJson)
+        .put("correctToolSelections", correctRoutes)
+        .put("details", details)
+    context.openFileOutput("agent-test-result.json", Context.MODE_PRIVATE).use {
+        it.write(report.toString(2).toByteArray())
+    }
+    Log.i(TAG_AGENT, report.toString())
+    return "Tool selection: $correctRoutes/${AGENT_TEST_CASES.size} | " +
+        "Valid JSON: $validJson/${AGENT_TEST_CASES.size}\nSaved agent-test-result.json"
+}
+
+private val READ_ONLY_TOOLS = setOf(
+    "get_device_info",
+    "get_battery_info",
+    "get_storage_info",
+)
+
+private fun executeReadOnlyTool(context: Context, name: String): JSONObject = when (name) {
+    "get_device_info" -> getDeviceInfo(context)
+    "get_battery_info" -> getBatteryInfo(context)
+    "get_storage_info" -> getStorageInfo()
+    else -> error("Unknown tool: $name")
+}
+
+private fun getDeviceInfo(context: Context): JSONObject {
+    val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    val memory = ActivityManager.MemoryInfo().also(am::getMemoryInfo)
+    return JSONObject()
+        .put("model", Build.MODEL)
+        .put("manufacturer", Build.MANUFACTURER)
+        .put("androidVersion", Build.VERSION.RELEASE)
+        .put("sdk", Build.VERSION.SDK_INT)
+        .put("cpuAbi", Build.SUPPORTED_ABIS.firstOrNull() ?: "unknown")
+        .put("totalRamBytes", memory.totalMem)
+        .put("availableRamBytes", memory.availMem)
+}
+
+private fun getBatteryInfo(context: Context): JSONObject {
+    val battery = context.registerReceiver(
+        null,
+        android.content.IntentFilter(Intent.ACTION_BATTERY_CHANGED),
+    ) ?: error("Battery information unavailable")
+    val level = battery.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+    val scale = battery.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+    val status = battery.getIntExtra(
+        BatteryManager.EXTRA_STATUS,
+        BatteryManager.BATTERY_STATUS_UNKNOWN,
+    )
+    return JSONObject()
+        .put(
+            "levelPercent",
+            if (level >= 0 && scale > 0) level * 100.0 / scale else JSONObject.NULL,
+        )
+        .put(
+            "temperatureC",
+            battery.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) / 10.0,
+        )
+        .put(
+            "isCharging",
+            status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL,
+        )
+        .put("statusCode", status)
+}
+
+private fun getStorageInfo(): JSONObject {
+    val stats = StatFs(Environment.getDataDirectory().absolutePath)
+    val total = stats.totalBytes
+    val available = stats.availableBytes
+    return JSONObject()
+        .put("totalBytes", total)
+        .put("availableBytes", available)
+        .put("usedBytes", total - available)
+}
 
 private fun batteryTemperatureC(context: Context): Double {
     val battery = context.registerReceiver(null, android.content.IntentFilter(Intent.ACTION_BATTERY_CHANGED))
@@ -371,3 +608,4 @@ private fun copyModelToPrivateStorage(context: Context, uri: Uri, displayName: S
 
 private const val TAG = "PocketLlama"
 private const val TAG_METRICS = "PocketLlamaMetrics"
+private const val TAG_AGENT = "PocketAgent"

@@ -31,7 +31,22 @@ The test model is available on the device at `Download/models/LFM2.5-1.2B-Instru
 1. Tap **Select GGUF** and choose a `.gguf` file.
 2. Tap **Load Model**. The app copies it to private storage and reports success or failure.
 3. Enter a prompt, or retain the default `What is 2+2?`.
-4. Tap **Generate** and read the streamed local result.
+4. Tap **Run Agent**. The model either answers directly or selects one of exactly three
+   read-only tools: `get_device_info`, `get_battery_info`, or `get_storage_info`.
+5. For a tool call, Android executes the tool locally, returns its JSON result to the model,
+   and displays the model's final answer. No network or external API is used.
+
+The agent protocol accepts only a bare JSON object in one of these forms:
+
+```json
+{"action":"answer","text":"..."}
+{"action":"tool","name":"get_battery_info","args":{}}
+```
+
+Malformed JSON, unknown tools, arguments, and repeated tool calls fail closed. **Run Agent
+Tests** evaluates eight fixed prompts and reports strict JSON validity plus tool-selection
+accuracy. The detailed report is stored in app-private `agent-test-result.json` and logged with
+the `PocketAgent` tag.
 
 The **Run Device Benchmark** button retains the original bundled 60-second MobileNet V1 CPU workload. It reports throughput, average latency, battery-temperature change, and a conservative GGUF parameter-size tier based on currently available RAM. The size tier is only a starting estimate: quantization, architecture, context length, KV cache, and runtime overhead all affect whether a model fits, while MobileNet throughput does not directly predict LLM token speed.
 
