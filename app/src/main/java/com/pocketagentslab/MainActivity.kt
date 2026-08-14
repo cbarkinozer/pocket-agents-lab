@@ -308,7 +308,8 @@ private fun PocketAgentsScreen() {
                             } ?: "${progress.completed}/${progress.total}"
                             agentTestStatus = "$position | " +
                                 "correct ${progress.correct} | strict ${progress.strictFirstPass} | " +
-                                "normalized ${progress.normalizedFirstPass} | repaired ${progress.repaired} | " +
+                                "normalized ${progress.normalizedFirstPass} | " +
+                                "repair ${progress.repaired}/${progress.repairAttempts} | " +
                                 "accepted ${progress.finalAccepted} | ${progress.elapsedMs / 1000}s"
                         }
                     } catch (error: Throwable) {
@@ -486,6 +487,7 @@ private data class AgentEvaluationProgress(
     val strictFirstPass: Int,
     val normalizedFirstPass: Int,
     val finalAccepted: Int,
+    val repairAttempts: Int,
     val repaired: Int,
     val elapsedMs: Long,
     val currentCase: String? = null,
@@ -520,6 +522,7 @@ private suspend fun runAgentTests(
                 strictFirstPass = strictFirstPass,
                 normalizedFirstPass = normalizedFirstPass,
                 finalAccepted = finalAccepted,
+                repairAttempts = repairAttempts,
                 repaired = repairedSelections,
                 elapsedMs = SystemClock.elapsedRealtime() - suiteStarted,
                 currentCase = case.id,
@@ -642,6 +645,7 @@ private suspend fun runAgentTests(
                 strictFirstPass = strictFirstPass,
                 normalizedFirstPass = normalizedFirstPass,
                 finalAccepted = finalAccepted,
+                repairAttempts = repairAttempts,
                 repaired = repairedSelections,
                 elapsedMs = SystemClock.elapsedRealtime() - suiteStarted,
             ),
@@ -677,7 +681,7 @@ private suspend fun runAgentTests(
     return "Completed: ${AGENT_TEST_CASES.size}/${AGENT_TEST_CASES.size}\n" +
         "Correct route: $correctRoutes/${AGENT_TEST_CASES.size}\n" +
         "Strict first-pass schema: $strictFirstPass/${AGENT_TEST_CASES.size} | " +
-        "Normalized: $normalizedFirstPass | Repaired: $repairedSelections | " +
+        "Normalized: $normalizedFirstPass | Repair success: $repairedSelections/$repairAttempts | " +
         "Final accepted: $finalAccepted/${AGENT_TEST_CASES.size}\n" +
         "Saved agent-test-result.json and agent-evaluation.csv"
 }
