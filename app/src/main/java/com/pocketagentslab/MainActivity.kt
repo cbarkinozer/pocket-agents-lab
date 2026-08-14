@@ -223,7 +223,7 @@ private fun PocketAgentsScreen() {
                     try {
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         val started = SystemClock.elapsedRealtime()
-                        val result = runAgentTurn(context, engine, prompt.trim())
+                        val result = createAgentBackend(context, engine).run(prompt.trim())
                         val generationMs = SystemClock.elapsedRealtime() - started
                         val piecesPerSecond = if (generationMs > 0) {
                             result.generatedPieces * 1000.0 / generationMs
@@ -286,9 +286,6 @@ private fun PocketAgentsScreen() {
     }
 }
 
-private const val AGENT_DECISION_TOKENS = 128
-private const val AGENT_ANSWER_TOKENS = 256
-
 private const val AGENT_SYSTEM_PROMPT = """You are a tiny offline Android agent. Return exactly one JSON object and no markdown or extra text.
 Valid responses are exactly one of these shapes:
 {"action":"answer","text":"your answer"}
@@ -298,18 +295,6 @@ The only tools are:
 - get_battery_info(): battery level, charging state, and temperature.
 - get_storage_info(): total, available, and used internal storage.
 Use a tool whenever the question requires current device facts. Otherwise answer directly. Never invent tools or arguments. After a TOOL_RESULT message, return an answer JSON using that data."""
-
-private data class AgentDecision(
-    val action: String,
-    val text: String? = null,
-    val toolName: String? = null,
-)
-
-private data class AgentRunResult(
-    val answer: String,
-    val route: String,
-    val generatedPieces: Int,
-)
 
 private data class AgentTestCase(val prompt: String, val expectedTool: String?)
 
@@ -334,76 +319,15 @@ private suspend fun collectGeneration(flow: Flow<String>): Pair<String, Int> {
     return text.toString() to pieces
 }
 
-private fun parseAgentDecision(raw: String): AgentDecision {
-    val trimmed = raw.trim()
-    require(trimmed.startsWith("{") && trimmed.endsWith("}")) {
-        "Model did not return a bare JSON object"
-    }
-    val json = JSONObject(trimmed)
-    return when (val action = json.optString("action")) {
-        "answer" -> {
-            require(json.length() == 2 && json.has("text")) { "Invalid answer schema" }
-            AgentDecision(action = action, text = json.getString("text"))
-        }
-        "tool" -> {
-            require(json.length() == 3 && json.has("name") && json.has("args")) {
-                "Invalid tool schema"
-            }
-            val name = json.getString("name")
-            require(name in READ_ONLY_TOOLS) { "Unknown tool: $name" }
-            require(json.getJSONObject("args").length() == 0) { "Tools accept no arguments" }
-            AgentDecision(action = action, toolName = name)
-        }
-        else -> error("Unknown action: $action")
-    }
-}
-
-private suspend fun requestAgentDecision(
-    engine: InferenceEngine,
-    message: String,
-    predictLength: Int = AGENT_DECISION_TOKENS,
-): Pair<AgentDecision, Int> {
-    val request = """Return exactly one compact JSON object. Do not answer outside JSON.
-For current device facts choose one tool using {"action":"tool","name":"TOOL_NAME","args":{}}.
-Allowed TOOL_NAME values: get_device_info, get_battery_info, get_storage_info.
-For anything else use {"action":"answer","text":"YOUR ANSWER"}.
-Examples:
-User: How much storage is free?
-Output: {"action":"tool","name":"get_storage_info","args":{}}
-User: Is the battery hot?
-Output: {"action":"tool","name":"get_battery_info","args":{}}
-User: What Android version is this?
-Output: {"action":"tool","name":"get_device_info","args":{}}
-User: Tell me a joke.
-Output: {"action":"answer","text":"Why did the byte cross the bus?"}
-User: $message
-Output:"""
-    val (raw, pieces) = collectGeneration(engine.sendUserPrompt(request, predictLength))
-    Log.i(TAG_AGENT, "model_json=$raw")
-    return parseAgentDecision(raw) to pieces
-}
-
-private suspend fun runAgentTurn(
-    context: Context,
-    engine: InferenceEngine,
-    prompt: String,
-): AgentRunResult {
-    val (decision, firstPieces) = requestAgentDecision(engine, prompt)
-    if (decision.action == "answer") {
-        return AgentRunResult(decision.text.orEmpty(), "answer", firstPieces)
-    }
-
-    val toolName = requireNotNull(decision.toolName)
-    val toolResult = executeReadOnlyTool(context, toolName)
-    val followUp = "TOOL_RESULT name=$toolName result=$toolResult. Explain this result to the user."
-    val (finalDecision, secondPieces) = requestAgentDecision(engine, followUp, AGENT_ANSWER_TOKENS)
-    require(finalDecision.action == "answer") { "Model requested another tool after receiving a result" }
-    return AgentRunResult(
-        answer = finalDecision.text.orEmpty(),
-        route = "tool:$toolName",
-        generatedPieces = firstPieces + secondPieces,
+private fun createAgentBackend(context: Context, engine: InferenceEngine): AgentBackend =
+    AgentBackend(
+        generator = AgentGenerator { request, maxTokens ->
+            val (raw, pieces) = collectGeneration(engine.sendUserPrompt(request, maxTokens))
+            Log.i(TAG_AGENT, "model_json=$raw")
+            GeneratedText(raw, pieces)
+        },
+        tools = ReadOnlyToolExecutor { name -> executeReadOnlyTool(context, name).toString() },
     )
-}
 
 private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {
     if (engine.state.value is InferenceEngine.State.ModelReady) {
@@ -424,22 +348,17 @@ private suspend fun runAgentTests(
     val details = JSONArray()
     for (case in AGENT_TEST_CASES) {
         prepareFreshAgent(engine, modelPath)
+        val backend = createAgentBackend(context, engine)
         var actualTool: String? = null
         var jsonValid = false
         try {
-            val (decision, _) = requestAgentDecision(engine, case.prompt)
+            val selection = backend.select(case.prompt)
+            val decision = selection.decision
             jsonValid = true
             validJson++
             actualTool = decision.toolName
             if (actualTool == case.expectedTool) correctRoutes++
-            if (actualTool != null) {
-                val result = executeReadOnlyTool(context, actualTool)
-                requestAgentDecision(
-                    engine,
-                    "TOOL_RESULT name=$actualTool result=$result. Explain this result to the user.",
-                    AGENT_ANSWER_TOKENS,
-                )
-            }
+            backend.complete(case.prompt, selection)
         } catch (error: Throwable) {
             Log.w(TAG_AGENT, "Test failed for: ${case.prompt}", error)
         }
@@ -464,12 +383,6 @@ private suspend fun runAgentTests(
     return "Tool selection: $correctRoutes/${AGENT_TEST_CASES.size} | " +
         "Valid JSON: $validJson/${AGENT_TEST_CASES.size}\nSaved agent-test-result.json"
 }
-
-private val READ_ONLY_TOOLS = setOf(
-    "get_device_info",
-    "get_battery_info",
-    "get_storage_info",
-)
 
 private fun executeReadOnlyTool(context: Context, name: String): JSONObject = when (name) {
     "get_device_info" -> getDeviceInfo(context)

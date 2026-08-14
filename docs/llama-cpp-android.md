@@ -50,6 +50,21 @@ the `PocketAgent` tag. Each test starts with a fresh model context so earlier pr
 pollute later routing measurements; the compact routing contract and examples are repeated in
 each request because small models do not always retain system-prompt constraints reliably.
 
+## Backend tests
+
+The agent state machine lives in `AgentBackend.kt` and has no Compose dependency. JVM tests use
+scripted model responses and fake tools to verify the direct-answer path, the complete two-call
+tool path, strict schemas, the three-tool allowlist, empty arguments, and rejection of malformed,
+unknown, or repeated actions. Run them on Windows with Java 17:
+
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
+.\gradlew.bat testDebugUnitTest
+```
+
+These tests prove orchestration and safety behavior deterministically. The on-device **Run Agent
+Tests** button remains necessary to measure whether a particular GGUF model follows the protocol.
+
 The **Run Device Benchmark** button retains the original bundled 60-second MobileNet V1 CPU workload. It reports throughput, average latency, battery-temperature change, and a conservative GGUF parameter-size tier based on currently available RAM. The size tier is only a starting estimate: quantization, architecture, context length, KV cache, and runtime overhead all affect whether a model fits, while MobileNet throughput does not directly predict LLM token speed.
 
 Performance events use the `PocketLlamaMetrics` log tag:
