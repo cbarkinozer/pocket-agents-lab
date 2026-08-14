@@ -14,6 +14,7 @@ import android.os.StatFs
 import android.os.SystemClock
 import android.provider.OpenableColumns
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -48,6 +49,7 @@ import com.arm.aichat.InferenceEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -87,6 +89,7 @@ private fun PocketAgentsScreen() {
         ActivityManager.MemoryInfo().also(activityManager::getMemoryInfo)
     }
 
+    var selectedModels by remember { mutableStateOf<List<SelectedModel>>(emptyList()) }
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var selectedName by remember { mutableStateOf("No GGUF selected") }
     var modelStatus by remember { mutableStateOf("Select a GGUF model, then load it") }
@@ -106,19 +109,22 @@ private fun PocketAgentsScreen() {
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
     val controlsBusy = isBusy || isBenchmarkRunning || isAgentTestRunning
 
-    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) {
-            try {
-                context.contentResolver.takePersistableUriPermission(
-                    uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                )
-            } catch (error: SecurityException) {
-                Log.w(TAG, "Provider did not grant persistable access", error)
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+        if (uris.isNotEmpty()) {
+            selectedModels = uris.map { uri ->
+                try {
+                    context.contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                    )
+                } catch (error: SecurityException) {
+                    Log.w(TAG, "Provider did not grant persistable access", error)
+                }
+                SelectedModel(uri, displayName(context, uri))
             }
-            selectedUri = uri
-            selectedName = displayName(context, uri)
-            modelStatus = "Selected: $selectedName"
+            selectedUri = selectedModels.first().uri
+            selectedName = selectedModels.first().name
+            modelStatus = "Selected ${selectedModels.size} model(s) in displayed order"
             isModelLoaded = false
         }
     }
@@ -158,13 +164,18 @@ private fun PocketAgentsScreen() {
         }
         Text(benchmarkStatus)
 
-        Text(selectedName, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            if (selectedModels.isEmpty()) selectedName else selectedModels.mapIndexed { index, model ->
+                "${index + 1}. ${model.name}"
+            }.joinToString("\n"),
+            style = MaterialTheme.typography.bodyMedium,
+        )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
                 onClick = { picker.launch(arrayOf("application/octet-stream", "*/*")) },
                 enabled = !controlsBusy,
             ) {
-                Text("Select GGUF")
+                Text("Select GGUFs")
             }
             Button(
                 onClick = {
@@ -211,6 +222,89 @@ private fun PocketAgentsScreen() {
             ) {
                 Text("Load Model")
             }
+        }
+        Button(
+            onClick = {
+                val queue = selectedModels
+                agentTestJob = scope.launch {
+                    isAgentTestRunning = true
+                    isModelLoaded = false
+                    agentTestProgress = 0f
+                    val activity = context as? ComponentActivity
+                    activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    val runId = System.currentTimeMillis()
+                    val outcomes = mutableListOf<JSONObject>()
+                    try {
+                        queue.forEachIndexed { modelIndex, selected ->
+                            currentCoroutineContext().ensureActive()
+                            awaitThermalCooldown(context) { temperature ->
+                                agentTestStatus = "Model ${modelIndex + 1}/${queue.size} ${selected.name}: " +
+                                    "cooling at ${formatMetric(temperature)} C; waiting for <= " +
+                                    "$AGENT_EVAL_MAX_START_TEMPERATURE_C C"
+                            }
+                            try {
+                                agentTestStatus = "Model ${modelIndex + 1}/${queue.size}: copying ${selected.name}"
+                                val modelFile = withContext(Dispatchers.IO) {
+                                    copyModelToPrivateStorage(context, selected.uri, selected.name)
+                                }
+                                agentTestStatus = "Model ${modelIndex + 1}/${queue.size}: loading ${selected.name}"
+                                val loadMs = loadModelFile(engine, modelFile)
+                                loadedModelPath = modelFile.absolutePath
+                                isModelLoaded = true
+                                val artifactStem = "agent-routing-$runId-${safeFileStem(selected.name)}"
+                                runAgentTests(
+                                    context,
+                                    engine,
+                                    modelFile.absolutePath,
+                                    artifactStem,
+                                ) { progress ->
+                                    agentTestProgress = (
+                                        modelIndex + progress.completed.toFloat() / progress.total
+                                    ) / queue.size
+                                    val case = progress.currentCase?.let {
+                                        "case ${progress.completed + 1}/${progress.total} ($it)"
+                                    } ?: "${progress.completed}/${progress.total} complete"
+                                    agentTestStatus = "Model ${modelIndex + 1}/${queue.size} ${selected.name} | $case | " +
+                                        "correct ${progress.correct} | strict ${progress.strictFirstPass} | " +
+                                        "normalized ${progress.normalizedFirstPass} | " +
+                                        "repair ${progress.repaired}/${progress.repairAttempts} | " +
+                                        "accepted ${progress.finalAccepted}"
+                                }
+                                outcomes += JSONObject()
+                                    .put("model", selected.name)
+                                    .put("status", "completed")
+                                    .put("loadMs", loadMs)
+                                    .put("artifactStem", artifactStem)
+                                modelStatus = "Loaded ${selected.name} in $loadMs ms"
+                            } catch (error: kotlinx.coroutines.CancellationException) {
+                                throw error
+                            } catch (error: Throwable) {
+                                Log.e(TAG_AGENT, "Queued model failed: ${selected.name}", error)
+                                outcomes += JSONObject()
+                                    .put("model", selected.name)
+                                    .put("status", "failed")
+                                    .put("error", error.message ?: error.javaClass.simpleName)
+                                recoverInferenceEngine(engine)
+                            }
+                        }
+                        agentTestProgress = 1f
+                        writeQueueManifest(context, runId, queue, outcomes, cancelled = false)
+                        agentTestStatus = "Overnight queue complete (${queue.size} models)\n" +
+                            outcomes.joinToString("\n") { formatQueueOutcome(it) }
+                    } catch (error: kotlinx.coroutines.CancellationException) {
+                        writeQueueManifest(context, runId, queue, outcomes, cancelled = true)
+                        agentTestStatus = "Multi-model evaluation cancelled\n" +
+                            outcomes.joinToString("\n") { formatQueueOutcome(it) }
+                    } finally {
+                        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        isAgentTestRunning = false
+                        agentTestJob = null
+                    }
+                }
+            },
+            enabled = selectedModels.size > 1 && !controlsBusy,
+        ) {
+            Text("Run Selected Models Overnight")
         }
         Text(modelStatus)
 
@@ -361,6 +455,8 @@ Allowed routes:
 {"action":"workflow","name":"phone_health_check","args":{}}
 Use a tool only for current phone facts. Use the workflow for overall health. Otherwise answer. Never invent names or arguments. After tool data, return action=answer."""
 
+private data class SelectedModel(val uri: Uri, val name: String)
+
 private data class AgentTestCase(
     val id: String,
     val prompt: String,
@@ -480,6 +576,51 @@ private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String
     }
 }
 
+private suspend fun loadModelFile(engine: InferenceEngine, modelFile: File): Long {
+    val readyState = engine.state.first {
+        it is InferenceEngine.State.Initialized ||
+            it is InferenceEngine.State.ModelReady ||
+            it is InferenceEngine.State.Error
+    }
+    if (readyState is InferenceEngine.State.ModelReady || readyState is InferenceEngine.State.Error) {
+        engine.cleanUp()
+        engine.state.first { it is InferenceEngine.State.Initialized }
+    }
+    val started = SystemClock.elapsedRealtime()
+    engine.loadModel(modelFile.absolutePath)
+    engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+    val elapsed = SystemClock.elapsedRealtime() - started
+    Log.i(
+        TAG_METRICS,
+        "model=${modelFile.name} load_ms=$elapsed context_tokens=1024 cpu_only=true",
+    )
+    return elapsed
+}
+
+private fun recoverInferenceEngine(engine: InferenceEngine) {
+    when (engine.state.value) {
+        is InferenceEngine.State.ModelReady,
+        is InferenceEngine.State.Error,
+        -> runCatching { engine.cleanUp() }.onFailure {
+            Log.e(TAG, "Unable to recover inference engine", it)
+        }
+        else -> Log.w(TAG, "Engine recovery skipped in ${engine.state.value.javaClass.simpleName}")
+    }
+}
+
+private suspend fun awaitThermalCooldown(
+    context: Context,
+    onWaiting: (Double) -> Unit,
+) {
+    while (true) {
+        currentCoroutineContext().ensureActive()
+        val temperature = getBatteryInfo(context).getDouble("temperatureC")
+        if (temperature <= AGENT_EVAL_MAX_START_TEMPERATURE_C) return
+        onWaiting(temperature)
+        delay(AGENT_EVAL_COOLDOWN_POLL_MS)
+    }
+}
+
 private data class AgentEvaluationProgress(
     val completed: Int,
     val total: Int,
@@ -497,6 +638,7 @@ private suspend fun runAgentTests(
     context: Context,
     engine: InferenceEngine,
     modelPath: String,
+    artifactStem: String = "agent",
     onProgress: (AgentEvaluationProgress) -> Unit,
 ): String {
     val initialTemperatureC = getBatteryInfo(context).getDouble("temperatureC")
@@ -670,10 +812,12 @@ private suspend fun runAgentTests(
         .put("finalAcceptedSelections", finalAccepted)
         .put("correctRoutes", correctRoutes)
         .put("details", details)
-    context.openFileOutput("agent-test-result.json", Context.MODE_PRIVATE).use {
+    val jsonName = if (artifactStem == "agent") "agent-test-result.json" else "$artifactStem-result.json"
+    val csvName = if (artifactStem == "agent") "agent-evaluation.csv" else "$artifactStem.csv"
+    context.openFileOutput(jsonName, Context.MODE_PRIVATE).use {
         it.write(report.toString(2).toByteArray())
     }
-    context.openFileOutput("agent-evaluation.csv", Context.MODE_PRIVATE).use {
+    context.openFileOutput(csvName, Context.MODE_PRIVATE).use {
         it.write(csv.toString().toByteArray())
     }
     Log.i(TAG_AGENT, report.toString())
@@ -683,7 +827,7 @@ private suspend fun runAgentTests(
         "Strict first-pass schema: $strictFirstPass/${AGENT_TEST_CASES.size} | " +
         "Normalized: $normalizedFirstPass | Repair success: $repairedSelections/$repairAttempts | " +
         "Final accepted: $finalAccepted/${AGENT_TEST_CASES.size}\n" +
-        "Saved agent-test-result.json and agent-evaluation.csv"
+        "Saved $jsonName and $csvName"
 }
 
 private fun expectedRoute(case: AgentTestCase): String = when {
@@ -716,6 +860,37 @@ private fun inferQuantization(filename: String): String =
     Regex("(?i)(Q[0-9]+(?:_[A-Z0-9]+)*)").find(filename)?.value ?: "unknown"
 
 private fun formatMetric(value: Double): String = "%.3f".format(Locale.US, value)
+
+private fun safeFileStem(filename: String): String = filename
+    .removeSuffix(".gguf")
+    .replace(Regex("[^A-Za-z0-9._-]"), "_")
+    .take(80)
+
+private fun writeQueueManifest(
+    context: Context,
+    runId: Long,
+    queue: List<SelectedModel>,
+    outcomes: List<JSONObject>,
+    cancelled: Boolean,
+) {
+    val selected = JSONArray().also { array -> queue.forEach { array.put(it.name) } }
+    val results = JSONArray().also { array -> outcomes.forEach(array::put) }
+    val report = JSONObject()
+        .put("schemaVersion", 1)
+        .put("runId", runId)
+        .put("suite", "tool-routing-3-tools-v2")
+        .put("cancelled", cancelled)
+        .put("selectedModels", selected)
+        .put("outcomes", results)
+    context.openFileOutput("agent-routing-$runId-queue.json", Context.MODE_PRIVATE).use {
+        it.write(report.toString(2).toByteArray())
+    }
+}
+
+private fun formatQueueOutcome(outcome: JSONObject): String = when (outcome.getString("status")) {
+    "completed" -> "${outcome.getString("model")}: completed"
+    else -> "${outcome.getString("model")}: FAILED - ${outcome.optString("error", "unknown error")}"
+}
 
 private fun executeReadOnlyTool(context: Context, name: String): JSONObject = when (name) {
     "get_device_info" -> getDeviceInfo(context)
@@ -892,5 +1067,6 @@ private const val LLAMA_CPP_COMMIT = "a94d563ed801d1da1b8c2432946de07d0231bb3d"
 private const val LLAMA_BUILD_FLAGS = "arm64-v8a;GGML_SYSTEM_ARCH=ARM;GGML_CPU_KLEIDIAI=OFF;GGML_OPENMP=OFF;ctx=1024;cpu-only"
 private const val AGENT_EVAL_MAX_START_TEMPERATURE_C = 35.0
 private const val AGENT_EVAL_CASE_TIMEOUT_MS = 120_000L
+private const val AGENT_EVAL_COOLDOWN_POLL_MS = 30_000L
 private const val AGENT_EVAL_CSV_HEADER = "id,prompt,expected_route,actual_route,correct,strict_schema_first_attempt,schema_normalized,repair_attempted,final_schema_accepted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
 private const val TAG_HEALTH = "PocketHealth"

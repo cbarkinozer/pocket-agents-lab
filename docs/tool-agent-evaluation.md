@@ -20,6 +20,28 @@ The model is loaded once. Before each prompt, a small JNI operation clears chat,
 
 The UI displays completed cases, running accuracy, strict first-pass count, normalized count, successful repair count, final accepted count, elapsed time, and a progress bar. **Cancel Agent Tests** safely cancels generation and does not save a misleading partial report.
 
+## Overnight multi-model queue
+
+Use **Select GGUFs** to select two or more models. The displayed numbered order is the execution order. **Run Selected Models Overnight** then:
+
+1. waits until battery temperature is at most 35 C;
+2. copies and loads one model;
+3. runs all 50 v2 cases;
+4. saves model-specific JSON and CSV files;
+5. unloads it and waits for cooldown again;
+6. continues even if an individual model is unsupported or fails.
+
+The activity keeps the screen awake while the queue is active. Cancellation stops the queue. A queue manifest named `agent-routing-RUN_ID-queue.json` records selection order and completed/failed outcomes. Per-model artifacts use the same run ID and a sanitized model name, preventing later models from overwriting earlier results.
+
+List and pull overnight artifacts with:
+
+```powershell
+adb shell run-as com.pocketagentslab ls files
+adb exec-out run-as com.pocketagentslab cat files/ARTIFACT_NAME > ARTIFACT_NAME
+```
+
+Model names and expected winners are hypotheses, not scoring inputs. Every model receives the identical suite and protocol.
+
 The benchmark writes app-private files:
 
 - `agent-test-result.json`: versioned manifest, device/model/build metadata, totals, and per-case records.
