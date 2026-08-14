@@ -52,6 +52,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
@@ -302,7 +303,10 @@ private fun PocketAgentsScreen() {
                     agentTestStatus = try {
                         runAgentTests(context, engine, requireNotNull(loadedModelPath)) { progress ->
                             agentTestProgress = progress.completed.toFloat() / progress.total
-                            agentTestStatus = "${progress.completed}/${progress.total} | " +
+                            val position = progress.currentCase?.let {
+                                "running ${progress.completed + 1}/${progress.total} ($it)"
+                            } ?: "${progress.completed}/${progress.total}"
+                            agentTestStatus = "$position | " +
                                 "correct ${progress.correct} | first-pass JSON ${progress.firstPassValid} | " +
                                 "repaired ${progress.repaired} | ${progress.elapsedMs / 1000}s"
                         }
@@ -462,13 +466,16 @@ private fun createAgentBackend(
     )
 
 private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {
-    if (engine.state.value is InferenceEngine.State.ModelReady) {
-        withContext(Dispatchers.IO) { ConversationReset.reset() }
-        return
+    when (val state = engine.state.value) {
+        is InferenceEngine.State.ModelReady ->
+            withContext(Dispatchers.IO) { ConversationReset.reset() }
+        is InferenceEngine.State.Initialized -> {
+            engine.loadModel(modelPath)
+            engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+            withContext(Dispatchers.IO) { ConversationReset.reset() }
+        }
+        else -> error("Cannot reset agent while engine is ${state.javaClass.simpleName}")
     }
-    engine.state.first { it is InferenceEngine.State.Initialized }
-    engine.loadModel(modelPath)
-    engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
 }
 
 private data class AgentEvaluationProgress(
@@ -478,6 +485,7 @@ private data class AgentEvaluationProgress(
     val firstPassValid: Int,
     val repaired: Int,
     val elapsedMs: Long,
+    val currentCase: String? = null,
 )
 
 private suspend fun runAgentTests(
@@ -498,6 +506,17 @@ private suspend fun runAgentTests(
     val suiteStarted = SystemClock.elapsedRealtime()
     for (case in AGENT_TEST_CASES) {
         currentCoroutineContext().ensureActive()
+        onProgress(
+            AgentEvaluationProgress(
+                completed = details.length(),
+                total = AGENT_TEST_CASES.size,
+                correct = correctRoutes,
+                firstPassValid = validJson,
+                repaired = repairedSelections,
+                elapsedMs = SystemClock.elapsedRealtime() - suiteStarted,
+                currentCase = case.id,
+            ),
+        )
         prepareFreshAgent(engine, modelPath)
         val generations = mutableListOf<TimedGeneration>()
         val backend = AgentBackend(
@@ -518,7 +537,9 @@ private suspend fun runAgentTests(
         val pssBeforeKb = Debug.getPss()
         val temperatureBeforeC = getBatteryInfo(context).getDouble("temperatureC")
         try {
-            val selection = backend.select(case.prompt)
+            val selection = withTimeout(AGENT_EVAL_CASE_TIMEOUT_MS) {
+                backend.select(case.prompt)
+            }
             val decision = selection.decision
             jsonValid = true
             repairAttempted = selection.repairAttempted
@@ -827,5 +848,6 @@ private const val TAG_AGENT = "PocketAgent"
 private const val LLAMA_CPP_COMMIT = "a94d563ed801d1da1b8c2432946de07d0231bb3d"
 private const val LLAMA_BUILD_FLAGS = "arm64-v8a;GGML_SYSTEM_ARCH=ARM;GGML_CPU_KLEIDIAI=OFF;GGML_OPENMP=OFF;ctx=1024;cpu-only"
 private const val AGENT_EVAL_MAX_START_TEMPERATURE_C = 35.0
+private const val AGENT_EVAL_CASE_TIMEOUT_MS = 120_000L
 private const val AGENT_EVAL_CSV_HEADER = "id,prompt,expected_route,actual_route,correct,valid_json,repair_attempted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
 private const val TAG_HEALTH = "PocketHealth"

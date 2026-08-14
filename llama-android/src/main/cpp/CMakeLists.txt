@@ -28,11 +28,9 @@ Java_com_arm_aichat_ConversationReset_resetNative(JNIEnv *, jclass) {
     if (g_context == nullptr) {
         return;
     }
-    if (chat_msgs.size() > 1) {
-        chat_msgs.resize(1);
-    }
-    llama_memory_seq_rm(llama_get_memory(g_context), 0, system_prompt_position, -1);
-    current_position = system_prompt_position;
+    // Full memory reset is required for hybrid recurrent models such as LFM2;
+    // truncating only KV positions leaves their recurrent state out of sync.
+    reset_long_term_states();
     reset_short_term_states();
 }
 ]=])
