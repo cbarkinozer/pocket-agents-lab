@@ -93,6 +93,7 @@ private fun PocketAgentsScreen() {
     var benchmarkStatus by remember { mutableStateOf("Benchmark not run") }
     var agentTestStatus by remember { mutableStateOf("Agent tests not run") }
     var isModelLoaded by remember { mutableStateOf(false) }
+    var loadedModelPath by remember { mutableStateOf<String?>(null) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
     val controlsBusy = isBusy || isBenchmarkRunning || isAgentTestRunning
 
@@ -183,6 +184,7 @@ private fun PocketAgentsScreen() {
                             val started = SystemClock.elapsedRealtime()
                             engine.loadModel(modelFile.absolutePath)
                             engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+                            loadedModelPath = modelFile.absolutePath
                             val loadMs = SystemClock.elapsedRealtime() - started
                             isModelLoaded = true
                             modelStatus = "Model loaded successfully in ${loadMs} ms"
@@ -219,6 +221,7 @@ private fun PocketAgentsScreen() {
                     output = ""
                     metrics = "Agent is deciding…"
                     try {
+                        prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         val started = SystemClock.elapsedRealtime()
                         val result = runAgentTurn(context, engine, prompt.trim())
                         val generationMs = SystemClock.elapsedRealtime() - started
@@ -256,7 +259,7 @@ private fun PocketAgentsScreen() {
                     isAgentTestRunning = true
                     agentTestStatus = "Running ${AGENT_TEST_CASES.size} local routing tests…"
                     agentTestStatus = try {
-                        runAgentTests(context, engine)
+                        runAgentTests(context, engine, requireNotNull(loadedModelPath))
                     } catch (error: Throwable) {
                         Log.e(TAG_AGENT, "Agent tests failed", error)
                         "Tests stopped: ${error.message ?: error.javaClass.simpleName}"
@@ -360,7 +363,22 @@ private suspend fun requestAgentDecision(
     message: String,
     predictLength: Int = AGENT_DECISION_TOKENS,
 ): Pair<AgentDecision, Int> {
-    val (raw, pieces) = collectGeneration(engine.sendUserPrompt(message, predictLength))
+    val request = """Return exactly one compact JSON object. Do not answer outside JSON.
+For current device facts choose one tool using {"action":"tool","name":"TOOL_NAME","args":{}}.
+Allowed TOOL_NAME values: get_device_info, get_battery_info, get_storage_info.
+For anything else use {"action":"answer","text":"YOUR ANSWER"}.
+Examples:
+User: How much storage is free?
+Output: {"action":"tool","name":"get_storage_info","args":{}}
+User: Is the battery hot?
+Output: {"action":"tool","name":"get_battery_info","args":{}}
+User: What Android version is this?
+Output: {"action":"tool","name":"get_device_info","args":{}}
+User: Tell me a joke.
+Output: {"action":"answer","text":"Why did the byte cross the bus?"}
+User: $message
+Output:"""
+    val (raw, pieces) = collectGeneration(engine.sendUserPrompt(request, predictLength))
     Log.i(TAG_AGENT, "model_json=$raw")
     return parseAgentDecision(raw) to pieces
 }
@@ -377,7 +395,7 @@ private suspend fun runAgentTurn(
 
     val toolName = requireNotNull(decision.toolName)
     val toolResult = executeReadOnlyTool(context, toolName)
-    val followUp = "TOOL_RESULT name=$toolName result=$toolResult Return the final answer JSON now."
+    val followUp = "TOOL_RESULT name=$toolName result=$toolResult. Explain this result to the user."
     val (finalDecision, secondPieces) = requestAgentDecision(engine, followUp, AGENT_ANSWER_TOKENS)
     require(finalDecision.action == "answer") { "Model requested another tool after receiving a result" }
     return AgentRunResult(
@@ -387,11 +405,25 @@ private suspend fun runAgentTurn(
     )
 }
 
-private suspend fun runAgentTests(context: Context, engine: InferenceEngine): String {
+private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {
+    if (engine.state.value is InferenceEngine.State.ModelReady) {
+        engine.cleanUp()
+    }
+    engine.state.first { it is InferenceEngine.State.Initialized }
+    engine.loadModel(modelPath)
+    engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+}
+
+private suspend fun runAgentTests(
+    context: Context,
+    engine: InferenceEngine,
+    modelPath: String,
+): String {
     var validJson = 0
     var correctRoutes = 0
     val details = JSONArray()
     for (case in AGENT_TEST_CASES) {
+        prepareFreshAgent(engine, modelPath)
         var actualTool: String? = null
         var jsonValid = false
         try {
@@ -404,7 +436,7 @@ private suspend fun runAgentTests(context: Context, engine: InferenceEngine): St
                 val result = executeReadOnlyTool(context, actualTool)
                 requestAgentDecision(
                     engine,
-                    "TOOL_RESULT name=$actualTool result=$result Return the final answer JSON now.",
+                    "TOOL_RESULT name=$actualTool result=$result. Explain this result to the user.",
                     AGENT_ANSWER_TOKENS,
                 )
             }
@@ -428,6 +460,7 @@ private suspend fun runAgentTests(context: Context, engine: InferenceEngine): St
         it.write(report.toString(2).toByteArray())
     }
     Log.i(TAG_AGENT, report.toString())
+    prepareFreshAgent(engine, modelPath)
     return "Tool selection: $correctRoutes/${AGENT_TEST_CASES.size} | " +
         "Valid JSON: $validJson/${AGENT_TEST_CASES.size}\nSaved agent-test-result.json"
 }

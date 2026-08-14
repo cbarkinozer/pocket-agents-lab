@@ -46,7 +46,9 @@ The agent protocol accepts only a bare JSON object in one of these forms:
 Malformed JSON, unknown tools, arguments, and repeated tool calls fail closed. **Run Agent
 Tests** evaluates eight fixed prompts and reports strict JSON validity plus tool-selection
 accuracy. The detailed report is stored in app-private `agent-test-result.json` and logged with
-the `PocketAgent` tag.
+the `PocketAgent` tag. Each test starts with a fresh model context so earlier prompts cannot
+pollute later routing measurements; the compact routing contract and examples are repeated in
+each request because small models do not always retain system-prompt constraints reliably.
 
 The **Run Device Benchmark** button retains the original bundled 60-second MobileNet V1 CPU workload. It reports throughput, average latency, battery-temperature change, and a conservative GGUF parameter-size tier based on currently available RAM. The size tier is only a starting estimate: quantization, architecture, context length, KV cache, and runtime overhead all affect whether a model fits, while MobileNet throughput does not directly predict LLM token speed.
 
