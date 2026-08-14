@@ -1872,7 +1872,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 5. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
 6. [ ] Benchmark several GGUF sizes and quantizations on the A32 using an identical protocol.
 7. [ ] Compare llama.cpp with at least one compatible alternative runtime using the same model family and workload.
-8. [ ] Prototype one constrained mobile capability proof with objective success criteria.
+8. [x] Prototype a constrained Phone Health Check: three read-only tools, deterministic storage/thermal diagnosis, local SLM explanation, threshold scenario tests, and device-side latency/RAM/rate telemetry.
 9. [ ] Design Edge Score only after enough raw results exist to test weighting, gates, stability, and ranking sensitivity.
 10. [ ] Attempt on-device LoRA/QLoRA only after inference, thermal, energy, and recovery tooling are reliable.
 

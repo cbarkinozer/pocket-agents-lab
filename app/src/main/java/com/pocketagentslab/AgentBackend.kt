@@ -16,6 +16,7 @@ internal data class AgentDecision(
     val action: String,
     val text: String? = null,
     val toolName: String? = null,
+    val workflowName: String? = null,
     val schemaRepaired: Boolean = false,
 )
 
@@ -30,6 +31,7 @@ internal data class AgentRunResult(
     val answer: String,
     val route: String,
     val generatedPieces: Int,
+    val diagnosis: String? = null,
 )
 
 internal fun interface AgentGenerator {
@@ -60,6 +62,10 @@ internal class AgentBackend(
             )
         }
 
+        if (decision.action == "workflow") {
+            return runHealthCheck(userPrompt, selection)
+        }
+
         val toolName = requireNotNull(decision.toolName)
         val toolResult = tools.execute(toolName)
         val generated = generator.generate(
@@ -84,7 +90,43 @@ internal class AgentBackend(
     }
 
     suspend fun run(userPrompt: String): AgentRunResult = complete(userPrompt, select(userPrompt))
+
+    private suspend fun runHealthCheck(
+        userPrompt: String,
+        selection: AgentSelection,
+    ): AgentRunResult {
+        require(selection.decision.workflowName == PHONE_HEALTH_CHECK)
+        val device = tools.execute("get_device_info")
+        val battery = tools.execute("get_battery_info")
+        val storage = tools.execute("get_storage_info")
+        val diagnosis = evaluatePhoneHealth(device, battery, storage)
+        val generated = generator.generate(
+            buildHealthExplanationPrompt(userPrompt, diagnosis),
+            AGENT_ANSWER_TOKENS,
+        )
+        val finalDecision = parseAgentDecision(generated.text)
+        require(finalDecision.action == "answer") {
+            "Health explanation must use action=answer, got action=${finalDecision.action}"
+        }
+        val modelAnswer = finalDecision.text.orEmpty().trim()
+        val usedFallback = isPlaceholderAnswer(modelAnswer)
+        val trustedSummary = deterministicHealthAnswer(diagnosis)
+        return AgentRunResult(
+            answer = if (usedFallback) {
+                trustedSummary
+            } else {
+                "$trustedSummary\n\nLocal SLM suggestions: $modelAnswer"
+            },
+            route = "workflow:$PHONE_HEALTH_CHECK" + if (usedFallback) " (fallback answer)" else "",
+            generatedPieces = selection.generatedPieces + generated.pieces,
+            diagnosis = diagnosis.toString(),
+        )
+    }
 }
+
+internal const val PHONE_HEALTH_CHECK = "phone_health_check"
+internal const val STORAGE_WARNING_FREE_PERCENT = 10.0
+internal const val BATTERY_WARNING_TEMPERATURE_C = 40.0
 
 internal fun parseAgentDecision(raw: String): AgentDecision {
     val trimmed = raw.trim()
@@ -106,12 +148,30 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
             require(json.getJSONObject("args").length() == 0) { "Tools accept no arguments" }
             AgentDecision(action = action, toolName = name)
         }
+        "workflow" -> {
+            require(json.length() == 3 && json.has("name") && json.has("args")) {
+                "Invalid workflow schema"
+            }
+            val name = json.getString("name")
+            require(name == PHONE_HEALTH_CHECK) { "Unknown workflow: $name" }
+            require(json.getJSONObject("args").length() == 0) { "Workflow accepts no arguments" }
+            AgentDecision(action = action, workflowName = name)
+        }
         in READ_ONLY_TOOLS -> {
             require(json.length() == 2 && json.has("args")) { "Invalid shorthand tool schema" }
             require(json.getJSONObject("args").length() == 0) { "Tools accept no arguments" }
             AgentDecision(
                 action = "tool",
                 toolName = action,
+                schemaRepaired = true,
+            )
+        }
+        PHONE_HEALTH_CHECK -> {
+            require(json.length() == 2 && json.has("args")) { "Invalid shorthand workflow schema" }
+            require(json.getJSONObject("args").length() == 0) { "Workflow accepts no arguments" }
+            AgentDecision(
+                action = "workflow",
+                workflowName = PHONE_HEALTH_CHECK,
                 schemaRepaired = true,
             )
         }
@@ -122,6 +182,7 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
 internal fun buildRoutingPrompt(userPrompt: String): String = """Return exactly one compact JSON object. Do not answer outside JSON.
 For current device facts choose one tool using {"action":"tool","name":"TOOL_NAME","args":{}}.
 Allowed TOOL_NAME values: get_device_info, get_battery_info, get_storage_info.
+For a phone health check use {"action":"workflow","name":"phone_health_check","args":{}}.
 For anything else use {"action":"answer","text":"YOUR ANSWER"}.
 Examples:
 User: How much storage is free?
@@ -130,10 +191,78 @@ User: Is the battery hot?
 Output: {"action":"tool","name":"get_battery_info","args":{}}
 User: What Android version is this?
 Output: {"action":"tool","name":"get_device_info","args":{}}
+User: Check my phone's health and suggest improvements.
+Output: {"action":"workflow","name":"phone_health_check","args":{}}
 User: Tell me a joke.
 Output: {"action":"answer","text":"Why did the byte cross the bus?"}
 User: $userPrompt
 Output:"""
+
+internal fun evaluatePhoneHealth(
+    rawDevice: String,
+    rawBattery: String,
+    rawStorage: String,
+): JSONObject {
+    val device = JSONObject(rawDevice)
+    val battery = JSONObject(rawBattery)
+    val storage = JSONObject(rawStorage)
+    val totalBytes = storage.getLong("totalBytes")
+    val availableBytes = storage.getLong("availableBytes")
+    require(totalBytes > 0) { "Total storage must be positive" }
+    val freePercent = availableBytes * 100.0 / totalBytes
+    val temperatureC = battery.getDouble("temperatureC")
+    val warnings = org.json.JSONArray()
+    val suggestions = org.json.JSONArray()
+    if (freePercent < STORAGE_WARNING_FREE_PERCENT) {
+        warnings.put("low_storage")
+        suggestions.put("Free storage until at least 10% is available.")
+    }
+    if (temperatureC > BATTERY_WARNING_TEMPERATURE_C) {
+        warnings.put("hot_battery")
+        suggestions.put("Pause heavy workloads, remove charging if safe, and let the phone cool.")
+    }
+    if (warnings.length() == 0) {
+        suggestions.put("Storage and battery temperature are within the configured thresholds.")
+    }
+    return JSONObject()
+        .put("status", if (warnings.length() == 0) "okay" else "warning")
+        .put("warnings", warnings)
+        .put("suggestions", suggestions)
+        .put("storageFreePercent", freePercent)
+        .put("storageThresholdPercent", STORAGE_WARNING_FREE_PERCENT)
+        .put("batteryTemperatureC", temperatureC)
+        .put("batteryTemperatureThresholdC", BATTERY_WARNING_TEMPERATURE_C)
+        .put("batteryLevelPercent", battery.opt("levelPercent"))
+        .put("isCharging", battery.getBoolean("isCharging"))
+        .put("deviceModel", device.getString("model"))
+        .put("androidVersion", device.getString("androidVersion"))
+        .put("cpuAbi", device.getString("cpuAbi"))
+}
+
+internal fun buildHealthExplanationPrompt(userPrompt: String, diagnosis: JSONObject): String =
+    """Return exactly one compact JSON object with action "answer" and a concise text explanation.
+The diagnosis below was calculated by trusted Android code. Do not change its status, thresholds, or facts.
+Mention each warning and give its listed suggestion. If status is okay, say the checked values are okay.
+Original request: $userPrompt
+Trusted diagnosis: $diagnosis
+Output JSON:"""
+
+private fun deterministicHealthAnswer(diagnosis: JSONObject): String {
+    val free = formatOne(diagnosis.getDouble("storageFreePercent"))
+    val temperature = formatOne(diagnosis.getDouble("batteryTemperatureC"))
+    val warnings = diagnosis.getJSONArray("warnings")
+    if (warnings.length() == 0) {
+        return "Phone health looks okay: $free% storage is free and battery temperature is $temperature°C."
+    }
+    val findings = mutableListOf<String>()
+    for (index in 0 until warnings.length()) {
+        when (warnings.getString(index)) {
+            "low_storage" -> findings += "storage is low at $free% free; free space until at least 10% is available"
+            "hot_battery" -> findings += "battery temperature is high at $temperature°C; pause heavy work and let it cool"
+        }
+    }
+    return "Phone health warning: ${findings.joinToString(". ")}."
+}
 
 internal fun buildFinalAnswerPrompt(
     userPrompt: String,

@@ -222,25 +222,45 @@ private fun PocketAgentsScreen() {
                     metrics = "Agent is deciding…"
                     try {
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
+                        val pssBeforeKb = Debug.getPss()
                         val started = SystemClock.elapsedRealtime()
                         val result = createAgentBackend(context, engine).run(prompt.trim())
                         val generationMs = SystemClock.elapsedRealtime() - started
+                        val pssAfterKb = Debug.getPss()
                         val piecesPerSecond = if (generationMs > 0) {
                             result.generatedPieces * 1000.0 / generationMs
                         } else {
                             0.0
                         }
                         output = result.answer
-                        metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | %.2f pieces/s".format(
+                        metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | " +
+                            "%.2f exposed pieces/s | PSS %.1f MB".format(
                             Locale.US,
                             piecesPerSecond,
+                            pssAfterKb / 1024.0,
                         )
                         Log.i(
                             TAG_METRICS,
                             "agent_route=${result.route} generation_ms=$generationMs " +
                                 "generated_token_pieces=${result.generatedPieces} " +
+                                "pss_before_kb=$pssBeforeKb pss_after_kb=$pssAfterKb " +
                                 "tokens_per_second=${"%.3f".format(Locale.US, piecesPerSecond)}",
                         )
+                        if (result.diagnosis != null) {
+                            val report = JSONObject()
+                                .put("workflow", PHONE_HEALTH_CHECK)
+                                .put("diagnosis", JSONObject(result.diagnosis))
+                                .put("latencyMs", generationMs)
+                                .put("generatedPieces", result.generatedPieces)
+                                .put("exposedPiecesPerSecond", piecesPerSecond)
+                                .put("pssBeforeKb", pssBeforeKb)
+                                .put("pssAfterKb", pssAfterKb)
+                                .put("route", result.route)
+                            context.openFileOutput("phone-health-check-result.json", Context.MODE_PRIVATE).use {
+                                it.write(report.toString(2).toByteArray())
+                            }
+                            Log.i(TAG_HEALTH, report.toString())
+                        }
                     } catch (error: Throwable) {
                         output = "Generation failed: ${error.message ?: error.javaClass.simpleName}"
                         Log.e(TAG, "Generation failed", error)
@@ -294,9 +314,14 @@ The only tools are:
 - get_device_info(): Android version, model, ABI, and memory.
 - get_battery_info(): battery level, charging state, and temperature.
 - get_storage_info(): total, available, and used internal storage.
+For a full phone health check, select the phone_health_check workflow. Android will run all three tools and decide the diagnosis.
 Use a tool whenever the question requires current device facts. Otherwise answer directly. Never invent tools or arguments. After a TOOL_RESULT message, return an answer JSON using that data."""
 
-private data class AgentTestCase(val prompt: String, val expectedTool: String?)
+private data class AgentTestCase(
+    val prompt: String,
+    val expectedTool: String? = null,
+    val expectedWorkflow: String? = null,
+)
 
 private val AGENT_TEST_CASES = listOf(
     AgentTestCase("How much storage do I have?", "get_storage_info"),
@@ -307,6 +332,10 @@ private val AGENT_TEST_CASES = listOf(
     AgentTestCase("What is my battery percentage?", "get_battery_info"),
     AgentTestCase("Tell me a joke.", null),
     AgentTestCase("What is 2+2?", null),
+    AgentTestCase("Run a phone health check.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("Check whether my phone is healthy.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("Inspect my phone and suggest health improvements.", expectedWorkflow = PHONE_HEALTH_CHECK),
+    AgentTestCase("Are storage and battery temperature okay?", expectedWorkflow = PHONE_HEALTH_CHECK),
 )
 
 private suspend fun collectGeneration(flow: Flow<String>): Pair<String, Int> {
@@ -350,6 +379,7 @@ private suspend fun runAgentTests(
         prepareFreshAgent(engine, modelPath)
         val backend = createAgentBackend(context, engine)
         var actualTool: String? = null
+        var actualWorkflow: String? = null
         var jsonValid = false
         try {
             val selection = backend.select(case.prompt)
@@ -357,7 +387,8 @@ private suspend fun runAgentTests(
             jsonValid = true
             validJson++
             actualTool = decision.toolName
-            if (actualTool == case.expectedTool) correctRoutes++
+            actualWorkflow = decision.workflowName
+            if (actualTool == case.expectedTool && actualWorkflow == case.expectedWorkflow) correctRoutes++
             backend.complete(case.prompt, selection)
         } catch (error: Throwable) {
             Log.w(TAG_AGENT, "Test failed for: ${case.prompt}", error)
@@ -367,6 +398,8 @@ private suspend fun runAgentTests(
                 .put("prompt", case.prompt)
                 .put("expectedTool", case.expectedTool ?: JSONObject.NULL)
                 .put("actualTool", actualTool ?: JSONObject.NULL)
+                .put("expectedWorkflow", case.expectedWorkflow ?: JSONObject.NULL)
+                .put("actualWorkflow", actualWorkflow ?: JSONObject.NULL)
                 .put("validJson", jsonValid),
         )
     }
@@ -555,3 +588,4 @@ private fun copyModelToPrivateStorage(context: Context, uri: Uri, displayName: S
 private const val TAG = "PocketLlama"
 private const val TAG_METRICS = "PocketLlamaMetrics"
 private const val TAG_AGENT = "PocketAgent"
+private const val TAG_HEALTH = "PocketHealth"

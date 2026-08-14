@@ -1,6 +1,7 @@
 package com.pocketagentslab
 
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -74,6 +75,40 @@ class AgentBackendTest {
 
         assertEquals("You have 20.0 GB available out of 64.0 GB of internal storage.", result.answer)
         assertEquals("tool:get_storage_info (fallback answer)", result.route)
+    }
+
+    @Test
+    fun healthWorkflowRunsAllThreeToolsAndPreservesDiagnosis() = runBlocking {
+        val responses = ArrayDeque(
+            listOf(
+                """{"action":"workflow","name":"phone_health_check","args":{}}""",
+                """{"action":"answer","text":"Storage is low; free some space."}""",
+            ),
+        )
+        val calls = mutableListOf<String>()
+        val backend = AgentBackend(
+            generator = AgentGenerator { _, _ -> GeneratedText(responses.removeFirst(), 1) },
+            tools = ReadOnlyToolExecutor { name ->
+                calls += name
+                when (name) {
+                    "get_device_info" -> """{"model":"A32","androidVersion":"13","cpuAbi":"arm64-v8a"}"""
+                    "get_battery_info" -> """{"levelPercent":50,"temperatureC":30,"isCharging":false}"""
+                    "get_storage_info" -> """{"totalBytes":1000,"availableBytes":50,"usedBytes":950}"""
+                    else -> error(name)
+                }
+            },
+        )
+
+        val result = backend.run("Run a phone health check")
+
+        assertEquals(
+            listOf("get_device_info", "get_battery_info", "get_storage_info"),
+            calls,
+        )
+        assertEquals("workflow:phone_health_check", result.route)
+        assertTrue(JSONObject(result.diagnosis!!).getJSONArray("warnings").toString().contains("low_storage"))
+        assertTrue(result.answer.contains("storage is low at 5.0%"))
+        assertTrue(result.answer.contains("Local SLM suggestions"))
     }
 
     @Test

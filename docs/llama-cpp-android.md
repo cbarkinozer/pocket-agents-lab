@@ -41,10 +41,11 @@ The agent protocol accepts only a bare JSON object in one of these forms:
 ```json
 {"action":"answer","text":"..."}
 {"action":"tool","name":"get_battery_info","args":{}}
+{"action":"workflow","name":"phone_health_check","args":{}}
 ```
 
 Malformed JSON, unknown tools, arguments, and repeated tool calls fail closed. **Run Agent
-Tests** evaluates eight fixed prompts and reports strict JSON validity plus tool-selection
+Tests** evaluates twelve fixed prompts, including four health-check phrasings, and reports JSON validity plus route-selection
 accuracy. The detailed report is stored in app-private `agent-test-result.json` and logged with
 the `PocketAgent` tag. Each test starts with a fresh model context so earlier prompts cannot
 pollute later routing measurements; the compact routing contract and examples are repeated in
@@ -59,6 +60,29 @@ If a small model copies the final-answer placeholder instead of interpreting a s
 result, the backend displays a deterministic answer derived from that same read-only JSON and
 marks the route `fallback answer`. This keeps device facts visible without inventing data while
 preserving the model's failure as an observable metric.
+
+## Phone Health Check workflow
+
+A health-check request selects one workflow; the workflow is not a fourth tool. Android invokes
+all three existing read-only tools, then Kotlin decides the facts using fixed thresholds:
+
+- free internal storage below 10%: `low_storage` warning;
+- battery temperature above 40.0°C: `hot_battery` warning;
+- otherwise: `okay`.
+
+Values exactly at 10% and 40.0°C are okay. The SLM receives the trusted diagnosis and may only
+explain it and repeat the deterministic suggestions. It does not choose warning thresholds or
+diagnostic status. The visible response always starts with a deterministic trusted summary, then
+labels the model-authored portion `Local SLM suggestions`, so fluent generation cannot replace
+the measured diagnosis. Fifteen parameterized JVM scenarios cover healthy, individual-warning,
+combined-warning, severe, and boundary conditions. A separate orchestration test verifies that
+the workflow calls device, battery, and storage exactly once and preserves the diagnosis.
+
+Every physical-device health run writes `phone-health-check-result.json` in app-private storage
+and logs `PocketHealth`. It records the trusted diagnosis, end-to-end workflow latency, process
+PSS before/after, generated text-piece count, exposed pieces/second, and selected route. The JNI
+binding exposes decoded pieces rather than an authoritative token count, so pieces/second is the
+closest available TPS estimate and is labeled accordingly.
 
 ## Backend tests
 
