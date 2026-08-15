@@ -10,6 +10,15 @@ import org.junit.Test
 
 class AgentBackendTest {
     @Test
+    fun routingPromptDistinguishesRamFromStorageCapacity() {
+        val prompt = buildRoutingPrompt("How much RAM is available?")
+
+        assertTrue(prompt.contains("ABI, and RAM"))
+        assertTrue(prompt.contains("Room for another model"))
+        assertTrue(prompt.contains("get_storage_info"))
+    }
+
+    @Test
     fun directAnswerUsesOneModelCallAndNoTool() = runBlocking {
         val fixture = fixture("""{"action":"answer","text":"A local joke"}""")
 

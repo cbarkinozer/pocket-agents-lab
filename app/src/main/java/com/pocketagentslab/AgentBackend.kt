@@ -285,6 +285,7 @@ internal fun unwrapJsonFence(raw: String): Pair<String, Boolean> {
 internal fun buildRoutingPrompt(userPrompt: String): String = """JSON only. Do not output reasoning, <think> tags, markdown, or code fences. Select exactly one route:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
 TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
+Device info covers model, manufacturer, Android, ABI, and RAM. Storage info covers disk space and room for files/models.
 Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
 No live phone data needed: {"action":"answer","text":"..."}
 Unclear: {"action":"answer","text":"$CLARIFICATION_MESSAGE"}
@@ -292,6 +293,8 @@ Examples:
 Battery level -> {"action":"tool","name":"get_battery_info","args":{}}
 Free space -> {"action":"tool","name":"get_storage_info","args":{}}
 Android version -> {"action":"tool","name":"get_device_info","args":{}}
+Physical RAM or manufacturer -> {"action":"tool","name":"get_device_info","args":{}}
+Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
 Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
 Request: $userPrompt
 JSON:"""
