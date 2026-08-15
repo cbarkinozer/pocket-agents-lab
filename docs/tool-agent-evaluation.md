@@ -16,7 +16,7 @@ The Android app's **Run Agent Tests** button runs `tool-routing-3-tools-v2`: 50 
 
 Several prompts mention a distractor (for example, battery versus storage). The suite tests only route selection. It deliberately does not execute tools or generate final explanations, so routing accuracy is not confounded with tool execution and answer quality.
 
-The model is loaded once. Before each prompt, a small JNI operation clears chat, KV, and recurrent conversation memory; it does not unload or reread the GGUF. Clearing recurrent state is essential for hybrid architectures such as LFM2. Every case therefore has an independent warm context without paying a 731 MB cold-load cost. The routing prompt is self-contained rather than relying on cached system tokens. Model loading must be benchmarked separately. Start only when battery temperature is at most 35 C; the run refuses to start above that threshold. Keep the phone unplugged, screen brightness and ambient conditions fixed, and do not interact with other apps during a run.
+The model is loaded once. Before each prompt, a small JNI operation clears chat, KV, and recurrent conversation memory; it does not unload or reread the GGUF. Clearing recurrent state is essential for hybrid architectures such as LFM2. Every case therefore has an independent warm context without paying a 731 MB cold-load cost. The routing prompt is self-contained rather than relying on cached system tokens. Model loading must be benchmarked separately. Start only when battery temperature is at most 38 C; the run refuses to start above that threshold. The threshold was raised from 35 C after the first xLAM queue run showed a stable 40 C sustained plateau and an unnecessarily long inter-model wait at 36.5 C. Each artifact records the threshold actually used, so results from different thermal protocols can be separated. Keep the phone unplugged, screen brightness and ambient conditions fixed, and do not interact with other apps during a run.
 
 The UI displays completed cases, running accuracy, strict first-pass count, normalized count, successful repair count, final accepted count, elapsed time, and a progress bar. **Cancel Agent Tests** safely cancels generation and does not save a misleading partial report.
 
@@ -24,7 +24,7 @@ The UI displays completed cases, running accuracy, strict first-pass count, norm
 
 Use **Select GGUFs** to select two or more models. The displayed numbered order is the execution order. **Run Selected Models Overnight** then:
 
-1. waits until battery temperature is at most 35 C;
+1. waits until battery temperature is at most 38 C;
 2. copies and loads one model;
 3. runs all 50 v2 cases;
 4. saves model-specific JSON and CSV files;

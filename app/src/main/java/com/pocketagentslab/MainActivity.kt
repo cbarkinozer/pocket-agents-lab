@@ -1095,7 +1095,7 @@ private const val TAG_METRICS = "PocketLlamaMetrics"
 private const val TAG_AGENT = "PocketAgent"
 private const val LLAMA_CPP_COMMIT = "a94d563ed801d1da1b8c2432946de07d0231bb3d"
 private const val LLAMA_BUILD_FLAGS = "arm64-v8a;GGML_SYSTEM_ARCH=ARM;GGML_CPU_KLEIDIAI=OFF;GGML_OPENMP=OFF;ctx=1024;cpu-only"
-private const val AGENT_EVAL_MAX_START_TEMPERATURE_C = 35.0
+private const val AGENT_EVAL_MAX_START_TEMPERATURE_C = 38.0
 private const val AGENT_EVAL_CASE_TIMEOUT_MS = 120_000L
 private const val AGENT_EVAL_COOLDOWN_POLL_MS = 30_000L
 private const val AGENT_EVAL_CSV_HEADER = "id,prompt,expected_route,actual_route,correct,strict_schema_first_attempt,schema_normalized,repair_attempted,final_schema_accepted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
