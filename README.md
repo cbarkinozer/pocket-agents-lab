@@ -16,6 +16,8 @@ The project is intentionally PoC-driven.
 
 We will build many small experiments, measure what works, discard what does not, and gradually discover how capable a fully local mobile agent can become.
 
+The canonical layered and iterative plan is maintained in [`docs/roadmap.md`](docs/roadmap.md). Each layer advances to a measurable MVP, then development moves across the stack and returns where evidence shows the highest-value improvement.
+
 ---
 
 # Vision
@@ -2019,6 +2021,8 @@ This allows Pocket Agents Lab to gradually become a public body of knowledge abo
 ---
 
 # Initial Roadmap
+
+This historical staged outline is retained for context. The active roadmap is the iterative layered plan in [`docs/roadmap.md`](docs/roadmap.md); stages are not gates that must be perfected before later work begins.
 
 ## Stage 1 — Make It Talk
 
