@@ -47,7 +47,7 @@ Model names and expected winners are hypotheses, not scoring inputs. Every model
 The portable protocol keeps one logical schema across models but applies narrowly recorded compatibility handling:
 
 - A response consisting solely of one `json` Markdown fence around one JSON object is unwrapped, validated normally, and counted as **normalized**, never strict. This covers observed xLAM output without accepting surrounding prose.
-- The JNI formatter applies each model's Jinja chat template with `enable_thinking=false`; this is required for Qwen3.5 because the official Android sample's legacy template path cannot pass that setting. Routing/repair output remains capped at 64 tokens, and the prompt also forbids reasoning and `<think>` output.
+- For user turns, the JNI formatter safely attempts the model's Jinja chat template with `enable_thinking=false`; this is required for Qwen3.5 because the official Android sample's legacy template path cannot pass that setting. System/history turns retain the stable legacy path, and caught Jinja incompatibilities fall back to it instead of crossing JNI and aborting Android. Routing/repair output remains capped at 64 tokens, and the prompt also forbids reasoning and `<think>` output.
 - A repair runs in a fresh conversation context and includes the original request plus at most 256 characters of rejected output. This prevents a reasoning trace from being duplicated into the 1024-token context.
 - Native generation stops at the context boundary. It never invokes the upstream sample's context-shift path, which was observed aborting in `llama_memory_hybrid::seq_add` for Qwen3.5-0.8B.
 

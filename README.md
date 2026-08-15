@@ -1873,7 +1873,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 4. [x] Preserve Run 001 of `tool-routing-3-tools-v1`: 13/50 correct routes, 29/50 final accepted selections, 42.3 s average latency, about 825-851 MB PSS, and 30.4-36.7 C observed temperature.
 5. [ ] Run the corrected `tool-routing-3-tools-v2` at least three times with strict/normalized/repaired schema accounting and raw generation capture.
    The app supports an ordered, thermally gated overnight multi-model queue with isolated artifacts for each GGUF.
-   Compatibility guards now cover xLAM fenced JSON and Qwen non-thinking Jinja formatting/fresh-repair operation while preserving normalization labels and raw outputs.
+   Compatibility guards now cover xLAM fenced JSON and crash-safe Qwen non-thinking Jinja formatting/fresh-repair operation while preserving normalization labels and raw outputs.
 6. [ ] Add authoritative native token counts and repeatable cold-load/warm-generation measurements for model-load time, TTFT, token/s, peak RAM, CPU, battery, and thermal samples.
 7. [ ] Stress-test the agent at 3 -> 5 -> 10 tools with similar and irrelevant distractors; preserve each versioned suite and identify the empirical breaking point.
 8. [ ] Turn Phone Health into the first evaluated end-to-end PoC: deterministic orchestration and facts, model selection/explanation only, scored correctness plus latency and resource cost.
