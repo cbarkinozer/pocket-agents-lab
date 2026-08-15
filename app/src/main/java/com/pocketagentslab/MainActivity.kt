@@ -13,6 +13,7 @@ import android.os.Environment
 import android.os.StatFs
 import android.os.SystemClock
 import android.provider.OpenableColumns
+import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -326,6 +327,22 @@ private fun PocketAgentsScreen() {
         Text("Tiny Agent", style = MaterialTheme.typography.titleLarge)
         Text("Ask about this device, battery health, storage, or request a phone health check with practical suggestions. Everything runs locally.")
         Text("Active read-only tools: Device info • Battery info • Storage info")
+        Text("Approved device actions", style = MaterialTheme.typography.titleSmall)
+        Text("These buttons only open Android Settings after you tap them; the agent cannot change settings silently.")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = { openAndroidSettings(context, Settings.ACTION_INTERNAL_STORAGE_SETTINGS) },
+                enabled = !controlsBusy,
+            ) {
+                Text("Open Storage")
+            }
+            Button(
+                onClick = { openAndroidSettings(context, Settings.ACTION_BATTERY_SAVER_SETTINGS) },
+                enabled = !controlsBusy,
+            ) {
+                Text("Open Battery")
+            }
+        }
         OutlinedTextField(
             value = prompt,
             onValueChange = { prompt = it },
@@ -419,6 +436,12 @@ private fun PocketAgentsScreen() {
                 .heightIn(min = 180.dp),
         )
     }
+}
+
+private fun openAndroidSettings(context: Context, action: String) {
+    val requested = Intent(action)
+    val fallback = Intent(Settings.ACTION_SETTINGS)
+    context.startActivity(if (requested.resolveActivity(context.packageManager) != null) requested else fallback)
 }
 
 internal fun rootCauseDescription(error: Throwable): String {
@@ -532,6 +555,24 @@ private suspend fun collectTimedGeneration(flow: Flow<String>): TimedGeneration 
     return TimedGeneration(text.toString(), pieces, finished - started, firstPieceAt?.minus(started))
 }
 
+private data class PreparedGrammarRequest(val prompt: String, val mode: Int)
+
+private fun prepareGrammarRequest(request: String): PreparedGrammarRequest = when {
+    request.startsWith(GRAMMAR_SCOPE_PREFIX) -> PreparedGrammarRequest(
+        request.removePrefix(GRAMMAR_SCOPE_PREFIX),
+        RoutingGrammar.SCOPE,
+    )
+    request.startsWith(GRAMMAR_LIVE_PREFIX) -> PreparedGrammarRequest(
+        request.removePrefix(GRAMMAR_LIVE_PREFIX),
+        RoutingGrammar.LIVE,
+    )
+    request.startsWith(GRAMMAR_ROUTE_PREFIX) -> PreparedGrammarRequest(
+        request.removePrefix(GRAMMAR_ROUTE_PREFIX),
+        RoutingGrammar.ROUTE,
+    )
+    else -> PreparedGrammarRequest(request, RoutingGrammar.NONE)
+}
+
 private fun createAgentBackend(
     context: Context,
     engine: InferenceEngine,
@@ -539,12 +580,12 @@ private fun createAgentBackend(
 ): AgentBackend =
     AgentBackend(
         generator = AgentGenerator { request, maxTokens ->
-            val constrained = maxTokens == AGENT_DECISION_TOKENS
-            if (constrained) RoutingGrammar.setEnabled(true)
+            val prepared = prepareGrammarRequest(request)
+            RoutingGrammar.setMode(prepared.mode)
             val (raw, pieces) = try {
-                collectGeneration(engine.sendUserPrompt(request, maxTokens))
+                collectGeneration(engine.sendUserPrompt(prepared.prompt, maxTokens))
             } finally {
-                if (constrained) RoutingGrammar.setEnabled(false)
+                RoutingGrammar.setMode(RoutingGrammar.NONE)
             }
             Log.i(TAG_AGENT, "model_json=$raw")
             GeneratedText(raw, pieces)
@@ -552,6 +593,7 @@ private fun createAgentBackend(
         tools = ReadOnlyToolExecutor { name -> executeReadOnlyTool(context, name).toString() },
         beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         onProgress = onProgress,
+        hierarchicalRouting = true,
     )
 
 private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {
@@ -648,7 +690,7 @@ private suspend fun runAgentTests(
     val csvName = if (artifactStem == "agent") "agent-evaluation.csv" else "$artifactStem.csv"
     val report = JSONObject()
         .put("schemaVersion", 2)
-        .put("suite", "tool-routing-3-tools-v5")
+        .put("suite", "tool-routing-3-tools-v6")
         .put("llamaCppCommit", LLAMA_CPP_COMMIT)
         .put("buildFlags", LLAMA_BUILD_FLAGS)
         .put("modelFile", File(modelPath).name)
@@ -682,25 +724,27 @@ private suspend fun runAgentTests(
         val generations = mutableListOf<TimedGeneration>()
         val backend = AgentBackend(
             generator = AgentGenerator { request, maxTokens ->
-                val constrained = maxTokens == AGENT_DECISION_TOKENS
-                if (constrained) RoutingGrammar.setEnabled(true)
+                val prepared = prepareGrammarRequest(request)
+                RoutingGrammar.setMode(prepared.mode)
                 try {
-                    collectTimedGeneration(engine.sendUserPrompt(request, maxTokens)).also {
+                    collectTimedGeneration(engine.sendUserPrompt(prepared.prompt, maxTokens)).also {
                         generations += it
                         Log.i(TAG_AGENT, "eval_model_json=${it.text}")
                     }.let { GeneratedText(it.text, it.pieces) }
                 } finally {
-                    if (constrained) RoutingGrammar.setEnabled(false)
+                    RoutingGrammar.setMode(RoutingGrammar.NONE)
                 }
             },
             tools = ReadOnlyToolExecutor { error("Evaluation must not execute tools") },
             beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
+            hierarchicalRouting = true,
         )
         var actualTool: String? = null
         var actualWorkflow: String? = null
         var actualAction: String? = null
         var jsonValid = false
         var schemaNormalized = false
+        var repairAttempted = false
         var errorType: String? = null
         val pssBeforeKb = Debug.getPss()
         val temperatureBeforeC = getBatteryInfo(context).getDouble("temperatureC")
@@ -709,6 +753,7 @@ private suspend fun runAgentTests(
                 backend.select(case.prompt)
             }
             val decision = selection.decision
+            repairAttempted = selection.repairAttempted
             jsonValid = true
             schemaNormalized = decision.schemaRepaired
             finalAccepted++
@@ -725,7 +770,6 @@ private suspend fun runAgentTests(
             errorType = classifyAgentEvaluationError(error)
             Log.w(TAG_AGENT, "Test failed for: ${case.prompt}", error)
         }
-        val repairAttempted = generations.size > 1
         if (repairAttempted) repairAttempts++
         val pssAfterKb = Debug.getPss()
         val temperatureAfterC = getBatteryInfo(context).getDouble("temperatureC")
@@ -764,7 +808,7 @@ private suspend fun runAgentTests(
                         attempts.put(
                             JSONObject()
                                 .put("attempt", index + 1)
-                                .put("kind", if (index == 0) "route" else "repair")
+                                .put("kind", if (index == 0) "scope" else "live_route")
                                 .put("rawOutput", generation.text)
                                 .put("latencyMs", generation.latencyMs)
                                 .put("ttftMs", generation.ttftMs ?: JSONObject.NULL)
@@ -920,7 +964,7 @@ private fun writeQueueManifest(
     val report = JSONObject()
         .put("schemaVersion", 1)
         .put("runId", runId)
-        .put("suite", "tool-routing-3-tools-v5")
+        .put("suite", "tool-routing-3-tools-v6")
         .put("state", state)
         .put("cancelled", state == "cancelled")
         .put("selectedModels", selected)

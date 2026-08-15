@@ -100,17 +100,34 @@ storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
 )grammar";
 
+static constexpr const char * POCKET_SCOPE_GRAMMAR = R"grammar(
+root ::= answer | live
+answer ::= "{\"scope\":\"answer\"}"
+live ::= "{\"scope\":\"live_device\"}"
+)grammar";
+
+static constexpr const char * POCKET_LIVE_GRAMMAR = R"grammar(
+root ::= device | battery | storage | health
+device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
+battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
+storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
+health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
+)grammar";
+
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_arm_aichat_RoutingGrammar_setEnabledNative(JNIEnv *, jclass, jboolean enabled) {
+Java_com_arm_aichat_RoutingGrammar_setModeNative(JNIEnv *, jclass, jint mode) {
     if (g_model == nullptr) {
         return;
     }
     common_sampler_free(g_sampler);
     common_params_sampling params;
     params.temp = DEFAULT_SAMPLER_TEMP;
-    if (enabled) {
-        params.grammar = common_grammar(COMMON_GRAMMAR_TYPE_USER, POCKET_ROUTING_GRAMMAR);
+    if (mode != 0) {
+        const char * grammar = mode == 2 ? POCKET_SCOPE_GRAMMAR
+                : mode == 3 ? POCKET_LIVE_GRAMMAR
+                : POCKET_ROUTING_GRAMMAR;
+        params.grammar = common_grammar(COMMON_GRAMMAR_TYPE_USER, grammar);
     }
     g_sampler = common_sampler_init(g_model, params);
 }

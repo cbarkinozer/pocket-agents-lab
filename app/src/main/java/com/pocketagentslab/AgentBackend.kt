@@ -6,6 +6,9 @@ import java.util.Locale
 
 internal const val AGENT_DECISION_TOKENS = 64
 internal const val AGENT_ANSWER_TOKENS = 256
+internal const val GRAMMAR_SCOPE_PREFIX = "[[POCKET_GRAMMAR_SCOPE]]\n"
+internal const val GRAMMAR_LIVE_PREFIX = "[[POCKET_GRAMMAR_LIVE]]\n"
+internal const val GRAMMAR_ROUTE_PREFIX = "[[POCKET_GRAMMAR_ROUTE]]\n"
 internal const val CLARIFICATION_MESSAGE =
     "I could not understand what you meant. Please rephrase your request."
 
@@ -54,10 +57,15 @@ internal class AgentBackend(
     private val tools: ReadOnlyToolExecutor,
     private val beforeRepair: suspend () -> Unit = {},
     private val onProgress: (AgentProgress) -> Unit = {},
+    private val hierarchicalRouting: Boolean = false,
 ) {
     suspend fun select(userPrompt: String): AgentSelection {
+        if (hierarchicalRouting) return selectHierarchically(userPrompt)
         onProgress(AgentProgress(0.15f, "Selecting an action with the local model…"))
-        val generated = generator.generate(buildRoutingPrompt(userPrompt), AGENT_DECISION_TOKENS)
+        val generated = generator.generate(
+            GRAMMAR_ROUTE_PREFIX + buildRoutingPrompt(userPrompt),
+            AGENT_DECISION_TOKENS,
+        )
         return try {
             AgentSelection(parseAgentDecision(generated.text), generated.pieces)
         } catch (validationError: Throwable) {
@@ -77,6 +85,29 @@ internal class AgentBackend(
                 repairAttempted = true,
             )
         }
+    }
+
+    private suspend fun selectHierarchically(userPrompt: String): AgentSelection {
+        onProgress(AgentProgress(0.12f, "Checking whether live phone data is needed…"))
+        val scope = generator.generate(
+            GRAMMAR_SCOPE_PREFIX + buildScopePrompt(userPrompt),
+            AGENT_DECISION_TOKENS,
+        )
+        if (parseScopeDecision(scope.text) == "answer") {
+            return AgentSelection(
+                decision = AgentDecision(action = "answer", text = ""),
+                generatedPieces = scope.pieces,
+            )
+        }
+        onProgress(AgentProgress(0.24f, "Selecting the required phone capability…"))
+        val route = generator.generate(
+            GRAMMAR_LIVE_PREFIX + buildLiveRoutingPrompt(userPrompt),
+            AGENT_DECISION_TOKENS,
+        )
+        return AgentSelection(
+            decision = parseAgentDecision(route.text),
+            generatedPieces = scope.pieces + route.pieces,
+        )
     }
 
     suspend fun complete(userPrompt: String, selection: AgentSelection): AgentRunResult {
@@ -312,6 +343,28 @@ Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
 Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
 Request: $userPrompt
 JSON:"""
+
+internal fun buildScopePrompt(userPrompt: String): String = """Choose whether the request needs current facts from this phone.
+ANSWER: writing, jokes, arithmetic, definitions, explanations, colors, sequences, or general knowledge.
+LIVE_DEVICE: current device/model/Android/RAM, storage capacity, battery/charging/heat, overall phone condition, or AI-workload readiness.
+Request: $userPrompt
+Decision:"""
+
+internal fun buildLiveRoutingPrompt(userPrompt: String): String = """The request needs live phone data. Choose exactly one route:
+DEVICE: model, manufacturer, Android, SDK, ABI, or RAM.
+BATTERY: level, charging state, temperature, heat, or cooling.
+STORAGE: free/used disk space or whether a file/model fits.
+HEALTH: overall wellness/readiness, recommendations, or two or more live categories.
+Request: $userPrompt
+Decision:"""
+
+internal fun parseScopeDecision(raw: String): String {
+    val json = JSONObject(raw.trim())
+    require(json.length() == 1 && json.has("scope")) { "Invalid scope schema" }
+    return json.getString("scope").also {
+        require(it == "answer" || it == "live_device") { "Unknown scope: $it" }
+    }
+}
 
 internal fun buildDirectAnswerPrompt(userPrompt: String): String =
     """Return exactly one compact JSON object: {"action":"answer","text":"your concise answer"}

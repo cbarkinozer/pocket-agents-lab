@@ -10,6 +10,35 @@ import org.junit.Test
 
 class AgentBackendTest {
     @Test
+    fun hierarchicalAnswerStopsAfterScopeDecision() = runBlocking {
+        val fixture = fixture(
+            """{"scope":"answer"}""",
+            hierarchicalRouting = true,
+        )
+
+        val selection = fixture.backend.select("Tell me a joke")
+
+        assertEquals("answer", selection.decision.action)
+        assertEquals(1, fixture.prompts.size)
+        assertTrue(fixture.prompts.single().contains("current facts from this phone"))
+    }
+
+    @Test
+    fun hierarchicalLiveRequestUsesSecondConstrainedDecision() = runBlocking {
+        val fixture = fixture(
+            """{"scope":"live_device"}""",
+            """{"action":"tool","name":"get_storage_info","args":{}}""",
+            hierarchicalRouting = true,
+        )
+
+        val selection = fixture.backend.select("How much storage is free?")
+
+        assertEquals("get_storage_info", selection.decision.toolName)
+        assertEquals(2, fixture.prompts.size)
+        assertTrue(fixture.prompts[1].contains("Choose exactly one route"))
+    }
+
+    @Test
     fun grammarSelectedAnswerGetsASeparateAnswerGeneration() = runBlocking {
         val fixture = fixture(
             """{"action":"answer","text":""}""",
@@ -312,6 +341,7 @@ class AgentBackendTest {
     private fun fixture(
         vararg responses: String,
         toolResult: String = """{"availableBytes":20000000000}""",
+        hierarchicalRouting: Boolean = false,
     ): Fixture {
         val queued = ArrayDeque(responses.toList())
         val prompts = mutableListOf<String>()
@@ -325,6 +355,7 @@ class AgentBackendTest {
                 toolCalls += name
                 toolResult
             },
+            hierarchicalRouting = hierarchicalRouting,
         )
         return Fixture(backend, prompts, toolCalls)
     }

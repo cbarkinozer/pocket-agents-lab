@@ -40,7 +40,7 @@ Make sub-1B and 1B models useful despite their limitations.
 - validators and limited repair
 - tool retrieval
 
-Current MVP: five-route native grammar, three read-only Android tools, deterministic Phone Health, strict validation, and at most one repair. Next experiment: hierarchical answer/live and single-tool/health routing.
+Current MVP: five-route native grammar, three read-only Android tools, deterministic Phone Health, strict validation, and at most one repair. Version 6 implements the hierarchical answer/live and single-tool/health experiment while preserving v5 as its baseline.
 
 ## 3. Mobile Capability Layer
 
@@ -68,7 +68,7 @@ Build the low-level “Playwright for Android” foundation.
 - optional Shizuku or ADB
 - UI-automation fallback
 
-MVP target: one narrowly permissioned, reversible action with visible confirmation and deterministic success/failure reporting.
+Current MVP: explicit user-approved buttons open Android Storage or Battery Settings through native intents. They cannot change settings silently. Next, let a model propose one of these actions while deterministic UI still requires confirmation.
 
 ## 5. Local Intelligence Layer
 
