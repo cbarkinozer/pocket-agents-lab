@@ -234,6 +234,7 @@ private fun PocketAgentsScreen() {
                     activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     val runId = System.currentTimeMillis()
                     val outcomes = mutableListOf<JSONObject>()
+                    writeQueueManifest(context, runId, queue, outcomes, state = "running")
                     try {
                         queue.forEachIndexed { modelIndex, selected ->
                             currentCoroutineContext().ensureActive()
@@ -286,13 +287,14 @@ private fun PocketAgentsScreen() {
                                     .put("error", error.message ?: error.javaClass.simpleName)
                                 recoverInferenceEngine(engine)
                             }
+                            writeQueueManifest(context, runId, queue, outcomes, state = "running")
                         }
                         agentTestProgress = 1f
-                        writeQueueManifest(context, runId, queue, outcomes, cancelled = false)
+                        writeQueueManifest(context, runId, queue, outcomes, state = "completed")
                         agentTestStatus = "Overnight queue complete (${queue.size} models)\n" +
                             outcomes.joinToString("\n") { formatQueueOutcome(it) }
                     } catch (error: kotlinx.coroutines.CancellationException) {
-                        writeQueueManifest(context, runId, queue, outcomes, cancelled = true)
+                        writeQueueManifest(context, runId, queue, outcomes, state = "cancelled")
                         agentTestStatus = "Multi-model evaluation cancelled\n" +
                             outcomes.joinToString("\n") { formatQueueOutcome(it) }
                     } finally {
@@ -328,7 +330,11 @@ private fun PocketAgentsScreen() {
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         val pssBeforeKb = Debug.getPss()
                         val started = SystemClock.elapsedRealtime()
-                        val result = createAgentBackend(context, engine) { progress ->
+                        val result = createAgentBackend(
+                            context,
+                            engine,
+                            requireNotNull(loadedModelPath),
+                        ) { progress ->
                             agentProgress = progress
                         }.run(prompt.trim())
                         val generationMs = SystemClock.elapsedRealtime() - started
@@ -551,15 +557,18 @@ private suspend fun collectTimedGeneration(flow: Flow<String>): TimedGeneration 
 private fun createAgentBackend(
     context: Context,
     engine: InferenceEngine,
+    modelPath: String,
     onProgress: (AgentProgress) -> Unit = {},
 ): AgentBackend =
     AgentBackend(
         generator = AgentGenerator { request, maxTokens ->
-            val (raw, pieces) = collectGeneration(engine.sendUserPrompt(request, maxTokens))
+            val adapted = adaptPromptForModel(request, modelPath)
+            val (raw, pieces) = collectGeneration(engine.sendUserPrompt(adapted, maxTokens))
             Log.i(TAG_AGENT, "model_json=$raw")
             GeneratedText(raw, pieces)
         },
         tools = ReadOnlyToolExecutor { name -> executeReadOnlyTool(context, name).toString() },
+        beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         onProgress = onProgress,
     )
 
@@ -653,6 +662,23 @@ private suspend fun runAgentTests(
     var correctRoutes = 0
     val details = JSONArray()
     val csv = StringBuilder(AGENT_EVAL_CSV_HEADER).append('\n')
+    val jsonName = if (artifactStem == "agent") "agent-test-result.json" else "$artifactStem-result.json"
+    val csvName = if (artifactStem == "agent") "agent-evaluation.csv" else "$artifactStem.csv"
+    val report = JSONObject()
+        .put("schemaVersion", 2)
+        .put("suite", "tool-routing-3-tools-v2")
+        .put("llamaCppCommit", LLAMA_CPP_COMMIT)
+        .put("buildFlags", LLAMA_BUILD_FLAGS)
+        .put("modelFile", File(modelPath).name)
+        .put("modelBytes", File(modelPath).length())
+        .put("quantizationFromFilename", inferQuantization(File(modelPath).name))
+        .put("device", getDeviceInfo(context))
+        .put("startTemperatureC", initialTemperatureC)
+        .put("maxStartTemperatureC", AGENT_EVAL_MAX_START_TEMPERATURE_C)
+        .put("tests", AGENT_TEST_CASES.size)
+        .put("details", details)
+    updateEvaluationReport(report, 0, 0, 0, 0, 0, 0, 0, complete = false)
+    writeEvaluationArtifacts(context, jsonName, csvName, report, csv)
     val suiteStarted = SystemClock.elapsedRealtime()
     for (case in AGENT_TEST_CASES) {
         currentCoroutineContext().ensureActive()
@@ -674,12 +700,14 @@ private suspend fun runAgentTests(
         val generations = mutableListOf<TimedGeneration>()
         val backend = AgentBackend(
             generator = AgentGenerator { request, maxTokens ->
-                collectTimedGeneration(engine.sendUserPrompt(request, maxTokens)).also {
+                val adapted = adaptPromptForModel(request, modelPath)
+                collectTimedGeneration(engine.sendUserPrompt(adapted, maxTokens)).also {
                     generations += it
                     Log.i(TAG_AGENT, "eval_model_json=${it.text}")
                 }.let { GeneratedText(it.text, it.pieces) }
             },
             tools = ReadOnlyToolExecutor { error("Evaluation must not execute tools") },
+            beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         )
         var actualTool: String? = null
         var actualWorkflow: String? = null
@@ -792,34 +820,24 @@ private suspend fun runAgentTests(
                 elapsedMs = SystemClock.elapsedRealtime() - suiteStarted,
             ),
         )
+        updateEvaluationReport(
+            report = report,
+            completedTests = details.length(),
+            strictFirstPass = strictFirstPass,
+            normalizedFirstPass = normalizedFirstPass,
+            repairAttempts = repairAttempts,
+            repairedSelections = repairedSelections,
+            finalAccepted = finalAccepted,
+            correctRoutes = correctRoutes,
+            complete = false,
+        )
+        writeEvaluationArtifacts(context, jsonName, csvName, report, csv)
     }
-    val report = JSONObject()
-        .put("schemaVersion", 2)
-        .put("suite", "tool-routing-3-tools-v2")
-        .put("llamaCppCommit", LLAMA_CPP_COMMIT)
-        .put("buildFlags", LLAMA_BUILD_FLAGS)
-        .put("modelFile", File(modelPath).name)
-        .put("modelBytes", File(modelPath).length())
-        .put("quantizationFromFilename", inferQuantization(File(modelPath).name))
-        .put("device", getDeviceInfo(context))
-        .put("startTemperatureC", initialTemperatureC)
-        .put("maxStartTemperatureC", AGENT_EVAL_MAX_START_TEMPERATURE_C)
-        .put("tests", AGENT_TEST_CASES.size)
-        .put("strictSchemaFirstPass", strictFirstPass)
-        .put("normalizedFirstPass", normalizedFirstPass)
-        .put("repairAttempts", repairAttempts)
-        .put("repairedSelections", repairedSelections)
-        .put("finalAcceptedSelections", finalAccepted)
-        .put("correctRoutes", correctRoutes)
-        .put("details", details)
-    val jsonName = if (artifactStem == "agent") "agent-test-result.json" else "$artifactStem-result.json"
-    val csvName = if (artifactStem == "agent") "agent-evaluation.csv" else "$artifactStem.csv"
-    context.openFileOutput(jsonName, Context.MODE_PRIVATE).use {
-        it.write(report.toString(2).toByteArray())
-    }
-    context.openFileOutput(csvName, Context.MODE_PRIVATE).use {
-        it.write(csv.toString().toByteArray())
-    }
+    updateEvaluationReport(
+        report, details.length(), strictFirstPass, normalizedFirstPass, repairAttempts,
+        repairedSelections, finalAccepted, correctRoutes, complete = true,
+    )
+    writeEvaluationArtifacts(context, jsonName, csvName, report, csv)
     Log.i(TAG_AGENT, report.toString())
     prepareFreshAgent(engine, modelPath)
     return "Completed: ${AGENT_TEST_CASES.size}/${AGENT_TEST_CASES.size}\n" +
@@ -828,6 +846,43 @@ private suspend fun runAgentTests(
         "Normalized: $normalizedFirstPass | Repair success: $repairedSelections/$repairAttempts | " +
         "Final accepted: $finalAccepted/${AGENT_TEST_CASES.size}\n" +
         "Saved $jsonName and $csvName"
+}
+
+private fun updateEvaluationReport(
+    report: JSONObject,
+    completedTests: Int,
+    strictFirstPass: Int,
+    normalizedFirstPass: Int,
+    repairAttempts: Int,
+    repairedSelections: Int,
+    finalAccepted: Int,
+    correctRoutes: Int,
+    complete: Boolean,
+) {
+    report
+        .put("completedTests", completedTests)
+        .put("complete", complete)
+        .put("strictSchemaFirstPass", strictFirstPass)
+        .put("normalizedFirstPass", normalizedFirstPass)
+        .put("repairAttempts", repairAttempts)
+        .put("repairedSelections", repairedSelections)
+        .put("finalAcceptedSelections", finalAccepted)
+        .put("correctRoutes", correctRoutes)
+}
+
+private fun writeEvaluationArtifacts(
+    context: Context,
+    jsonName: String,
+    csvName: String,
+    report: JSONObject,
+    csv: StringBuilder,
+) {
+    context.openFileOutput(jsonName, Context.MODE_PRIVATE).use {
+        it.write(report.toString(2).toByteArray())
+    }
+    context.openFileOutput(csvName, Context.MODE_PRIVATE).use {
+        it.write(csv.toString().toByteArray())
+    }
 }
 
 private fun expectedRoute(case: AgentTestCase): String = when {
@@ -866,12 +921,19 @@ private fun safeFileStem(filename: String): String = filename
     .replace(Regex("[^A-Za-z0-9._-]"), "_")
     .take(80)
 
+private fun adaptPromptForModel(prompt: String, modelPath: String): String =
+    if (File(modelPath).name.contains("qwen", ignoreCase = true)) {
+        "$prompt\n/no_think"
+    } else {
+        prompt
+    }
+
 private fun writeQueueManifest(
     context: Context,
     runId: Long,
     queue: List<SelectedModel>,
     outcomes: List<JSONObject>,
-    cancelled: Boolean,
+    state: String,
 ) {
     val selected = JSONArray().also { array -> queue.forEach { array.put(it.name) } }
     val results = JSONArray().also { array -> outcomes.forEach(array::put) }
@@ -879,7 +941,8 @@ private fun writeQueueManifest(
         .put("schemaVersion", 1)
         .put("runId", runId)
         .put("suite", "tool-routing-3-tools-v2")
-        .put("cancelled", cancelled)
+        .put("state", state)
+        .put("cancelled", state == "cancelled")
         .put("selectedModels", selected)
         .put("outcomes", results)
     context.openFileOutput("agent-routing-$runId-queue.json", Context.MODE_PRIVATE).use {

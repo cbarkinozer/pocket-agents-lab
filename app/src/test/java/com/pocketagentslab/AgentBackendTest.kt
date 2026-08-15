@@ -171,6 +171,38 @@ class AgentBackendTest {
         assertEquals("get_storage_info", selection.decision.toolName)
         assertEquals(2, fixture.prompts.size)
         assertTrue(fixture.prompts[1].contains("Model did not return a bare JSON object"))
+        assertTrue(fixture.prompts[1].contains("How much storage is free?"))
+    }
+
+    @Test
+    fun markdownJsonFenceIsSafelyNormalizedForXlamStyleOutput() {
+        val decision = parseAgentDecision(
+            """```json
+                {"action":"answer","text":"2 + 2 = 4"}
+                ```""".trimIndent(),
+        )
+
+        assertEquals("answer", decision.action)
+        assertEquals("2 + 2 = 4", decision.text)
+        assertTrue(decision.schemaRepaired)
+    }
+
+    @Test
+    fun repairRunsAfterFreshContextHook() = runBlocking {
+        var resets = 0
+        val responses = ArrayDeque(
+            listOf("not json", """{"action":"answer","text":"4"}"""),
+        )
+        val backend = AgentBackend(
+            generator = AgentGenerator { _, _ -> GeneratedText(responses.removeFirst(), 1) },
+            tools = ReadOnlyToolExecutor { error("No tool expected") },
+            beforeRepair = { resets++ },
+        )
+
+        val selection = backend.select("What is 2+2?")
+
+        assertEquals(1, resets)
+        assertTrue(selection.repairAttempted)
     }
 
     @Test

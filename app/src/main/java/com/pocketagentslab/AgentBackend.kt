@@ -3,7 +3,7 @@ package com.pocketagentslab
 import org.json.JSONObject
 import java.util.Locale
 
-internal const val AGENT_DECISION_TOKENS = 128
+internal const val AGENT_DECISION_TOKENS = 64
 internal const val AGENT_ANSWER_TOKENS = 256
 internal const val CLARIFICATION_MESSAGE =
     "I could not understand what you meant. Please rephrase your request."
@@ -51,6 +51,7 @@ internal data class AgentProgress(val fraction: Float, val message: String)
 internal class AgentBackend(
     private val generator: AgentGenerator,
     private val tools: ReadOnlyToolExecutor,
+    private val beforeRepair: suspend () -> Unit = {},
     private val onProgress: (AgentProgress) -> Unit = {},
 ) {
     suspend fun select(userPrompt: String): AgentSelection {
@@ -60,8 +61,13 @@ internal class AgentBackend(
             AgentSelection(parseAgentDecision(generated.text), generated.pieces)
         } catch (validationError: Throwable) {
             onProgress(AgentProgress(0.22f, "Repairing one invalid routing response…"))
+            beforeRepair()
             val repaired = generator.generate(
-                buildRoutingRepairPrompt(generated.text, validationError.message.orEmpty()),
+                buildRoutingRepairPrompt(
+                    userPrompt,
+                    generated.text,
+                    validationError.message.orEmpty(),
+                ),
                 AGENT_DECISION_TOKENS,
             )
             AgentSelection(
@@ -159,7 +165,10 @@ internal const val STORAGE_WARNING_FREE_PERCENT = 10.0
 internal const val BATTERY_WARNING_TEMPERATURE_C = 40.0
 
 internal fun parseAgentDecision(raw: String): AgentDecision {
-    val trimmed = raw.trim()
+    val rawTrimmed = raw.trim()
+    val fenced = JSON_FENCE.matchEntire(rawTrimmed)
+    val trimmed = fenced?.groupValues?.get(1)?.trim() ?: rawTrimmed
+    val fenceNormalized = fenced != null
     require(trimmed.startsWith("{") && trimmed.endsWith("}")) {
         "Model did not return a bare JSON object"
     }
@@ -167,7 +176,11 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
     return when (val action = json.optString("action")) {
         "answer" -> {
             require(json.length() == 2 && json.has("text")) { "Invalid answer schema" }
-            AgentDecision(action = action, text = json.getString("text"))
+            AgentDecision(
+                action = action,
+                text = json.getString("text"),
+                schemaRepaired = fenceNormalized,
+            )
         }
         "tool" -> {
             require(json.length() == 3 && json.has("name") && json.has("args")) {
@@ -176,7 +189,7 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
             val name = json.getString("name")
             require(name in READ_ONLY_TOOLS) { "Unknown tool: $name" }
             require(json.getJSONObject("args").length() == 0) { "Tools accept no arguments" }
-            AgentDecision(action = action, toolName = name)
+            AgentDecision(action = action, toolName = name, schemaRepaired = fenceNormalized)
         }
         "workflow" -> {
             require(json.length() == 3 && json.has("name") && json.has("args")) {
@@ -185,7 +198,7 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
             val name = json.getString("name")
             require(name == PHONE_HEALTH_CHECK) { "Unknown workflow: $name" }
             require(json.getJSONObject("args").length() == 0) { "Workflow accepts no arguments" }
-            AgentDecision(action = action, workflowName = name)
+            AgentDecision(action = action, workflowName = name, schemaRepaired = fenceNormalized)
         }
         in READ_ONLY_TOOLS -> {
             require(json.length() == 2 && json.has("args")) { "Invalid shorthand tool schema" }
@@ -209,7 +222,7 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
     }
 }
 
-internal fun buildRoutingPrompt(userPrompt: String): String = """JSON only. Select exactly one route:
+internal fun buildRoutingPrompt(userPrompt: String): String = """JSON only. Do not output reasoning, <think> tags, markdown, or code fences. Select exactly one route:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
 TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
 Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
@@ -264,8 +277,12 @@ internal fun evaluatePhoneHealth(
         .put("cpuAbi", device.getString("cpuAbi"))
 }
 
-internal fun buildRoutingRepairPrompt(invalidOutput: String, validationError: String): String =
-    """Repair the invalid routing response below. Return exactly one corrected compact JSON object and nothing else.
+internal fun buildRoutingRepairPrompt(
+    userPrompt: String,
+    invalidOutput: String,
+    validationError: String,
+): String =
+    """No thinking, explanation, or markdown. Return one corrected compact JSON object only.
 Validator error: $validationError
 Allowed actions and schemas:
 {"action":"answer","text":"..."}
@@ -273,8 +290,11 @@ Allowed actions and schemas:
 {"action":"tool","name":"get_battery_info","args":{}}
 {"action":"tool","name":"get_storage_info","args":{}}
 {"action":"workflow","name":"phone_health_check","args":{}}
-Invalid response: $invalidOutput
+Original request: $userPrompt
+Invalid response excerpt: ${invalidOutput.take(256)}
 Corrected JSON:"""
+
+private val JSON_FENCE = Regex("""(?s)^```(?:json)?\s*(\{.*})\s*```$""", RegexOption.IGNORE_CASE)
 
 internal fun buildHealthExplanationPrompt(userPrompt: String, diagnosis: JSONObject): String =
     """Return exactly one compact JSON object with action "answer" and a concise text explanation.

@@ -42,6 +42,19 @@ adb exec-out run-as com.pocketagentslab cat files/ARTIFACT_NAME > ARTIFACT_NAME
 
 Model names and expected winners are hypotheses, not scoring inputs. Every model receives the identical suite and protocol.
 
+## Model compatibility normalization
+
+The portable protocol keeps one logical schema across models but applies narrowly recorded compatibility handling:
+
+- A response consisting solely of one `json` Markdown fence around one JSON object is unwrapped, validated normally, and counted as **normalized**, never strict. This covers observed xLAM output without accepting surrounding prose.
+- Qwen model filenames receive `/no_think`, routing/repair output is capped at 64 tokens, and the prompt explicitly forbids reasoning and `<think>` output.
+- A repair runs in a fresh conversation context and includes the original request plus at most 256 characters of rejected output. This prevents a reasoning trace from being duplicated into the 1024-token context.
+- Native generation stops at the context boundary. It never invokes the upstream sample's context-shift path, which was observed aborting in `llama_memory_hybrid::seq_add` for Qwen3.5-0.8B.
+
+These transformations and normalization flags remain visible in raw artifacts. Future native tool-protocol benchmarks should be reported separately from this portable protocol.
+
+Queue manifests are checkpointed before work and after every model. Per-model JSON/CSV files are initialized before case one and rewritten after every completed case, allowing a native crash to leave a clearly marked partial result (`complete: false`) instead of erasing all progress.
+
 The benchmark writes app-private files:
 
 - `agent-test-result.json`: versioned manifest, device/model/build metadata, totals, and per-case records.

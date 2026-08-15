@@ -18,6 +18,15 @@ string(REPLACE
     AI_CHAT_SOURCE
     "${AI_CHAT_SOURCE}"
 )
+# The upstream sample shifts a full context indefinitely. Hybrid recurrent
+# models (observed with Qwen3.5) can abort inside llama_memory_hybrid::seq_add.
+# Stop generation at the boundary; Kotlin performs one fresh-context repair.
+string(REPLACE
+    "LOGw(\"%s: Context full! Shifting...\", __func__);\n        shift_context();"
+    "LOGw(\"%s: Context full; stopping safely before shift\", __func__);\n        return nullptr;"
+    AI_CHAT_SOURCE
+    "${AI_CHAT_SOURCE}"
+)
 # Add the one lifecycle operation the official sample does not expose: return to
 # the already-decoded system-prompt boundary without unloading model weights.
 string(APPEND AI_CHAT_SOURCE [=[
