@@ -91,6 +91,30 @@ string(REPLACE
 # the already-decoded system-prompt boundary without unloading model weights.
 string(APPEND AI_CHAT_SOURCE [=[
 
+static constexpr const char * POCKET_ROUTING_GRAMMAR = R"grammar(
+root ::= answer | device | battery | storage | health
+answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
+device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
+battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
+storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
+health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
+)grammar";
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_arm_aichat_RoutingGrammar_setEnabledNative(JNIEnv *, jclass, jboolean enabled) {
+    if (g_model == nullptr) {
+        return;
+    }
+    common_sampler_free(g_sampler);
+    common_params_sampling params;
+    params.temp = DEFAULT_SAMPLER_TEMP;
+    if (enabled) {
+        params.grammar = common_grammar(COMMON_GRAMMAR_TYPE_USER, POCKET_ROUTING_GRAMMAR);
+    }
+    g_sampler = common_sampler_init(g_model, params);
+}
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_arm_aichat_ConversationReset_resetNative(JNIEnv *, jclass) {

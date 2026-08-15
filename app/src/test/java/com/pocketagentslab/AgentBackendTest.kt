@@ -10,6 +10,21 @@ import org.junit.Test
 
 class AgentBackendTest {
     @Test
+    fun grammarSelectedAnswerGetsASeparateAnswerGeneration() = runBlocking {
+        val fixture = fixture(
+            """{"action":"answer","text":""}""",
+            """{"action":"answer","text":"4"}""",
+        )
+
+        val result = fixture.backend.run("What is 2+2?")
+
+        assertEquals("4", result.answer)
+        assertEquals("answer", result.route)
+        assertEquals(2, fixture.prompts.size)
+        assertTrue(fixture.prompts[1].contains("without using device tools"))
+    }
+
+    @Test
     fun routingPromptDistinguishesRamFromStorageCapacity() {
         val prompt = buildRoutingPrompt("How much RAM is available?")
 

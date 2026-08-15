@@ -83,6 +83,17 @@ internal class AgentBackend(
         val decision = selection.decision
         if (decision.action == "answer") {
             val directAnswer = decision.text.orEmpty().trim()
+            if (directAnswer.isBlank()) {
+                onProgress(AgentProgress(0.70f, "Generating a local answer…"))
+                val generated = generator.generate(buildDirectAnswerPrompt(userPrompt), AGENT_ANSWER_TOKENS)
+                val answered = parseAgentDecision(generated.text)
+                require(answered.action == "answer") { "Direct response must use action=answer" }
+                return AgentRunResult(
+                    answer = answered.text.orEmpty().ifBlank { CLARIFICATION_MESSAGE },
+                    route = "answer",
+                    generatedPieces = selection.generatedPieces + generated.pieces,
+                ).also { onProgress(AgentProgress(1.0f, "Complete")) }
+            }
             val copiedExample = directAnswer.isBlank() ||
                 (isCopiedRoutingExample(directAnswer) && !userPrompt.contains("joke", ignoreCase = true))
             return AgentRunResult(
@@ -282,14 +293,14 @@ internal fun unwrapJsonFence(raw: String): Pair<String, Boolean> {
     return inner to true
 }
 
-internal fun buildRoutingPrompt(userPrompt: String): String = """JSON only. Do not output reasoning, <think> tags, markdown, or code fences. Select exactly one route:
+internal fun buildRoutingPrompt(userPrompt: String): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
 TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
 Device info covers model, manufacturer, Android, ABI, and RAM. Storage info covers disk space and room for files/models.
 Battery info covers live level, charging state, temperature, heat, and whether cooling is needed.
 Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
 Two or more live categories, overall condition, or AI-workload readiness use phone_health_check.
-No live phone data needed: {"action":"answer","text":"..."}
+No live phone data needed: {"action":"answer","text":""}
 Writing, jokes, arithmetic, definitions, colors, sequences, and general knowledge need no tool.
 Unclear: {"action":"answer","text":"$CLARIFICATION_MESSAGE"}
 Examples:
@@ -300,6 +311,11 @@ Physical RAM or manufacturer -> {"action":"tool","name":"get_device_info","args"
 Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
 Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
 Request: $userPrompt
+JSON:"""
+
+internal fun buildDirectAnswerPrompt(userPrompt: String): String =
+    """Return exactly one compact JSON object: {"action":"answer","text":"your concise answer"}
+Answer this request without using device tools: $userPrompt
 JSON:"""
 
 internal fun evaluatePhoneHealth(

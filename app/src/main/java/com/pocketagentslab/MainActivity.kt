@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.arm.aichat.AiChat
 import com.arm.aichat.ConversationReset
 import com.arm.aichat.InferenceEngine
+import com.arm.aichat.RoutingGrammar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
@@ -538,7 +539,13 @@ private fun createAgentBackend(
 ): AgentBackend =
     AgentBackend(
         generator = AgentGenerator { request, maxTokens ->
-            val (raw, pieces) = collectGeneration(engine.sendUserPrompt(request, maxTokens))
+            val constrained = maxTokens == AGENT_DECISION_TOKENS
+            if (constrained) RoutingGrammar.setEnabled(true)
+            val (raw, pieces) = try {
+                collectGeneration(engine.sendUserPrompt(request, maxTokens))
+            } finally {
+                if (constrained) RoutingGrammar.setEnabled(false)
+            }
             Log.i(TAG_AGENT, "model_json=$raw")
             GeneratedText(raw, pieces)
         },
@@ -641,7 +648,7 @@ private suspend fun runAgentTests(
     val csvName = if (artifactStem == "agent") "agent-evaluation.csv" else "$artifactStem.csv"
     val report = JSONObject()
         .put("schemaVersion", 2)
-        .put("suite", "tool-routing-3-tools-v4")
+        .put("suite", "tool-routing-3-tools-v5")
         .put("llamaCppCommit", LLAMA_CPP_COMMIT)
         .put("buildFlags", LLAMA_BUILD_FLAGS)
         .put("modelFile", File(modelPath).name)
@@ -675,10 +682,16 @@ private suspend fun runAgentTests(
         val generations = mutableListOf<TimedGeneration>()
         val backend = AgentBackend(
             generator = AgentGenerator { request, maxTokens ->
-                collectTimedGeneration(engine.sendUserPrompt(request, maxTokens)).also {
-                    generations += it
-                    Log.i(TAG_AGENT, "eval_model_json=${it.text}")
-                }.let { GeneratedText(it.text, it.pieces) }
+                val constrained = maxTokens == AGENT_DECISION_TOKENS
+                if (constrained) RoutingGrammar.setEnabled(true)
+                try {
+                    collectTimedGeneration(engine.sendUserPrompt(request, maxTokens)).also {
+                        generations += it
+                        Log.i(TAG_AGENT, "eval_model_json=${it.text}")
+                    }.let { GeneratedText(it.text, it.pieces) }
+                } finally {
+                    if (constrained) RoutingGrammar.setEnabled(false)
+                }
             },
             tools = ReadOnlyToolExecutor { error("Evaluation must not execute tools") },
             beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
@@ -907,7 +920,7 @@ private fun writeQueueManifest(
     val report = JSONObject()
         .put("schemaVersion", 1)
         .put("runId", runId)
-        .put("suite", "tool-routing-3-tools-v4")
+        .put("suite", "tool-routing-3-tools-v5")
         .put("state", state)
         .put("cancelled", state == "cancelled")
         .put("selectedModels", selected)
