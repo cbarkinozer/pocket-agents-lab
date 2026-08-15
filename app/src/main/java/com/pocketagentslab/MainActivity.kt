@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -146,7 +147,8 @@ private fun PocketAgentsScreen() {
             ),
         )
 
-        Text("Device capability", style = MaterialTheme.typography.titleMedium)
+        Text("Device Capability", style = MaterialTheme.typography.titleLarge)
+        Text("Run a short on-device benchmark to estimate this phone's local AI capability and a practical GGUF model-size range.")
         Button(
             onClick = {
                 scope.launch {
@@ -164,6 +166,9 @@ private fun PocketAgentsScreen() {
         }
         Text(benchmarkStatus)
 
+        HorizontalDivider()
+        Text("Agent Test", style = MaterialTheme.typography.titleLarge)
+        Text("Select one or more GGUF models. The same 50-prompt tool-routing test runs once for a single model or sequentially for several models.")
         Text(
             if (selectedModels.isEmpty()) selectedName else selectedModels.mapIndexed { index, model ->
                 "${index + 1}. ${model.name}"
@@ -220,7 +225,7 @@ private fun PocketAgentsScreen() {
                 },
                 enabled = selectedUri != null && !controlsBusy,
             ) {
-                Text("Load Model")
+                Text("Load for Tiny Agent")
             }
         }
         Button(
@@ -262,14 +267,9 @@ private fun PocketAgentsScreen() {
                                     agentTestProgress = (
                                         modelIndex + progress.completed.toFloat() / progress.total
                                     ) / queue.size
-                                    val case = progress.currentCase?.let {
-                                        "case ${progress.completed + 1}/${progress.total} ($it)"
-                                    } ?: "${progress.completed}/${progress.total} complete"
-                                    agentTestStatus = "Model ${modelIndex + 1}/${queue.size} ${selected.name} | $case | " +
-                                        "correct ${progress.correct} | strict ${progress.strictFirstPass} | " +
-                                        "normalized ${progress.normalizedFirstPass} | " +
-                                        "repair ${progress.repaired}/${progress.repairAttempts} | " +
-                                        "accepted ${progress.finalAccepted}"
+                                    val promptNumber = (progress.completed + 1).coerceAtMost(progress.total)
+                                    agentTestStatus = "Model ${modelIndex + 1}/${queue.size}: ${selected.name}\n" +
+                                        "Prompt $promptNumber/${progress.total} • ${progress.correct} correct"
                                 }
                                 outcomes += JSONObject()
                                     .put("model", selected.name)
@@ -291,11 +291,11 @@ private fun PocketAgentsScreen() {
                         }
                         agentTestProgress = 1f
                         writeQueueManifest(context, runId, queue, outcomes, state = "completed")
-                        agentTestStatus = "Overnight queue complete (${queue.size} models)\n" +
+                        agentTestStatus = "Agent test complete (${queue.size} model(s))\n" +
                             outcomes.joinToString("\n") { formatQueueOutcome(it) }
                     } catch (error: kotlinx.coroutines.CancellationException) {
                         writeQueueManifest(context, runId, queue, outcomes, state = "cancelled")
-                        agentTestStatus = "Multi-model evaluation cancelled\n" +
+                        agentTestStatus = "Agent test cancelled\n" +
                             outcomes.joinToString("\n") { formatQueueOutcome(it) }
                     } finally {
                         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -304,14 +304,27 @@ private fun PocketAgentsScreen() {
                     }
                 }
             },
-            enabled = selectedModels.size > 1 && !controlsBusy,
+            enabled = selectedModels.isNotEmpty() && !controlsBusy,
         ) {
-            Text("Run Selected Models Overnight")
+            Text(if (isAgentTestRunning) "Running Agent Test…" else "Run Agent Test")
         }
+        if (isAgentTestRunning) {
+            LinearProgressIndicator(
+                progress = { agentTestProgress },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Text("Overall progress: ${(agentTestProgress * 100).toInt()}%")
+            Button(onClick = { agentTestJob?.cancel() }) {
+                Text("Cancel Agent Test")
+            }
+        }
+        Text(agentTestStatus)
         Text(modelStatus)
 
-        Text("Tiny local agent", style = MaterialTheme.typography.titleMedium)
-        Text("Read-only tools: get_device_info, get_battery_info, get_storage_info")
+        HorizontalDivider()
+        Text("Tiny Agent", style = MaterialTheme.typography.titleLarge)
+        Text("Ask about this device, battery health, storage, or request a phone health check with practical suggestions. Everything runs locally.")
+        Text("Active read-only tools: Device info • Battery info • Storage info")
         OutlinedTextField(
             value = prompt,
             onValueChange = { prompt = it },
@@ -394,51 +407,6 @@ private fun PocketAgentsScreen() {
             )
             Text("Stage progress: ${(agentProgress.fraction * 100).toInt()}%")
         }
-        Button(
-            onClick = {
-                agentTestJob = scope.launch {
-                    isAgentTestRunning = true
-                    agentTestProgress = 0f
-                    agentTestStatus = "Running ${AGENT_TEST_CASES.size} local routing tests…"
-                    agentTestStatus = try {
-                        runAgentTests(context, engine, requireNotNull(loadedModelPath)) { progress ->
-                            agentTestProgress = progress.completed.toFloat() / progress.total
-                            val position = progress.currentCase?.let {
-                                "running ${progress.completed + 1}/${progress.total} ($it)"
-                            } ?: "${progress.completed}/${progress.total}"
-                            agentTestStatus = "$position | " +
-                                "correct ${progress.correct} | strict ${progress.strictFirstPass} | " +
-                                "normalized ${progress.normalizedFirstPass} | " +
-                                "repair ${progress.repaired}/${progress.repairAttempts} | " +
-                                "accepted ${progress.finalAccepted} | ${progress.elapsedMs / 1000}s"
-                        }
-                    } catch (error: Throwable) {
-                        Log.e(TAG_AGENT, "Agent tests failed", error)
-                        if (error is kotlinx.coroutines.CancellationException) {
-                            "Evaluation cancelled; partial results were not saved"
-                        } else {
-                            "Tests stopped: ${error.message ?: error.javaClass.simpleName}"
-                        }
-                    } finally {
-                        isAgentTestRunning = false
-                        agentTestJob = null
-                    }
-                }
-            },
-            enabled = isModelLoaded && !controlsBusy,
-        ) {
-            Text(if (isAgentTestRunning) "Testing agent…" else "Run Agent Tests")
-        }
-        if (isAgentTestRunning) {
-            LinearProgressIndicator(
-                progress = { agentTestProgress },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Button(onClick = { agentTestJob?.cancel() }) {
-                Text("Cancel Agent Tests")
-            }
-        }
-        Text(agentTestStatus)
         Text(metrics)
         OutlinedTextField(
             value = output,
