@@ -1,5 +1,6 @@
 package com.pocketagentslab
 
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
 
@@ -166,6 +167,9 @@ internal const val BATTERY_WARNING_TEMPERATURE_C = 40.0
 
 internal fun parseAgentDecision(raw: String): AgentDecision {
     val (trimmed, fenceNormalized) = unwrapJsonFence(raw)
+    if (trimmed.startsWith("[")) {
+        return parseNativeToolCalls(trimmed)
+    }
     require(trimmed.startsWith("{") && trimmed.endsWith("}")) {
         "Model did not return a bare JSON object"
     }
@@ -216,6 +220,43 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
             )
         }
         else -> error("Unknown action: $action")
+    }
+}
+
+/** Normalize xLAM-style native function calls without accepting arbitrary arrays. */
+internal fun parseNativeToolCalls(raw: String): AgentDecision {
+    val calls = JSONArray(raw)
+    require(calls.length() > 0) { "Native tool-call array is empty" }
+    val names = buildList {
+        repeat(calls.length()) { index ->
+            val call = calls.getJSONObject(index)
+            require(call.length() == 2 && call.has("name") && call.has("arguments")) {
+                "Invalid native tool-call schema"
+            }
+            require(call.getJSONObject("arguments").length() == 0) {
+                "Native tools accept no arguments"
+            }
+            add(call.getString("name"))
+        }
+    }
+    require(names.distinct().size == names.size) { "Duplicate native tool calls" }
+    return when {
+        names.size == 1 && names.single() in READ_ONLY_TOOLS -> AgentDecision(
+            action = "tool",
+            toolName = names.single(),
+            schemaRepaired = true,
+        )
+        names.size == 1 && names.single() == PHONE_HEALTH_CHECK -> AgentDecision(
+            action = "workflow",
+            workflowName = PHONE_HEALTH_CHECK,
+            schemaRepaired = true,
+        )
+        names.size == READ_ONLY_TOOLS.size && names.toSet() == READ_ONLY_TOOLS -> AgentDecision(
+            action = "workflow",
+            workflowName = PHONE_HEALTH_CHECK,
+            schemaRepaired = true,
+        )
+        else -> error("Unsupported native tool-call combination: ${names.joinToString()}")
     }
 }
 

@@ -189,6 +189,40 @@ class AgentBackendTest {
     }
 
     @Test
+    fun xlamNativeSingleToolCallIsNormalized() {
+        val decision = parseAgentDecision(
+            """[{"name":"get_storage_info","arguments":{}}]""",
+        )
+
+        assertEquals("tool", decision.action)
+        assertEquals("get_storage_info", decision.toolName)
+        assertTrue(decision.schemaRepaired)
+    }
+
+    @Test
+    fun xlamNativeThreeToolCallIsNormalizedToHealthWorkflow() {
+        val decision = parseAgentDecision(
+            """[{"name":"get_device_info","arguments":{}},{"name":"get_battery_info","arguments":{}},{"name":"get_storage_info","arguments":{}}]""",
+        )
+
+        assertEquals("workflow", decision.action)
+        assertEquals(PHONE_HEALTH_CHECK, decision.workflowName)
+        assertTrue(decision.schemaRepaired)
+    }
+
+    @Test
+    fun partialNativeToolBundleRemainsInvalid() {
+        try {
+            parseAgentDecision(
+                """[{"name":"get_storage_info","arguments":{}},{"name":"get_battery_info","arguments":{}}]""",
+            )
+            fail("Expected partial native bundle to be rejected")
+        } catch (error: IllegalStateException) {
+            assertTrue(error.message.orEmpty().contains("Unsupported native tool-call combination"))
+        }
+    }
+
+    @Test
     fun incompleteMarkdownFenceIsNotSilentlyAccepted() {
         val (text, normalized) = unwrapJsonFence("""```json {"action":"answer","text":"4"}""")
 
