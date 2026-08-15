@@ -251,7 +251,7 @@ internal fun parseNativeToolCalls(raw: String): AgentDecision {
             workflowName = PHONE_HEALTH_CHECK,
             schemaRepaired = true,
         )
-        names.size == READ_ONLY_TOOLS.size && names.toSet() == READ_ONLY_TOOLS -> AgentDecision(
+        names.size >= 2 && names.all { it in READ_ONLY_TOOLS } -> AgentDecision(
             action = "workflow",
             workflowName = PHONE_HEALTH_CHECK,
             schemaRepaired = true,
@@ -286,8 +286,11 @@ internal fun buildRoutingPrompt(userPrompt: String): String = """JSON only. Do n
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
 TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
 Device info covers model, manufacturer, Android, ABI, and RAM. Storage info covers disk space and room for files/models.
+Battery info covers live level, charging state, temperature, heat, and whether cooling is needed.
 Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
+Two or more live categories, overall condition, or AI-workload readiness use phone_health_check.
 No live phone data needed: {"action":"answer","text":"..."}
+Writing, jokes, arithmetic, definitions, colors, sequences, and general knowledge need no tool.
 Unclear: {"action":"answer","text":"$CLARIFICATION_MESSAGE"}
 Examples:
 Battery level -> {"action":"tool","name":"get_battery_info","args":{}}

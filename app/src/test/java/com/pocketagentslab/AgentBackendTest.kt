@@ -220,15 +220,14 @@ class AgentBackendTest {
     }
 
     @Test
-    fun partialNativeToolBundleRemainsInvalid() {
-        try {
-            parseAgentDecision(
-                """[{"name":"get_storage_info","arguments":{}},{"name":"get_battery_info","arguments":{}}]""",
-            )
-            fail("Expected partial native bundle to be rejected")
-        } catch (error: IllegalStateException) {
-            assertTrue(error.message.orEmpty().contains("Unsupported native tool-call combination"))
-        }
+    fun xlamNativeTwoCategoryBundleMapsToHealthWorkflow() {
+        val decision = parseAgentDecision(
+            """[{"name":"get_storage_info","arguments":{}},{"name":"get_battery_info","arguments":{}}]""",
+        )
+
+        assertEquals("workflow", decision.action)
+        assertEquals(PHONE_HEALTH_CHECK, decision.workflowName)
+        assertTrue(decision.schemaRepaired)
     }
 
     @Test

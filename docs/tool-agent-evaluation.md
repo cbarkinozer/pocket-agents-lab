@@ -4,9 +4,9 @@ The next result this project targets is a reproducible statement of the form:
 
 > On a Galaxy A32, model X at quantization Y selected the correct route on N/50 requests, with measured latency, output rate, RAM, and temperature.
 
-## Version 3 suite
+## Version 4 suite
 
-The Android app's **Run Agent Test** button runs `tool-routing-3-tools-v3`: 50 fixed prompts, with ten prompts in each class:
+The Android app's **Run Agent Test** button runs `tool-routing-3-tools-v4`: 50 fixed prompts, with ten prompts in each class:
 
 - `get_storage_info`
 - `get_device_info`
@@ -47,8 +47,9 @@ Model names and expected winners are hypotheses, not scoring inputs. Every model
 The portable protocol keeps one logical schema across models but applies narrowly recorded compatibility handling:
 
 - A response consisting solely of one `json` Markdown fence around one JSON object is unwrapped, validated normally, and counted as **normalized**, never strict. This covers observed xLAM output without accepting surrounding prose.
-- An exact xLAM-style native call array containing one known read-only tool is normalized to that tool. A single `phone_health_check` call or an exact set of all three read-only tools is normalized to the health workflow. Empty arrays, duplicate/unknown calls, arguments, partial multi-tool bundles, and arbitrary prose remain invalid.
+- An exact xLAM-style native call array containing one known read-only tool is normalized to that tool. A single `phone_health_check` call or an exact combination of two or all three distinct read-only tools is normalized to the health workflow, which deterministically executes the complete inspection. Empty arrays, duplicate/unknown calls, arguments, and arbitrary prose remain invalid.
 - The v3 routing prompt explicitly distinguishes physical RAM/model/manufacturer/ABI facts from filesystem capacity after Qwen v2 confused three such cases. This is a recorded prompt change, not post-hoc rescoring of v2.
+- Version 4 explicitly distinguishes live battery facts, ordinary no-tool questions, multi-category health checks, and AI-workload readiness after the completed v3 comparison exposed those shared boundaries. Version 3 artifacts keep their original scores.
 - For user turns, the JNI formatter safely attempts the model's Jinja chat template with `enable_thinking=false`; this is required for Qwen3.5 because the official Android sample's legacy template path cannot pass that setting. System/history turns retain the stable legacy path, and caught Jinja incompatibilities fall back to it instead of crossing JNI and aborting Android. Routing/repair output remains capped at 64 tokens, and the prompt also forbids reasoning and `<think>` output.
 - A repair runs in a fresh conversation context and includes the original request plus at most 256 characters of rejected output. This prevents a reasoning trace from being duplicated into the 1024-token context.
 - Native generation stops at the context boundary. It never invokes the upstream sample's context-shift path, which was observed aborting in `llama_memory_hybrid::seq_add` for Qwen3.5-0.8B.
