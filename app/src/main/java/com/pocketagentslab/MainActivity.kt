@@ -333,7 +333,6 @@ private fun PocketAgentsScreen() {
                         val result = createAgentBackend(
                             context,
                             engine,
-                            requireNotNull(loadedModelPath),
                         ) { progress ->
                             agentProgress = progress
                         }.run(prompt.trim())
@@ -567,13 +566,11 @@ private suspend fun collectTimedGeneration(flow: Flow<String>): TimedGeneration 
 private fun createAgentBackend(
     context: Context,
     engine: InferenceEngine,
-    modelPath: String,
     onProgress: (AgentProgress) -> Unit = {},
 ): AgentBackend =
     AgentBackend(
         generator = AgentGenerator { request, maxTokens ->
-            val adapted = adaptPromptForModel(request, modelPath)
-            val (raw, pieces) = collectGeneration(engine.sendUserPrompt(adapted, maxTokens))
+            val (raw, pieces) = collectGeneration(engine.sendUserPrompt(request, maxTokens))
             Log.i(TAG_AGENT, "model_json=$raw")
             GeneratedText(raw, pieces)
         },
@@ -710,8 +707,7 @@ private suspend fun runAgentTests(
         val generations = mutableListOf<TimedGeneration>()
         val backend = AgentBackend(
             generator = AgentGenerator { request, maxTokens ->
-                val adapted = adaptPromptForModel(request, modelPath)
-                collectTimedGeneration(engine.sendUserPrompt(adapted, maxTokens)).also {
+                collectTimedGeneration(engine.sendUserPrompt(request, maxTokens)).also {
                     generations += it
                     Log.i(TAG_AGENT, "eval_model_json=${it.text}")
                 }.let { GeneratedText(it.text, it.pieces) }
@@ -930,13 +926,6 @@ private fun safeFileStem(filename: String): String = filename
     .removeSuffix(".gguf")
     .replace(Regex("[^A-Za-z0-9._-]"), "_")
     .take(80)
-
-private fun adaptPromptForModel(prompt: String, modelPath: String): String =
-    if (File(modelPath).name.contains("qwen", ignoreCase = true)) {
-        "$prompt\n/no_think"
-    } else {
-        prompt
-    }
 
 private fun writeQueueManifest(
     context: Context,

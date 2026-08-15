@@ -18,6 +18,51 @@ string(REPLACE
     AI_CHAT_SOURCE
     "${AI_CHAT_SOURCE}"
 )
+# The official Android example formats messages through the legacy template path,
+# which cannot pass template kwargs. Qwen3.5 consequently enters thinking mode and
+# spends the entire small routing budget inside <think>. Use the model's Jinja
+# template and explicitly disable thinking for this constrained agent workload.
+set(NO_THINK_FORMATTER [=[
+static std::string chat_format_single_no_thinking(
+        const common_chat_templates * tmpls,
+        const std::vector<common_chat_msg> & past_msg,
+        const common_chat_msg & new_msg,
+        bool add_ass) {
+    common_chat_templates_inputs inputs;
+    inputs.use_jinja = true;
+    inputs.enable_thinking = false;
+
+    std::string formatted_past;
+    if (!past_msg.empty()) {
+        inputs.messages = past_msg;
+        inputs.add_generation_prompt = false;
+        formatted_past = common_chat_templates_apply(tmpls, inputs).prompt;
+    }
+
+    inputs.messages.push_back(new_msg);
+    inputs.add_generation_prompt = add_ass;
+    const auto formatted_all = common_chat_templates_apply(tmpls, inputs).prompt;
+    std::string result;
+    if (add_ass && !formatted_past.empty() && formatted_past.back() == '\n') {
+        result += '\n';
+    }
+    result += formatted_all.substr(formatted_past.size());
+    return result;
+}
+
+]=])
+string(REPLACE
+    "static std::string chat_add_and_format(const std::string &role, const std::string &content) {"
+    "${NO_THINK_FORMATTER}static std::string chat_add_and_format(const std::string &role, const std::string &content) {"
+    AI_CHAT_SOURCE
+    "${AI_CHAT_SOURCE}"
+)
+string(REPLACE
+    "auto formatted = common_chat_format_single(\n            g_chat_templates.get(), chat_msgs, new_msg, role == ROLE_USER, /* use_jinja */ false);"
+    "auto formatted = chat_format_single_no_thinking(\n            g_chat_templates.get(), chat_msgs, new_msg, role == ROLE_USER);"
+    AI_CHAT_SOURCE
+    "${AI_CHAT_SOURCE}"
+)
 # The upstream sample shifts a full context indefinitely. Hybrid recurrent
 # models (observed with Qwen3.5) can abort inside llama_memory_hybrid::seq_add.
 # Stop generation at the boundary; Kotlin performs one fresh-context repair.
