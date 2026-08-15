@@ -165,10 +165,7 @@ internal const val STORAGE_WARNING_FREE_PERCENT = 10.0
 internal const val BATTERY_WARNING_TEMPERATURE_C = 40.0
 
 internal fun parseAgentDecision(raw: String): AgentDecision {
-    val rawTrimmed = raw.trim()
-    val fenced = JSON_FENCE.matchEntire(rawTrimmed)
-    val trimmed = fenced?.groupValues?.get(1)?.trim() ?: rawTrimmed
-    val fenceNormalized = fenced != null
+    val (trimmed, fenceNormalized) = unwrapJsonFence(raw)
     require(trimmed.startsWith("{") && trimmed.endsWith("}")) {
         "Model did not return a bare JSON object"
     }
@@ -220,6 +217,28 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
         }
         else -> error("Unknown action: $action")
     }
+}
+
+/**
+ * Accept the common ```json ... ``` wrapper without relying on a regular expression.
+ * Android's ICU regex implementation rejects some patterns accepted by the desktop JVM,
+ * which previously made AgentBackendKt fail during class initialization on the phone.
+ */
+internal fun unwrapJsonFence(raw: String): Pair<String, Boolean> {
+    val trimmed = raw.trim()
+    val openingLength = when {
+        trimmed.startsWith("```json", ignoreCase = true) -> 7
+        trimmed.startsWith("```") -> 3
+        else -> return trimmed to false
+    }
+    if (!trimmed.endsWith("```") || trimmed.length < openingLength + 3) {
+        return trimmed to false
+    }
+    val inner = trimmed.substring(openingLength, trimmed.length - 3).trim()
+    if (!inner.startsWith("{") || !inner.endsWith("}")) {
+        return trimmed to false
+    }
+    return inner to true
 }
 
 internal fun buildRoutingPrompt(userPrompt: String): String = """JSON only. Do not output reasoning, <think> tags, markdown, or code fences. Select exactly one route:
@@ -293,8 +312,6 @@ Allowed actions and schemas:
 Original request: $userPrompt
 Invalid response excerpt: ${invalidOutput.take(256)}
 Corrected JSON:"""
-
-private val JSON_FENCE = Regex("""(?s)^```(?:json)?\s*(\{.*})\s*```$""", RegexOption.IGNORE_CASE)
 
 internal fun buildHealthExplanationPrompt(userPrompt: String, diagnosis: JSONObject): String =
     """Return exactly one compact JSON object with action "answer" and a concise text explanation.

@@ -3,6 +3,7 @@ package com.pocketagentslab
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -185,6 +186,14 @@ class AgentBackendTest {
         assertEquals("answer", decision.action)
         assertEquals("2 + 2 = 4", decision.text)
         assertTrue(decision.schemaRepaired)
+    }
+
+    @Test
+    fun incompleteMarkdownFenceIsNotSilentlyAccepted() {
+        val (text, normalized) = unwrapJsonFence("""```json {"action":"answer","text":"4"}""")
+
+        assertFalse(normalized)
+        assertTrue(text.startsWith("```json"))
     }
 
     @Test

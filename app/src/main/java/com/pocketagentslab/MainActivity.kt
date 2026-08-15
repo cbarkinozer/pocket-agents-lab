@@ -374,8 +374,9 @@ private fun PocketAgentsScreen() {
                             Log.i(TAG_HEALTH, report.toString())
                         }
                     } catch (error: Throwable) {
-                        agentProgress = AgentProgress(0f, "Stopped: ${error.message ?: "unknown error"}")
-                        output = "Generation failed: ${error.message ?: error.javaClass.simpleName}"
+                        val cause = rootCauseDescription(error)
+                        agentProgress = AgentProgress(0f, "Stopped: $cause")
+                        output = "Generation failed: $cause"
                         Log.e(TAG, "Generation failed", error)
                     } finally {
                         isBusy = false
@@ -450,6 +451,15 @@ private fun PocketAgentsScreen() {
                 .heightIn(min = 180.dp),
         )
     }
+}
+
+internal fun rootCauseDescription(error: Throwable): String {
+    var deepest = error
+    val visited = mutableSetOf<Throwable>()
+    while (deepest.cause != null && visited.add(deepest)) {
+        deepest = deepest.cause!!
+    }
+    return deepest.message?.takeIf { it.isNotBlank() } ?: deepest.javaClass.simpleName
 }
 
 private const val AGENT_SYSTEM_PROMPT = """You are an offline Android router. Output one bare JSON object, never markdown.
