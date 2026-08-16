@@ -68,7 +68,7 @@ Build the low-level “Playwright for Android” foundation.
 - optional Shizuku or ADB
 - UI-automation fallback
 
-Current MVP: explicit user-approved buttons open Android Storage or Battery Settings through native intents. They cannot change settings silently. Next, let a model propose one of these actions while deterministic UI still requires confirmation.
+Current MVP: the local model can propose opening Android Storage or Battery Settings. Deterministic Kotlin displays the proposal and requires an explicit confirmation tap before launching the allowlisted native intent; the model cannot execute or change settings silently. The original direct buttons remain available.
 
 ## 5. Local Intelligence Layer
 

@@ -106,6 +106,17 @@ answer ::= "{\"scope\":\"answer\"}"
 live ::= "{\"scope\":\"live_device\"}"
 )grammar";
 
+static constexpr const char * POCKET_AGENT_ROUTING_GRAMMAR = R"grammar(
+root ::= answer | device | battery | storage | health | open_storage | open_battery
+answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
+device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
+battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
+storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
+health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
+open_storage ::= "{\"action\":\"propose\",\"name\":\"open_storage_settings\",\"args\":{}}"
+open_battery ::= "{\"action\":\"propose\",\"name\":\"open_battery_settings\",\"args\":{}}"
+)grammar";
+
 static constexpr const char * POCKET_LIVE_GRAMMAR = R"grammar(
 root ::= device | battery | storage | health
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
@@ -126,6 +137,7 @@ Java_com_arm_aichat_RoutingGrammar_setModeNative(JNIEnv *, jclass, jint mode) {
     if (mode != 0) {
         const char * grammar = mode == 2 ? POCKET_SCOPE_GRAMMAR
                 : mode == 3 ? POCKET_LIVE_GRAMMAR
+                : mode == 4 ? POCKET_AGENT_ROUTING_GRAMMAR
                 : POCKET_ROUTING_GRAMMAR;
         params.grammar = common_grammar(COMMON_GRAMMAR_TYPE_USER, grammar);
     }

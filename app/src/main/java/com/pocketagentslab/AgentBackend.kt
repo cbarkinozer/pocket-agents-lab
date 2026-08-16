@@ -9,6 +9,7 @@ internal const val AGENT_ANSWER_TOKENS = 256
 internal const val GRAMMAR_SCOPE_PREFIX = "[[POCKET_GRAMMAR_SCOPE]]\n"
 internal const val GRAMMAR_LIVE_PREFIX = "[[POCKET_GRAMMAR_LIVE]]\n"
 internal const val GRAMMAR_ROUTE_PREFIX = "[[POCKET_GRAMMAR_ROUTE]]\n"
+internal const val GRAMMAR_AGENT_ROUTE_PREFIX = "[[POCKET_GRAMMAR_AGENT_ROUTE]]\n"
 internal const val CLARIFICATION_MESSAGE =
     "I could not understand what you meant. Please rephrase your request."
 
@@ -23,6 +24,7 @@ internal data class AgentDecision(
     val text: String? = null,
     val toolName: String? = null,
     val workflowName: String? = null,
+    val proposedAction: String? = null,
     val schemaRepaired: Boolean = false,
 )
 
@@ -39,6 +41,7 @@ internal data class AgentRunResult(
     val route: String,
     val generatedPieces: Int,
     val diagnosis: String? = null,
+    val proposedAction: String? = null,
 )
 
 internal fun interface AgentGenerator {
@@ -58,12 +61,14 @@ internal class AgentBackend(
     private val beforeRepair: suspend () -> Unit = {},
     private val onProgress: (AgentProgress) -> Unit = {},
     private val hierarchicalRouting: Boolean = false,
+    private val allowDeviceActions: Boolean = false,
 ) {
     suspend fun select(userPrompt: String): AgentSelection {
         if (hierarchicalRouting) return selectHierarchically(userPrompt)
         onProgress(AgentProgress(0.15f, "Selecting an action with the local model…"))
         val generated = generator.generate(
-            GRAMMAR_ROUTE_PREFIX + buildRoutingPrompt(userPrompt),
+            (if (allowDeviceActions) GRAMMAR_AGENT_ROUTE_PREFIX else GRAMMAR_ROUTE_PREFIX) +
+                buildRoutingPrompt(userPrompt, allowDeviceActions),
             AGENT_DECISION_TOKENS,
         )
         return try {
@@ -136,6 +141,20 @@ internal class AgentBackend(
 
         if (decision.action == "workflow") {
             return runHealthCheck(userPrompt, selection)
+        }
+
+        if (decision.action == "propose") {
+            val action = requireNotNull(decision.proposedAction)
+            return AgentRunResult(
+                answer = when (action) {
+                    OPEN_STORAGE_SETTINGS -> "I can open Android Storage Settings. Confirm below before anything happens."
+                    OPEN_BATTERY_SETTINGS -> "I can open Android Battery Settings. Confirm below before anything happens."
+                    else -> error("Unknown proposed action: $action")
+                },
+                route = "propose:$action",
+                generatedPieces = selection.generatedPieces,
+                proposedAction = action,
+            ).also { onProgress(AgentProgress(1.0f, "Waiting for your confirmation")) }
         }
 
         val toolName = requireNotNull(decision.toolName)
@@ -243,6 +262,15 @@ internal fun parseAgentDecision(raw: String): AgentDecision {
             require(json.getJSONObject("args").length() == 0) { "Workflow accepts no arguments" }
             AgentDecision(action = action, workflowName = name, schemaRepaired = fenceNormalized)
         }
+        "propose" -> {
+            require(json.length() == 3 && json.has("name") && json.has("args")) {
+                "Invalid proposed-action schema"
+            }
+            val name = json.getString("name")
+            require(name in APPROVED_DEVICE_ACTIONS) { "Unknown proposed action: $name" }
+            require(json.getJSONObject("args").length() == 0) { "Device actions accept no arguments" }
+            AgentDecision(action = action, proposedAction = name, schemaRepaired = fenceNormalized)
+        }
         in READ_ONLY_TOOLS -> {
             require(json.length() == 2 && json.has("args")) { "Invalid shorthand tool schema" }
             require(json.getJSONObject("args").length() == 0) { "Tools accept no arguments" }
@@ -324,7 +352,11 @@ internal fun unwrapJsonFence(raw: String): Pair<String, Boolean> {
     return inner to true
 }
 
-internal fun buildRoutingPrompt(userPrompt: String): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
+internal const val OPEN_STORAGE_SETTINGS = "open_storage_settings"
+internal const val OPEN_BATTERY_SETTINGS = "open_battery_settings"
+internal val APPROVED_DEVICE_ACTIONS = setOf(OPEN_STORAGE_SETTINGS, OPEN_BATTERY_SETTINGS)
+
+internal fun buildRoutingPrompt(userPrompt: String, allowDeviceActions: Boolean = false): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
 TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
 Device info covers model, manufacturer, Android, ABI, and RAM. Storage info covers disk space and room for files/models.
@@ -341,6 +373,9 @@ Android version -> {"action":"tool","name":"get_device_info","args":{}}
 Physical RAM or manufacturer -> {"action":"tool","name":"get_device_info","args":{}}
 Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
 Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
+${if (allowDeviceActions) """Explicit request to open Storage Settings -> {"action":"propose","name":"open_storage_settings","args":{}}
+Explicit request to open Battery Settings -> {"action":"propose","name":"open_battery_settings","args":{}}
+Only propose an action when the user asks to open or navigate to that settings page. Reading facts still uses a read-only tool. A proposal never executes without confirmation.""" else ""}
 Request: $userPrompt
 JSON:"""
 

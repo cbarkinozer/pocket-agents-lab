@@ -107,6 +107,7 @@ private fun PocketAgentsScreen() {
     var agentTestProgress by remember { mutableStateOf(0f) }
     var agentTestJob by remember { mutableStateOf<Job?>(null) }
     var agentProgress by remember { mutableStateOf(AgentProgress(0f, "Ready")) }
+    var proposedAction by remember { mutableStateOf<String?>(null) }
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
@@ -343,6 +344,22 @@ private fun PocketAgentsScreen() {
                 Text("Open Battery")
             }
         }
+        if (proposedAction != null) {
+            Text("Agent proposed: ${proposedActionLabel(requireNotNull(proposedAction))}")
+            Text("Nothing has happened yet. Confirm to leave the app and open Android Settings.")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = {
+                        openProposedAction(context, requireNotNull(proposedAction))
+                        proposedAction = null
+                    },
+                    enabled = !controlsBusy,
+                ) { Text("Confirm open") }
+                Button(onClick = { proposedAction = null }, enabled = !controlsBusy) {
+                    Text("Cancel")
+                }
+            }
+        }
         OutlinedTextField(
             value = prompt,
             onValueChange = { prompt = it },
@@ -355,6 +372,7 @@ private fun PocketAgentsScreen() {
                 scope.launch {
                     isBusy = true
                     output = ""
+                    proposedAction = null
                     metrics = "Agent is deciding…"
                     agentProgress = AgentProgress(0.05f, "Preparing a fresh local-model context…")
                     try {
@@ -375,6 +393,7 @@ private fun PocketAgentsScreen() {
                             0.0
                         }
                         output = result.answer
+                        proposedAction = result.proposedAction
                         metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | " +
                             "%.2f exposed pieces/s | PSS %.1f MB".format(
                             Locale.US,
@@ -444,6 +463,21 @@ private fun openAndroidSettings(context: Context, action: String) {
     context.startActivity(if (requested.resolveActivity(context.packageManager) != null) requested else fallback)
 }
 
+private fun proposedActionLabel(action: String): String = when (action) {
+    OPEN_STORAGE_SETTINGS -> "Open Storage Settings"
+    OPEN_BATTERY_SETTINGS -> "Open Battery Settings"
+    else -> "Unknown action"
+}
+
+private fun openProposedAction(context: Context, action: String) {
+    val settingsAction = when (action) {
+        OPEN_STORAGE_SETTINGS -> Settings.ACTION_INTERNAL_STORAGE_SETTINGS
+        OPEN_BATTERY_SETTINGS -> Settings.ACTION_BATTERY_SAVER_SETTINGS
+        else -> error("Action is not approved: $action")
+    }
+    openAndroidSettings(context, settingsAction)
+}
+
 internal fun rootCauseDescription(error: Throwable): String {
     var deepest = error
     val visited = mutableSetOf<Throwable>()
@@ -460,6 +494,8 @@ Allowed routes:
 {"action":"tool","name":"get_battery_info","args":{}}
 {"action":"tool","name":"get_storage_info","args":{}}
 {"action":"workflow","name":"phone_health_check","args":{}}
+{"action":"propose","name":"open_storage_settings","args":{}}
+{"action":"propose","name":"open_battery_settings","args":{}}
 Use a tool only for current phone facts. Use the workflow for overall health. Otherwise answer. Never invent names or arguments. After tool data, return action=answer."""
 
 private data class SelectedModel(val uri: Uri, val name: String)
@@ -558,6 +594,10 @@ private suspend fun collectTimedGeneration(flow: Flow<String>): TimedGeneration 
 private data class PreparedGrammarRequest(val prompt: String, val mode: Int)
 
 private fun prepareGrammarRequest(request: String): PreparedGrammarRequest = when {
+    request.startsWith(GRAMMAR_AGENT_ROUTE_PREFIX) -> PreparedGrammarRequest(
+        request.removePrefix(GRAMMAR_AGENT_ROUTE_PREFIX),
+        RoutingGrammar.AGENT_ROUTE,
+    )
     request.startsWith(GRAMMAR_SCOPE_PREFIX) -> PreparedGrammarRequest(
         request.removePrefix(GRAMMAR_SCOPE_PREFIX),
         RoutingGrammar.SCOPE,
@@ -593,6 +633,7 @@ private fun createAgentBackend(
         tools = ReadOnlyToolExecutor { name -> executeReadOnlyTool(context, name).toString() },
         beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         onProgress = onProgress,
+        allowDeviceActions = true,
     )
 
 private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {

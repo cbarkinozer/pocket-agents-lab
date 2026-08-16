@@ -1881,6 +1881,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 6. [ ] Add authoritative native token counts and repeatable cold-load/warm-generation measurements for model-load time, TTFT, token/s, peak RAM, CPU, battery, and thermal samples.
 7. [ ] Stress-test the agent at 3 -> 5 -> 10 tools with similar and irrelevant distractors; preserve each versioned suite and identify the empirical breaking point.
 8. [ ] Turn Phone Health into the first evaluated end-to-end PoC: deterministic orchestration and facts, model selection/explanation only, scored correctness plus latency and resource cost.
+9. [x] Add the first Mobile Control proposal flow: the local model may propose opening allowlisted Storage or Battery Settings, but deterministic UI requires a separate confirmation tap before launching Android Settings.
 9. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
 10. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
 11. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.

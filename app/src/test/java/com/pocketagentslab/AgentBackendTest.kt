@@ -75,6 +75,32 @@ class AgentBackendTest {
     }
 
     @Test
+    fun approvedSettingsActionIsProposedButNeverExecuted() = runBlocking {
+        val fixture = fixture(
+            """{"action":"propose","name":"open_storage_settings","args":{}}""",
+            allowDeviceActions = true,
+        )
+
+        val result = fixture.backend.run("Open storage settings")
+
+        assertEquals("propose:open_storage_settings", result.route)
+        assertEquals(OPEN_STORAGE_SETTINGS, result.proposedAction)
+        assertTrue(result.answer.contains("Confirm"))
+        assertTrue(fixture.toolCalls.isEmpty())
+        assertTrue(fixture.prompts.single().startsWith(GRAMMAR_AGENT_ROUTE_PREFIX))
+    }
+
+    @Test
+    fun proposedActionRejectsUnknownOrArgumentBearingActions() {
+        expectFailureSync("Unknown proposed action") {
+            parseAgentDecision("""{"action":"propose","name":"wipe_storage","args":{}}""")
+        }
+        expectFailureSync("accept no arguments") {
+            parseAgentDecision("""{"action":"propose","name":"open_battery_settings","args":{"force":true}}""")
+        }
+    }
+
+    @Test
     fun copiedRoutingJokeBecomesClarificationInsteadOfFakeAnswer() = runBlocking {
         val fixture = fixture(
             """{"action":"answer","text":"Why did the byte cross the road?"}""",
@@ -342,6 +368,7 @@ class AgentBackendTest {
         vararg responses: String,
         toolResult: String = """{"availableBytes":20000000000}""",
         hierarchicalRouting: Boolean = false,
+        allowDeviceActions: Boolean = false,
     ): Fixture {
         val queued = ArrayDeque(responses.toList())
         val prompts = mutableListOf<String>()
@@ -356,11 +383,23 @@ class AgentBackendTest {
                 toolResult
             },
             hierarchicalRouting = hierarchicalRouting,
+            allowDeviceActions = allowDeviceActions,
         )
         return Fixture(backend, prompts, toolCalls)
     }
 
     private suspend fun expectFailure(message: String, block: suspend () -> Unit) {
+        var caught: Throwable? = null
+        try {
+            block()
+        } catch (error: Throwable) {
+            caught = error
+        }
+        if (caught == null) fail("Expected failure containing: $message")
+        assertTrue("Actual message: ${caught?.message}", caught?.message.orEmpty().contains(message))
+    }
+
+    private fun expectFailureSync(message: String, block: () -> Unit) {
         var caught: Throwable? = null
         try {
             block()
