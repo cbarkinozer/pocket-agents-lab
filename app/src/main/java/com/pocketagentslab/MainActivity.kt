@@ -1095,6 +1095,7 @@ private fun expectedRoute(case: AgentTestCase): String = when {
 private fun actualRoute(decision: AgentDecision): String = when (decision.action) {
     "workflow" -> "workflow:${decision.workflowName}"
     "tool" -> "tool:${decision.toolName}"
+    "propose" -> "propose:${decision.proposedAction}"
     else -> decision.action
 }
 

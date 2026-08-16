@@ -74,6 +74,8 @@ Implementation note: JNI catches native grammar-construction errors and reports 
 
 Evaluation MVP: `mobile-control-actions-v1` contains 20 fixed prompts covering Storage/Battery navigation, read-only distractors, ordinary answers, and unsupported actions. It records route correctness, schema validity, false action proposals, latency, and peak PSS to `action-safety-result.json`. Confirmation and cancellation remain UI invariants and are not automatically executed by the suite.
 
+First result: 17/20 after correcting an evaluator route-label bug, with 20/20 valid JSON and 8/8 intended navigation proposals. Two of twelve non-navigation prompts falsely proposed Battery Settings, so the action set stays limited and confirmed. Next control iteration: deterministic explicit-navigation gate, then held-out paraphrases.
+
 ## 5. Local Intelligence Layer
 
 Add capabilities beyond basic tool routing.
