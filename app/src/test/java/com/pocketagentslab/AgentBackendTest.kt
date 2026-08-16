@@ -95,6 +95,18 @@ class AgentBackendTest {
     }
 
     @Test
+    fun deterministicValidatorCorrectsMisroutedExplicitNoteCommand() = runBlocking {
+        val fixture = fixture("""{"action":"tool","name":"search_notes","args":{}}""")
+        val selection = fixture.backend.select("experiment number is 842 remember it")
+        assertEquals("save_note", selection.decision.toolName)
+    }
+
+    @Test
+    fun truncatedFinalJsonFailsSoftInsteadOfStoppingAgent() {
+        assertEquals(CLARIFICATION_MESSAGE, parseFinalAnswer("""{"action":"answer","text":""""))
+    }
+
+    @Test
     fun directAnswerUsesOneModelCallAndNoTool() = runBlocking {
         val fixture = fixture("""{"action":"answer","text":"A local joke"}""")
 

@@ -75,7 +75,7 @@ internal class AgentBackend(
             AGENT_DECISION_TOKENS,
         )
         return try {
-            AgentSelection(parseAgentDecision(generated.text), generated.pieces)
+            AgentSelection(normalizeNoteRoute(userPrompt, parseAgentDecision(generated.text)), generated.pieces)
         } catch (validationError: Throwable) {
             onProgress(AgentProgress(0.22f, "Repairing one invalid routing response…"))
             beforeRepair()
@@ -88,7 +88,7 @@ internal class AgentBackend(
                 AGENT_DECISION_TOKENS,
             )
             AgentSelection(
-                decision = parseAgentDecision(repaired.text),
+                decision = normalizeNoteRoute(userPrompt, parseAgentDecision(repaired.text)),
                 generatedPieces = generated.pieces + repaired.pieces,
                 repairAttempted = true,
             )
@@ -224,11 +224,22 @@ internal fun parseFinalAnswer(raw: String): String {
     val trimmed = raw.trim()
     if (trimmed.isBlank()) return CLARIFICATION_MESSAGE
     if (trimmed.startsWith("{") || trimmed.startsWith("```") || trimmed.startsWith("[")) {
-        val decision = parseAgentDecision(trimmed)
+        val decision = runCatching { parseAgentDecision(trimmed) }.getOrElse { validationError ->
+            val syntacticallyValidJson = runCatching { JSONObject(unwrapJsonFence(trimmed).first) }.isSuccess
+            if (syntacticallyValidJson) throw validationError
+            val partialText = Regex("\\\"text\\\"\\s*:\\s*\\\"([^\\\"]*)").find(trimmed)?.groupValues?.get(1)
+            return partialText?.ifBlank { CLARIFICATION_MESSAGE } ?: CLARIFICATION_MESSAGE
+        }
         require(decision.action == "answer") { "Final response must use action=answer" }
         return decision.text.orEmpty().trim().ifBlank { CLARIFICATION_MESSAGE }
     }
     return trimmed
+}
+
+private fun normalizeNoteRoute(userPrompt: String, decision: AgentDecision): AgentDecision = when {
+    parseNoteWriteRequest(userPrompt) != null -> AgentDecision(action = "tool", toolName = "save_note")
+    parseNoteSearchRequest(userPrompt) != null -> AgentDecision(action = "tool", toolName = "search_notes")
+    else -> decision
 }
 
 internal fun parseAgentDecision(raw: String): AgentDecision {

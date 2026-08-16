@@ -25,6 +25,8 @@ internal fun parseNoteWriteRequest(request: String): NoteProposal? {
         "(?i)^(?:please\\s+)?write\\s+(?:this\\s+)?(?:in|to)\\s+(?:my\\s+)?notes?\\s*:?\\s*(.+)$",
     ).matchEntire(trimmed) ?: Regex(
         "(?i)^(?:please\\s+)?(?:write|add)\\s+(?:this\\s+)?(?:note\\s*:?\\s*)?(.+)$",
+    ).matchEntire(trimmed) ?: Regex(
+        "(?i)^(.+?)[,!.]?\\s+(?:please\\s+)?(?:remember|save)(?:\\s+it)?[.!]?$",
     ).matchEntire(trimmed)
     val content = match?.groupValues?.get(1)?.trim()?.trimEnd('.', '!') ?: return null
     if (content.isBlank()) return null
@@ -37,7 +39,9 @@ internal fun parseNoteSearchRequest(request: String): String? {
     ).matchEntire(request.trim())
     if (explicit != null) return explicit.groupValues[1].trim().takeIf { it.isNotBlank() }
     val recall = Regex(
-        "(?i)^(?:please\\s+)?(?:what\\s+(?:was|is)\\s+|what\\s+did\\s+i\\s+(?:tell|ask)\\s+you\\s+(?:about\\s+)?|do\\s+you\\s+remember\\s+|recall\\s+)(.+?)(?:\\s+i\\s+told\\s+you(?:\\s+before)?|\\s+from\\s+(?:my\\s+)?notes?)?[?.!]?$",
+        "(?i)^(?:please\\s+)?(?:what\\s+was\\s+|what\\s+did\\s+i\\s+(?:tell|ask)\\s+you\\s+(?:about\\s+)?|do\\s+you\\s+remember\\s+|recall\\s+)(.+?)(?:\\s+i\\s+told\\s+you(?:\\s+before)?|\\s+from\\s+(?:my\\s+)?notes?)?[?.!]?$",
+    ).matchEntire(request.trim()) ?: Regex(
+        "(?i)^(?:please\\s+)?what\\s+is\\s+(.+?)(?:\\s+i\\s+told\\s+you(?:\\s+before)?|\\s+from\\s+(?:my\\s+)?notes?)[?.!]?$",
     ).matchEntire(request.trim()) ?: return null
     return recall.groupValues[1].trim().takeIf { it.isNotBlank() }
 }
@@ -91,10 +95,20 @@ internal fun searchPocketNotes(notes: List<PocketNote>, query: String): List<Poc
     return notes.map { note ->
         val title = note.title.lowercase(Locale.ROOT)
         val content = note.content.lowercase(Locale.ROOT)
+        val titleWords = title.split(Regex("[^\\p{L}\\p{N}]+"))
+        val contentWords = content.split(Regex("[^\\p{L}\\p{N}]+"))
         note to terms.sumOf { term ->
-            (if (title.contains(term)) 3 else 0) + (if (content.contains(term)) 1 else 0)
+            (if (title.contains(term) || titleWords.any { isAdjacentSwap(it, term) }) 3 else 0) +
+                (if (content.contains(term) || contentWords.any { isAdjacentSwap(it, term) }) 1 else 0)
         }
     }.filter { it.second > 0 }
         .sortedWith(compareByDescending<Pair<PocketNote, Int>> { it.second }.thenByDescending { it.first.createdAtMs })
         .map { it.first }
+}
+
+private fun isAdjacentSwap(left: String, right: String): Boolean {
+    if (left.length != right.length || left.length < 2) return false
+    val differences = left.indices.filter { left[it] != right[it] }
+    return differences.size == 2 && differences[1] == differences[0] + 1 &&
+        left[differences[0]] == right[differences[1]] && left[differences[1]] == right[differences[0]]
 }

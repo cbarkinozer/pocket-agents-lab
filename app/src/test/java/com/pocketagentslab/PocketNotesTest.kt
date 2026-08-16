@@ -43,4 +43,18 @@ class PocketNotesTest {
         val notes = listOf(PocketNote("1", "the pass is 777", "the pass is 777", 1))
         assertEquals("1", searchPocketNotes(notes, "the pass I told you before").single().id)
     }
+
+    @Test
+    fun suffixRememberCommandIsRecognized() {
+        assertEquals(
+            "experiment numebr is 842",
+            parseNoteWriteRequest("experiment numebr is 842 remember it")?.content,
+        )
+    }
+
+    @Test
+    fun adjacentLetterTypoStillMatchesRecall() {
+        val notes = listOf(PocketNote("1", "experiment numebr", "experiment numebr is 842", 1))
+        assertEquals("1", searchPocketNotes(notes, "experiment number").single().id)
+    }
 }
