@@ -2,6 +2,7 @@ package com.pocketagentslab
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PocketNotesTest {
@@ -68,5 +69,22 @@ class PocketNotesTest {
     fun adjacentLetterTypoStillMatchesRecall() {
         val notes = listOf(PocketNote("1", "experiment numebr", "experiment numebr is 842", 1))
         assertEquals("1", searchPocketNotes(notes, "experiment number").single().id)
+    }
+
+    @Test
+    fun latestExperimentNumberFindsThePersistedNaturalNote() {
+        val notes = listOf(
+            PocketNote(
+                "1",
+                "make sure u remember the experiment no is 842",
+                "make sure u remember the experiment no is 842",
+                1,
+            ),
+        )
+
+        val matches = searchPocketNotes(notes, "the latest experiment number")
+
+        assertEquals("1", matches.single().id)
+        assertTrue(matches.single().content.contains("842"))
     }
 }

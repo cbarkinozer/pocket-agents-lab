@@ -177,6 +177,16 @@ internal class AgentBackend(
         val toolName = requireNotNull(decision.toolName)
         onProgress(AgentProgress(0.45f, "Reading ${toolName.toDisplayName()}…"))
         val toolResult = tools.execute(toolName, userPrompt)
+        if (toolName == "search_notes") {
+            return AgentRunResult(
+                answer = deterministicToolAnswer(toolName, toolResult),
+                route = buildString {
+                    append("tool:$toolName (deterministic result)")
+                    if (decision.schemaRepaired) append(" (normalized)")
+                },
+                generatedPieces = selection.generatedPieces,
+            ).also { onProgress(AgentProgress(1.0f, "Note recall complete")) }
+        }
         onProgress(AgentProgress(0.70f, "Generating a local explanation…"))
         val generated = generator.generate(
             buildFinalAnswerPrompt(userPrompt, toolName, toolResult),
@@ -560,7 +570,7 @@ private fun isCopiedRoutingExample(answer: String): Boolean {
         normalized.contains("why did the byte cross the road")
 }
 
-private fun deterministicToolAnswer(toolName: String, rawResult: String): String {
+internal fun deterministicToolAnswer(toolName: String, rawResult: String): String {
     val result = JSONObject(rawResult)
     return when (toolName) {
         "get_storage_info" -> {
