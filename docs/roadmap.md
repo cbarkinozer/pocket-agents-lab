@@ -70,6 +70,8 @@ Build the low-level “Playwright for Android” foundation.
 
 Current MVP: the local model can propose opening Android Storage or Battery Settings. Deterministic Kotlin displays the proposal and requires an explicit confirmation tap before launching the allowlisted native intent; the model cannot execute or change settings silently. The original direct buttons remain available.
 
+Implementation note: JNI catches native grammar-construction errors and reports them to Kotlin. A malformed experimental grammar must not terminate the Android process.
+
 ## 5. Local Intelligence Layer
 
 Add capabilities beyond basic tool routing.

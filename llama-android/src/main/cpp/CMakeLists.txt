@@ -107,14 +107,14 @@ live ::= "{\"scope\":\"live_device\"}"
 )grammar";
 
 static constexpr const char * POCKET_AGENT_ROUTING_GRAMMAR = R"grammar(
-root ::= answer | device | battery | storage | health | open_storage | open_battery
+root ::= answer | device | battery | storage | health | open-storage | open-battery
 answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
 battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
 storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
-open_storage ::= "{\"action\":\"propose\",\"name\":\"open_storage_settings\",\"args\":{}}"
-open_battery ::= "{\"action\":\"propose\",\"name\":\"open_battery_settings\",\"args\":{}}"
+open-storage ::= "{\"action\":\"propose\",\"name\":\"open_storage_settings\",\"args\":{}}"
+open-battery ::= "{\"action\":\"propose\",\"name\":\"open_battery_settings\",\"args\":{}}"
 )grammar";
 
 static constexpr const char * POCKET_LIVE_GRAMMAR = R"grammar(
@@ -127,21 +127,32 @@ health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_arm_aichat_RoutingGrammar_setModeNative(JNIEnv *, jclass, jint mode) {
+Java_com_arm_aichat_RoutingGrammar_setModeNative(JNIEnv * env, jclass, jint mode) {
     if (g_model == nullptr) {
         return;
     }
     common_sampler_free(g_sampler);
+    g_sampler = nullptr;
     common_params_sampling params;
     params.temp = DEFAULT_SAMPLER_TEMP;
-    if (mode != 0) {
-        const char * grammar = mode == 2 ? POCKET_SCOPE_GRAMMAR
-                : mode == 3 ? POCKET_LIVE_GRAMMAR
-                : mode == 4 ? POCKET_AGENT_ROUTING_GRAMMAR
-                : POCKET_ROUTING_GRAMMAR;
-        params.grammar = common_grammar(COMMON_GRAMMAR_TYPE_USER, grammar);
+    try {
+        if (mode != 0) {
+            const char * grammar = mode == 2 ? POCKET_SCOPE_GRAMMAR
+                    : mode == 3 ? POCKET_LIVE_GRAMMAR
+                    : mode == 4 ? POCKET_AGENT_ROUTING_GRAMMAR
+                    : POCKET_ROUTING_GRAMMAR;
+            params.grammar = common_grammar(COMMON_GRAMMAR_TYPE_USER, grammar);
+        }
+        g_sampler = common_sampler_init(g_model, params);
+    } catch (const std::exception & error) {
+        common_params_sampling fallback;
+        fallback.temp = DEFAULT_SAMPLER_TEMP;
+        g_sampler = common_sampler_init(g_model, fallback);
+        jclass exception = env->FindClass("java/lang/IllegalStateException");
+        if (exception != nullptr) {
+            env->ThrowNew(exception, error.what());
+        }
     }
-    g_sampler = common_sampler_init(g_model, params);
 }
 
 extern "C"
