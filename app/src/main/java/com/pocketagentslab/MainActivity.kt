@@ -206,31 +206,9 @@ private fun PocketAgentsScreen() {
         val savedName = modelPreferences.getString("model_name", null) ?: preferredFile?.name
         if (savedPath != null) {
             modelPreferences.edit().putString("model_path", savedPath).putString("model_name", savedName).apply()
-            isBusy = true
-            modelStatus = "Automatically loading ${savedName ?: File(savedPath).name}…"
-            try {
-                val initializedState = engine.state.first {
-                    it is InferenceEngine.State.Initialized ||
-                        it is InferenceEngine.State.ModelReady ||
-                        it is InferenceEngine.State.Error
-                }
-                check(initializedState !is InferenceEngine.State.Error) { "llama.cpp initialization failed" }
-                if (initializedState is InferenceEngine.State.ModelReady) withContext(Dispatchers.IO) { engine.cleanUp() }
-                val started = SystemClock.elapsedRealtime()
-                withContext(Dispatchers.IO) {
-                    engine.loadModel(savedPath)
-                    engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
-                }
-                loadedModelPath = savedPath
-                selectedName = savedName ?: File(savedPath).name
-                isModelLoaded = true
-                modelStatus = "Default model ready in ${SystemClock.elapsedRealtime() - started} ms"
-            } catch (error: Throwable) {
-                modelStatus = "Automatic model load failed: ${rootCauseDescription(error)}"
-                isModelLoaded = false
-            } finally {
-                isBusy = false
-            }
+            loadedModelPath = savedPath
+            selectedName = savedName ?: File(savedPath).name
+            modelStatus = "Default model selected • loads automatically on first Agent run"
         }
     }
 
@@ -738,6 +716,24 @@ private fun PocketAgentsScreen() {
                     agentProgress = AgentProgress(0.05f, "Preparing a fresh local-model context…")
                     val wakeLock = acquireInferenceWakeLock(context, "interactive-agent", 30 * 60 * 1000L)
                     try {
+                        if (!isModelLoaded) {
+                            agentProgress = AgentProgress(0.02f, "Loading the default model…")
+                            modelStatus = "Loading $selectedName…"
+                            val modelPath = requireNotNull(loadedModelPath) { "Select a GGUF model first" }
+                            val initializedState = engine.state.first {
+                                it is InferenceEngine.State.Initialized ||
+                                    it is InferenceEngine.State.ModelReady ||
+                                    it is InferenceEngine.State.Error
+                            }
+                            check(initializedState !is InferenceEngine.State.Error) { "llama.cpp initialization failed" }
+                            withContext(Dispatchers.IO) {
+                                if (initializedState is InferenceEngine.State.ModelReady) engine.cleanUp()
+                                engine.loadModel(modelPath)
+                                engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+                            }
+                            isModelLoaded = true
+                            modelStatus = "$selectedName • Ready"
+                        }
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         val pssBeforeKb = Debug.getPss()
                         val started = SystemClock.elapsedRealtime()
@@ -797,9 +793,15 @@ private fun PocketAgentsScreen() {
                     }
                 }
             },
-            enabled = isModelLoaded && prompt.isNotBlank() && !controlsBusy,
+            enabled = loadedModelPath != null && prompt.isNotBlank() && !controlsBusy,
         ) {
-            Text(if (isBusy && isModelLoaded) "Agent working…" else "Run Agent")
+            Text(
+                when {
+                    isBusy && !isModelLoaded -> "Loading model…"
+                    isBusy -> "Agent working…"
+                    else -> "Run Agent"
+                },
+            )
         }
         Text("Agent activity: ${agentProgress.message}")
         if (isBusy) {
