@@ -616,28 +616,6 @@ private fun PocketAgentsScreen() {
                     metrics = "Agent is deciding…"
                     agentProgress = AgentProgress(0.05f, "Preparing a fresh local-model context…")
                     try {
-                        val noteProposal = parseNoteWriteRequest(prompt.trim())
-                        if (noteProposal != null) {
-                            val saved = savePocketNote(context, noteProposal)
-                            noteStatus = "Saved locally: ${saved.title}"
-                            output = "Remembered locally: ${saved.content}"
-                            metrics = "private notes write | no model call"
-                            agentProgress = AgentProgress(1f, "Saved in private app files")
-                            return@launch
-                        }
-                        val noteSearch = parseNoteSearchRequest(prompt.trim())
-                        if (noteSearch != null) {
-                            val matches = searchPocketNotes(loadPocketNotes(context), noteSearch).take(5)
-                            output = if (matches.isEmpty()) {
-                                "I could not find anything about \u201c$noteSearch\u201d in your local notes."
-                            } else {
-                                "From your local notes:\n\n" +
-                                    matches.joinToString("\n\n") { it.content.take(500) }
-                            }
-                            metrics = "private notes recall | ${matches.size} match(es) | no model call"
-                            agentProgress = AgentProgress(1f, "Searched private app files")
-                            return@launch
-                        }
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         val pssBeforeKb = Debug.getPss()
                         val started = SystemClock.elapsedRealtime()
@@ -695,9 +673,7 @@ private fun PocketAgentsScreen() {
                     }
                 }
             },
-            enabled = prompt.isNotBlank() && !controlsBusy && (
-                isModelLoaded || parseNoteWriteRequest(prompt) != null || parseNoteSearchRequest(prompt) != null
-            ),
+            enabled = isModelLoaded && prompt.isNotBlank() && !controlsBusy,
         ) {
             Text(if (isBusy && isModelLoaded) "Agent working…" else "Run Agent")
         }
@@ -1007,6 +983,8 @@ Allowed routes:
 {"action":"tool","name":"get_battery_info","args":{}}
 {"action":"tool","name":"get_storage_info","args":{}}
 {"action":"tool","name":"search_local_files","args":{}}
+{"action":"tool","name":"search_notes","args":{}}
+{"action":"tool","name":"save_note","args":{}}
 {"action":"workflow","name":"phone_health_check","args":{}}
 {"action":"propose","name":"open_storage_settings","args":{}}
 {"action":"propose","name":"open_battery_settings","args":{}}
@@ -1261,6 +1239,18 @@ private fun createAgentBackend(
                                 .put("excerpt", match.excerpt)
                         }),
                     ).toString()
+                }
+            } else if (name == "search_notes") {
+                val query = parseNoteSearchRequest(userPrompt) ?: userPrompt
+                val matches = searchPocketNotes(loadPocketNotes(context), query).take(5)
+                JSONObject().put("matches", JSONArray(matches.map { it.content })).toString()
+            } else if (name == "save_note") {
+                val proposal = parseNoteWriteRequest(userPrompt)
+                if (proposal == null) {
+                    JSONObject().put("message", "Nothing was saved because the request did not contain an explicit note-writing command.").toString()
+                } else {
+                    val saved = savePocketNote(context, proposal)
+                    JSONObject().put("message", "Remembered locally: ${saved.content}").toString()
                 }
             } else {
                 executeReadOnlyTool(context, name).toString()

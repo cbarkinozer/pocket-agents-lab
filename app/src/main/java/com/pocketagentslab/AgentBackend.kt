@@ -18,6 +18,8 @@ internal val READ_ONLY_TOOLS = setOf(
     "get_battery_info",
     "get_storage_info",
     "search_local_files",
+    "search_notes",
+    "save_note",
 )
 
 internal data class AgentDecision(
@@ -361,10 +363,11 @@ internal val APPROVED_DEVICE_ACTIONS = setOf(OPEN_STORAGE_SETTINGS, OPEN_BATTERY
 
 internal fun buildRoutingPrompt(userPrompt: String, allowDeviceActions: Boolean = false): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
-TOOL is exactly get_device_info, get_battery_info, get_storage_info, or search_local_files.
+TOOL is exactly get_device_info, get_battery_info, get_storage_info, search_local_files, search_notes, or save_note.
 Device info covers model, manufacturer, Android, ABI, and RAM. Storage info covers disk space and room for files/models.
 Battery info covers live level, charging state, temperature, heat, and whether cooling is needed.
 Local file search finds filenames or text in the folder the user previously authorized. Its query is the original request.
+Note search recalls app-private notes. Save note is only for an explicit request to remember, save, or write something to notes. Kotlin uses the original request as the query or content.
 Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
 Two or more live categories, overall condition, or AI-workload readiness use phone_health_check.
 No live phone data needed: {"action":"answer","text":""}
@@ -374,6 +377,8 @@ Examples:
 Battery level -> {"action":"tool","name":"get_battery_info","args":{}}
 Free space -> {"action":"tool","name":"get_storage_info","args":{}}
 Find a file or phrase in local files -> {"action":"tool","name":"search_local_files","args":{}}
+Recall something previously saved -> {"action":"tool","name":"search_notes","args":{}}
+Remember or save something to notes -> {"action":"tool","name":"save_note","args":{}}
 Android version -> {"action":"tool","name":"get_device_info","args":{}}
 Physical RAM or manufacturer -> {"action":"tool","name":"get_device_info","args":{}}
 Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
@@ -545,6 +550,13 @@ private fun deterministicToolAnswer(toolName: String, rawResult: String): String
                     "I found ${matches.length()} local file match(es). Review them below before opening one."
             }
         }
+        "search_notes" -> {
+            val matches = result.optJSONArray("matches") ?: JSONArray()
+            if (matches.length() == 0) "I found no matching local notes." else
+                "I found ${matches.length()} matching local note(s): " +
+                    (0 until matches.length()).joinToString("; ") { matches.getString(it) }
+        }
+        "save_note" -> result.optString("message", "The note was saved locally.")
         else -> error("Unknown tool: $toolName")
     }
 }

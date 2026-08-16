@@ -83,6 +83,18 @@ class AgentBackendTest {
     }
 
     @Test
+    fun noteToolsAreGrammarConstrainedAndAccepted() {
+        assertEquals(
+            "search_notes",
+            parseAgentDecision("""{"action":"tool","name":"search_notes","args":{}}""").toolName,
+        )
+        assertEquals(
+            "save_note",
+            parseAgentDecision("""{"action":"tool","name":"save_note","args":{}}""").toolName,
+        )
+    }
+
+    @Test
     fun directAnswerUsesOneModelCallAndNoTool() = runBlocking {
         val fixture = fixture("""{"action":"answer","text":"A local joke"}""")
 

@@ -92,12 +92,14 @@ string(REPLACE
 string(APPEND AI_CHAT_SOURCE [=[
 
 static constexpr const char * POCKET_ROUTING_GRAMMAR = R"grammar(
-root ::= answer | device | battery | storage | files | health
+root ::= answer | device | battery | storage | files | notes | save-note | health
 answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
 battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
 storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
 files ::= "{\"action\":\"tool\",\"name\":\"search_local_files\",\"args\":{}}"
+notes ::= "{\"action\":\"tool\",\"name\":\"search_notes\",\"args\":{}}"
+save-note ::= "{\"action\":\"tool\",\"name\":\"save_note\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
 )grammar";
 
@@ -108,12 +110,14 @@ live ::= "{\"scope\":\"live_device\"}"
 )grammar";
 
 static constexpr const char * POCKET_AGENT_ROUTING_GRAMMAR = R"grammar(
-root ::= answer | device | battery | storage | files | health | open-storage | open-battery
+root ::= answer | device | battery | storage | files | notes | save-note | health | open-storage | open-battery
 answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
 battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
 storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
 files ::= "{\"action\":\"tool\",\"name\":\"search_local_files\",\"args\":{}}"
+notes ::= "{\"action\":\"tool\",\"name\":\"search_notes\",\"args\":{}}"
+save-note ::= "{\"action\":\"tool\",\"name\":\"save_note\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
 open-storage ::= "{\"action\":\"propose\",\"name\":\"open_storage_settings\",\"args\":{}}"
 open-battery ::= "{\"action\":\"propose\",\"name\":\"open_battery_settings\",\"args\":{}}"
