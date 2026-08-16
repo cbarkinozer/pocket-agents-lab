@@ -33,7 +33,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -123,6 +126,7 @@ private fun PocketAgentsScreen() {
     var noteStatus by remember { mutableStateOf("No notes yet") }
     var showNotesPage by remember { mutableStateOf(false) }
     var showFilesPage by remember { mutableStateOf(false) }
+    var currentPage by remember { mutableStateOf(AppPage.AGENT) }
     var folderUri by remember {
         mutableStateOf(
             context.getSharedPreferences("local_files", Context.MODE_PRIVATE)
@@ -261,20 +265,32 @@ private fun PocketAgentsScreen() {
         return
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+            AppPage.entries.forEach { page ->
+                NavigationBarItem(
+                    selected = currentPage == page,
+                    onClick = { currentPage = page },
+                    icon = { Text(page.symbol) },
+                    label = { Text(page.label) },
+                    enabled = !controlsBusy,
+                )
+            }
+            }
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
         Text("Pocket Agents Lab", style = MaterialTheme.typography.headlineSmall)
-        Button(onClick = { showNotesPage = true }, enabled = !controlsBusy) {
-            Text("Open Pocket Notes")
-        }
-        Button(onClick = { showFilesPage = true }, enabled = !controlsBusy) {
-            Text("Search Local Files")
-        }
+
+        if (currentPage == AppPage.TESTS) {
         Text(
             "RAM: %.1f GB  •  ABI: %s  •  Android: %s".format(
                 Locale.US,
@@ -457,7 +473,9 @@ private fun PocketAgentsScreen() {
         }
         Text(agentTestStatus)
         Text(modelStatus)
+        }
 
+        if (currentPage == AppPage.AGENT) {
         HorizontalDivider()
         Text("Tiny Agent", style = MaterialTheme.typography.titleLarge)
         Text("Ask about this device, battery health, storage, or request a phone health check with practical suggestions. Everything runs locally.")
@@ -666,7 +684,19 @@ private fun PocketAgentsScreen() {
                 }
             }
         }
+        }
 
+        if (currentPage == AppPage.CAPABILITIES) {
+        Text("Capabilities", style = MaterialTheme.typography.titleLarge)
+        Text("Use local notes, search a granted folder, or ask questions grounded in one selected document.")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { showNotesPage = true }, enabled = !controlsBusy) {
+                Text("Pocket Notes")
+            }
+            Button(onClick = { showFilesPage = true }, enabled = !controlsBusy) {
+                Text("Local Files")
+            }
+        }
         HorizontalDivider()
         Text("Local Document Agent", style = MaterialTheme.typography.titleLarge)
         Text("Select one .txt or .md file. Kotlin retrieves the most relevant excerpts, then the local SLM answers only from those excerpts with source numbers.")
@@ -721,7 +751,30 @@ private fun PocketAgentsScreen() {
         )
         Text("Retrieved source excerpts", style = MaterialTheme.typography.titleSmall)
         Text(documentSources)
+        }
+
+        if (currentPage == AppPage.RESULTS) {
+            Text("Results", style = MaterialTheme.typography.titleLarge)
+            Text("Latest device benchmark", style = MaterialTheme.typography.titleSmall)
+            Text(benchmarkStatus)
+            HorizontalDivider()
+            Text("Latest model and agent evaluation", style = MaterialTheme.typography.titleSmall)
+            Text(agentTestStatus)
+            Text(actionTestStatus)
+            HorizontalDivider()
+            Text("Latest interactive run", style = MaterialTheme.typography.titleSmall)
+            Text(metrics.ifBlank { "No interactive agent run recorded in this session" })
+            if (output.isNotBlank()) Text(output)
+        }
+        }
     }
+}
+
+private enum class AppPage(val label: String, val symbol: String) {
+    AGENT("Agent", "A"),
+    CAPABILITIES("Capabilities", "C"),
+    TESTS("Tests", "T"),
+    RESULTS("Results", "R"),
 }
 
 @Composable

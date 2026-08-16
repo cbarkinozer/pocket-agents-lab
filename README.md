@@ -1888,6 +1888,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 13. [x] Add Pocket Notes and persistent-memory MVP: app-owned offline JSON notes plus deterministic natural-language save/recall commands that survive app restarts without model inference.
     Pocket Notes lives on a separate in-app page so research benchmarks and the Tiny Agent remain readable as more capability PoCs are added.
 14. [x] Add bounded local folder search: persist user-granted folder access, search up to 500 filenames and readable text files without embeddings, show matching excerpts, and require an explicit tap before opening a result.
+15. [x] Replace the single crowded research screen with four navigable product surfaces: Agent, Capabilities, Tests, and Results, using persistent Material bottom navigation while preserving dedicated Notes and Local Files subpages.
 9. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
 10. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
 11. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.
