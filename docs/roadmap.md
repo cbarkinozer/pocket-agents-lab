@@ -72,6 +72,8 @@ Current MVP: the local model can propose opening Android Storage or Battery Sett
 
 Implementation note: JNI catches native grammar-construction errors and reports them to Kotlin. A malformed experimental grammar must not terminate the Android process.
 
+Evaluation MVP: `mobile-control-actions-v1` contains 20 fixed prompts covering Storage/Battery navigation, read-only distractors, ordinary answers, and unsupported actions. It records route correctness, schema validity, false action proposals, latency, and peak PSS to `action-safety-result.json`. Confirmation and cancellation remain UI invariants and are not automatically executed by the suite.
+
 ## 5. Local Intelligence Layer
 
 Add capabilities beyond basic tool routing.
