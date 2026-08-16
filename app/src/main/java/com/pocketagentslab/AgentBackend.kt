@@ -324,25 +324,23 @@ internal fun unwrapJsonFence(raw: String): Pair<String, Boolean> {
     return inner to true
 }
 
-internal fun buildRoutingPrompt(userPrompt: String): String = """Choose one route. Apply these rules in order:
-1. HEALTH when the request asks for overall phone condition, readiness, recommendations, or combines two or more of device, battery, and storage.
-2. One TOOL only when answering requires a current fact from this phone:
-   DEVICE = model, manufacturer, Android/SDK, ABI, or physical RAM.
-   BATTERY = live charge, charging state, temperature, heat, or cooling.
-   STORAGE = live free/used space or whether a file/model fits.
-3. ANSWER for everything else: writing, jokes, arithmetic, definitions, explanations, colors, sequences, and general knowledge. A device-related word alone does not require a tool.
-
-Contrast examples:
-Define RAM -> ANSWER; current RAM on this phone -> DEVICE.
-Explain ABI -> ANSWER; this phone's ABI -> DEVICE.
-Write a greeting or solve a sequence -> ANSWER.
-Battery status -> BATTERY; battery plus storage status -> HEALTH.
-Assess the whole phone and suggest improvements -> HEALTH.
-
-Native grammar constructs the exact JSON. Select only the meaning:
-HEALTH={"action":"workflow","name":"phone_health_check","args":{}}
-DEVICE/BATTERY/STORAGE={"action":"tool","name":"get_DEVICE_OR_BATTERY_OR_STORAGE_info","args":{}}
-ANSWER={"action":"answer","text":""}
+internal fun buildRoutingPrompt(userPrompt: String): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
+Live phone fact: {"action":"tool","name":"TOOL","args":{}}
+TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
+Device info covers model, manufacturer, Android, ABI, and RAM. Storage info covers disk space and room for files/models.
+Battery info covers live level, charging state, temperature, heat, and whether cooling is needed.
+Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
+Two or more live categories, overall condition, or AI-workload readiness use phone_health_check.
+No live phone data needed: {"action":"answer","text":""}
+Writing, jokes, arithmetic, definitions, colors, sequences, and general knowledge need no tool.
+Unclear: {"action":"answer","text":"$CLARIFICATION_MESSAGE"}
+Examples:
+Battery level -> {"action":"tool","name":"get_battery_info","args":{}}
+Free space -> {"action":"tool","name":"get_storage_info","args":{}}
+Android version -> {"action":"tool","name":"get_device_info","args":{}}
+Physical RAM or manufacturer -> {"action":"tool","name":"get_device_info","args":{}}
+Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
+Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
 Request: $userPrompt
 JSON:"""
 

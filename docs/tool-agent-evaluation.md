@@ -6,7 +6,7 @@ The next result this project targets is a reproducible statement of the form:
 
 ## Version 6 suite
 
-The Android app's **Run Agent Test** button runs `tool-routing-3-tools-v7`: 50 fixed prompts, with ten prompts in each class:
+The Android app's **Run Agent Test** button now runs the frozen `tool-routing-3-tools-v5` reference again: 50 fixed prompts, with ten prompts in each class:
 
 - `get_storage_info`
 - `get_device_info`

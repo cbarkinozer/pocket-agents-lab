@@ -689,7 +689,7 @@ private suspend fun runAgentTests(
     val csvName = if (artifactStem == "agent") "agent-evaluation.csv" else "$artifactStem.csv"
     val report = JSONObject()
         .put("schemaVersion", 2)
-        .put("suite", "tool-routing-3-tools-v7")
+        .put("suite", "tool-routing-3-tools-v5")
         .put("llamaCppCommit", LLAMA_CPP_COMMIT)
         .put("buildFlags", LLAMA_BUILD_FLAGS)
         .put("modelFile", File(modelPath).name)
@@ -962,7 +962,7 @@ private fun writeQueueManifest(
     val report = JSONObject()
         .put("schemaVersion", 1)
         .put("runId", runId)
-        .put("suite", "tool-routing-3-tools-v7")
+        .put("suite", "tool-routing-3-tools-v5")
         .put("state", state)
         .put("cancelled", state == "cancelled")
         .put("selectedModels", selected)
