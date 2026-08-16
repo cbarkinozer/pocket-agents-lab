@@ -1886,6 +1886,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 11. [x] Preserve a frozen v5 replication: 44/50 correct, 50/50 strict JSON, 28.70 s average latency, and 759.9 MB peak PSS. Treat the difference from the original 40/50 as run-to-run variation rather than post-hoc replacement.
 12. [x] Add the Local Document Agent MVP: select one read-only `.txt` or `.md` file, retrieve bounded relevant excerpts deterministically, answer locally with Qwen, and display numbered source excerpts. Keep the first version embedding-free and limited to 1 MB.
 13. [x] Add Pocket Notes MVP: app-owned offline JSON notes, editable write proposals with explicit save/cancel confirmation, and deterministic title/content search without embeddings or model inference.
+    Pocket Notes lives on a separate in-app page so research benchmarks and the Tiny Agent remain readable as more capability PoCs are added.
 9. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
 10. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
 11. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.

@@ -121,6 +121,7 @@ private fun PocketAgentsScreen() {
     var noteContent by remember { mutableStateOf("") }
     var noteQuery by remember { mutableStateOf("") }
     var noteStatus by remember { mutableStateOf("No notes yet") }
+    var showNotesPage by remember { mutableStateOf(false) }
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
@@ -165,6 +166,40 @@ private fun PocketAgentsScreen() {
         }
     }
 
+    if (showNotesPage) {
+        PocketNotesPage(
+            title = noteTitle,
+            content = noteContent,
+            query = noteQuery,
+            status = noteStatus,
+            hasPendingProposal = pendingNote != null,
+            onTitleChange = { noteTitle = it },
+            onContentChange = { noteContent = it },
+            onQueryChange = { noteQuery = it },
+            onBack = { showNotesPage = false },
+            onSave = {
+                val saved = savePocketNote(context, NoteProposal(noteTitle, noteContent))
+                noteStatus = "Saved locally: ${saved.title}"
+                pendingNote = null
+                noteTitle = ""
+                noteContent = ""
+            },
+            onCancel = {
+                pendingNote = null
+                noteTitle = ""
+                noteContent = ""
+                noteStatus = "Note proposal cancelled"
+            },
+            onSearch = {
+                val matches = searchPocketNotes(loadPocketNotes(context), noteQuery).take(10)
+                noteStatus = if (matches.isEmpty()) "No matching notes" else matches.joinToString("\n\n") {
+                    "${it.title}\n${it.content.take(300)}"
+                }
+            },
+        )
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -173,6 +208,9 @@ private fun PocketAgentsScreen() {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Pocket Agents Lab", style = MaterialTheme.typography.headlineSmall)
+        Button(onClick = { showNotesPage = true }, enabled = !controlsBusy) {
+            Text("Open Pocket Notes")
+        }
         Text(
             "RAM: %.1f GB  •  ABI: %s  •  Android: %s".format(
                 Locale.US,
@@ -392,6 +430,7 @@ private fun PocketAgentsScreen() {
                             output = "I prepared a local note. Review it below and confirm Save note."
                             metrics = "note proposal | no model call | nothing saved yet"
                             agentProgress = AgentProgress(1f, "Waiting for note confirmation")
+                            showNotesPage = true
                             return@launch
                         }
                         val noteSearch = parseNoteSearchRequest(prompt.trim())
@@ -541,64 +580,6 @@ private fun PocketAgentsScreen() {
         }
 
         HorizontalDivider()
-        Text("Pocket Notes", style = MaterialTheme.typography.titleLarge)
-        Text("Create and search app-owned notes locally. Agent note requests create an editable proposal; saving always requires confirmation.")
-        OutlinedTextField(
-            value = noteTitle,
-            onValueChange = { noteTitle = it },
-            label = { Text("Note title") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !controlsBusy,
-        )
-        OutlinedTextField(
-            value = noteContent,
-            onValueChange = { noteContent = it },
-            label = { Text("Note content") },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
-            enabled = !controlsBusy,
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(
-                onClick = {
-                    val saved = savePocketNote(context, NoteProposal(noteTitle, noteContent))
-                    noteStatus = "Saved locally: ${saved.title}"
-                    pendingNote = null
-                    noteTitle = ""
-                    noteContent = ""
-                },
-                enabled = noteTitle.isNotBlank() && noteContent.isNotBlank() && !controlsBusy,
-            ) { Text(if (pendingNote != null) "Confirm Save Note" else "Save Note") }
-            if (pendingNote != null) {
-                Button(
-                    onClick = {
-                        pendingNote = null
-                        noteTitle = ""
-                        noteContent = ""
-                        noteStatus = "Note proposal cancelled"
-                    },
-                    enabled = !controlsBusy,
-                ) { Text("Cancel") }
-            }
-        }
-        OutlinedTextField(
-            value = noteQuery,
-            onValueChange = { noteQuery = it },
-            label = { Text("Search note titles and content") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !controlsBusy,
-        )
-        Button(
-            onClick = {
-                val matches = searchPocketNotes(loadPocketNotes(context), noteQuery).take(10)
-                noteStatus = if (matches.isEmpty()) "No matching notes" else matches.joinToString("\n\n") {
-                    "${it.title}\n${it.content.take(300)}"
-                }
-            },
-            enabled = noteQuery.isNotBlank() && !controlsBusy,
-        ) { Text("Search Notes") }
-        Text(noteStatus)
-
-        HorizontalDivider()
         Text("Local Document Agent", style = MaterialTheme.typography.titleLarge)
         Text("Select one .txt or .md file. Kotlin retrieves the most relevant excerpts, then the local SLM answers only from those excerpts with source numbers.")
         Button(
@@ -652,6 +633,67 @@ private fun PocketAgentsScreen() {
         )
         Text("Retrieved source excerpts", style = MaterialTheme.typography.titleSmall)
         Text(documentSources)
+    }
+}
+
+@Composable
+private fun PocketNotesPage(
+    title: String,
+    content: String,
+    query: String,
+    status: String,
+    hasPendingProposal: Boolean,
+    onTitleChange: (String) -> Unit,
+    onContentChange: (String) -> Unit,
+    onQueryChange: (String) -> Unit,
+    onBack: () -> Unit,
+    onSave: () -> Unit,
+    onCancel: () -> Unit,
+    onSearch: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = onBack) { Text("Back to Lab") }
+            Text("Pocket Notes", style = MaterialTheme.typography.headlineSmall)
+        }
+        Text("Private offline notes with deterministic string search. Nothing is sent to a model or network.")
+        if (hasPendingProposal) {
+            Text("Agent proposal: review or edit this note before saving.")
+        }
+        OutlinedTextField(
+            value = title,
+            onValueChange = onTitleChange,
+            label = { Text("Note title") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            value = content,
+            onValueChange = onContentChange,
+            label = { Text("Note content") },
+            modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp),
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = onSave, enabled = title.isNotBlank() && content.isNotBlank()) {
+                Text(if (hasPendingProposal) "Confirm Save Note" else "Save Note")
+            }
+            if (hasPendingProposal) Button(onClick = onCancel) { Text("Cancel") }
+        }
+        HorizontalDivider()
+        Text("Search", style = MaterialTheme.typography.titleLarge)
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            label = { Text("Search titles and content") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Button(onClick = onSearch, enabled = query.isNotBlank()) { Text("Search Notes") }
+        Text(status)
     }
 }
 
