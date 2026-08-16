@@ -122,6 +122,17 @@ private fun PocketAgentsScreen() {
     var noteQuery by remember { mutableStateOf("") }
     var noteStatus by remember { mutableStateOf("No notes yet") }
     var showNotesPage by remember { mutableStateOf(false) }
+    var showFilesPage by remember { mutableStateOf(false) }
+    var folderUri by remember {
+        mutableStateOf(
+            context.getSharedPreferences("local_files", Context.MODE_PRIVATE)
+                .getString("tree_uri", null)?.let(Uri::parse),
+        )
+    }
+    var folderStatus by remember { mutableStateOf(if (folderUri == null) "No folder selected" else "Folder access restored") }
+    var fileQuery by remember { mutableStateOf("") }
+    var fileMatches by remember { mutableStateOf<List<LocalFileMatch>>(emptyList()) }
+    var isFileSearchRunning by remember { mutableStateOf(false) }
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
@@ -164,6 +175,56 @@ private fun PocketAgentsScreen() {
                 documentSources = rootCauseDescription(error)
             }
         }
+    }
+    val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri != null) {
+            try {
+                context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                context.getSharedPreferences("local_files", Context.MODE_PRIVATE).edit()
+                    .putString("tree_uri", uri.toString()).apply()
+                folderUri = uri
+                folderStatus = "Folder selected. Enter a filename or phrase to search."
+                fileMatches = emptyList()
+            } catch (error: Throwable) {
+                folderStatus = "Folder access failed: ${rootCauseDescription(error)}"
+            }
+        }
+    }
+
+    if (showFilesPage) {
+        LocalFilesPage(
+            hasFolder = folderUri != null,
+            query = fileQuery,
+            status = folderStatus,
+            matches = fileMatches,
+            searching = isFileSearchRunning,
+            onBack = { showFilesPage = false },
+            onSelectFolder = { folderPicker.launch(folderUri) },
+            onQueryChange = { fileQuery = it },
+            onSearch = {
+                scope.launch {
+                    isFileSearchRunning = true
+                    folderStatus = "Searching up to 500 files locally…"
+                    try {
+                        fileMatches = withContext(Dispatchers.IO) {
+                            searchDocumentTree(context, requireNotNull(folderUri), fileQuery)
+                        }
+                        folderStatus = if (fileMatches.isEmpty()) {
+                            "No matching files found"
+                        } else {
+                            "Found ${fileMatches.size} match(es). Opening a file requires your tap."
+                        }
+                    } catch (error: Throwable) {
+                        fileMatches = emptyList()
+                        folderStatus = "Search failed: ${rootCauseDescription(error)}"
+                    } finally {
+                        isFileSearchRunning = false
+                    }
+                }
+            },
+            onOpen = { match -> openLocalFile(context, match.uri) },
+        )
+        return
     }
 
     if (showNotesPage) {
@@ -210,6 +271,9 @@ private fun PocketAgentsScreen() {
         Text("Pocket Agents Lab", style = MaterialTheme.typography.headlineSmall)
         Button(onClick = { showNotesPage = true }, enabled = !controlsBusy) {
             Text("Open Pocket Notes")
+        }
+        Button(onClick = { showFilesPage = true }, enabled = !controlsBusy) {
+            Text("Search Local Files")
         }
         Text(
             "RAM: %.1f GB  •  ABI: %s  •  Android: %s".format(
@@ -719,6 +783,63 @@ private fun PocketNotesPage(
         Button(onClick = onSearch, enabled = query.isNotBlank()) { Text("Search Notes") }
         Text(status)
     }
+}
+
+@Composable
+private fun LocalFilesPage(
+    hasFolder: Boolean,
+    query: String,
+    status: String,
+    matches: List<LocalFileMatch>,
+    searching: Boolean,
+    onBack: () -> Unit,
+    onSelectFolder: () -> Unit,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+    onOpen: (LocalFileMatch) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = onBack, enabled = !searching) { Text("Back to Lab") }
+            Text("Local File Search", style = MaterialTheme.typography.headlineSmall)
+        }
+        Text("Grant one folder, then search filenames and readable text locally. No model, embeddings, or network calls are used.")
+        Button(onClick = onSelectFolder, enabled = !searching) {
+            Text(if (hasFolder) "Change Folder" else "Select Folder")
+        }
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            label = { Text("Filename or text to find") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !searching,
+        )
+        Button(onClick = onSearch, enabled = hasFolder && query.isNotBlank() && !searching) {
+            Text(if (searching) "Searching…" else "Search Folder")
+        }
+        if (searching) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        Text(status)
+        matches.forEach { match ->
+            HorizontalDivider()
+            Text(match.name, style = MaterialTheme.typography.titleMedium)
+            Text(match.relativePath)
+            Text(match.excerpt)
+            Button(onClick = { onOpen(match) }, enabled = !searching) { Text("Open File") }
+        }
+    }
+}
+
+private fun openLocalFile(context: Context, uri: Uri) {
+    val mimeType = context.contentResolver.getType(uri) ?: "*/*"
+    val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, mimeType)
+        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    context.startActivity(Intent.createChooser(intent, "Open file with"))
 }
 
 private fun openAndroidSettings(context: Context, action: String) {
