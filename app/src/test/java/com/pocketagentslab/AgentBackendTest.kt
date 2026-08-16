@@ -54,6 +54,19 @@ class AgentBackendTest {
     }
 
     @Test
+    fun separateFinalGenerationAcceptsPlainNaturalLanguage() = runBlocking {
+        val fixture = fixture(
+            """{"action":"answer","text":""}""",
+            "4",
+        )
+
+        val result = fixture.backend.run("What is 2+2?")
+
+        assertEquals("4", result.answer)
+        assertEquals("answer", result.route)
+    }
+
+    @Test
     fun routingPromptDistinguishesRamFromStorageCapacity() {
         val prompt = buildRoutingPrompt("How much RAM is available?")
 

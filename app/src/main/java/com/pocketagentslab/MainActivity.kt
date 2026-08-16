@@ -484,6 +484,28 @@ private fun PocketAgentsScreen() {
                     metrics = "Agent is deciding…"
                     agentProgress = AgentProgress(0.05f, "Preparing a fresh local-model context…")
                     try {
+                        val noteProposal = parseNoteWriteRequest(prompt.trim())
+                        if (noteProposal != null) {
+                            val saved = savePocketNote(context, noteProposal)
+                            noteStatus = "Saved locally: ${saved.title}"
+                            output = "Remembered locally: ${saved.content}"
+                            metrics = "private notes write | no model call"
+                            agentProgress = AgentProgress(1f, "Saved in private app files")
+                            return@launch
+                        }
+                        val noteSearch = parseNoteSearchRequest(prompt.trim())
+                        if (noteSearch != null) {
+                            val matches = searchPocketNotes(loadPocketNotes(context), noteSearch).take(5)
+                            output = if (matches.isEmpty()) {
+                                "I could not find anything about \u201c$noteSearch\u201d in your local notes."
+                            } else {
+                                "From your local notes:\n\n" +
+                                    matches.joinToString("\n\n") { it.content.take(500) }
+                            }
+                            metrics = "private notes recall | ${matches.size} match(es) | no model call"
+                            agentProgress = AgentProgress(1f, "Searched private app files")
+                            return@launch
+                        }
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         val pssBeforeKb = Debug.getPss()
                         val started = SystemClock.elapsedRealtime()
@@ -540,7 +562,9 @@ private fun PocketAgentsScreen() {
                     }
                 }
             },
-            enabled = isModelLoaded && prompt.isNotBlank() && !controlsBusy,
+            enabled = prompt.isNotBlank() && !controlsBusy && (
+                isModelLoaded || parseNoteWriteRequest(prompt) != null || parseNoteSearchRequest(prompt) != null
+            ),
         ) {
             Text(if (isBusy && isModelLoaded) "Agent working…" else "Run Agent")
         }

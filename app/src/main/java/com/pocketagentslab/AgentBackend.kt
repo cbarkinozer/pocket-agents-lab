@@ -122,10 +122,8 @@ internal class AgentBackend(
             if (directAnswer.isBlank()) {
                 onProgress(AgentProgress(0.70f, "Generating a local answer…"))
                 val generated = generator.generate(buildDirectAnswerPrompt(userPrompt), AGENT_ANSWER_TOKENS)
-                val answered = parseAgentDecision(generated.text)
-                require(answered.action == "answer") { "Direct response must use action=answer" }
                 return AgentRunResult(
-                    answer = answered.text.orEmpty().ifBlank { CLARIFICATION_MESSAGE },
+                    answer = parseFinalAnswer(generated.text),
                     route = "answer",
                     generatedPieces = selection.generatedPieces + generated.pieces,
                 ).also { onProgress(AgentProgress(1.0f, "Complete")) }
@@ -165,11 +163,7 @@ internal class AgentBackend(
             buildFinalAnswerPrompt(userPrompt, toolName, toolResult),
             AGENT_ANSWER_TOKENS,
         )
-        val finalDecision = parseAgentDecision(generated.text)
-        require(finalDecision.action == "answer") {
-            "Final response must use action=answer, got action=${finalDecision.action}"
-        }
-        val modelAnswer = finalDecision.text.orEmpty().trim()
+        val modelAnswer = parseFinalAnswer(generated.text)
         val usedFallback = isPlaceholderAnswer(modelAnswer)
         return AgentRunResult(
             answer = if (usedFallback) deterministicToolAnswer(toolName, toolResult) else modelAnswer,
@@ -202,11 +196,7 @@ internal class AgentBackend(
             buildHealthExplanationPrompt(userPrompt, diagnosis),
             AGENT_ANSWER_TOKENS,
         )
-        val finalDecision = parseAgentDecision(generated.text)
-        require(finalDecision.action == "answer") {
-            "Health explanation must use action=answer, got action=${finalDecision.action}"
-        }
-        val modelAnswer = finalDecision.text.orEmpty().trim()
+        val modelAnswer = parseFinalAnswer(generated.text)
         val usedFallback = isPlaceholderAnswer(modelAnswer)
         val trustedSummary = deterministicHealthAnswer(diagnosis)
         return AgentRunResult(
@@ -225,6 +215,18 @@ internal class AgentBackend(
 internal const val PHONE_HEALTH_CHECK = "phone_health_check"
 internal const val STORAGE_WARNING_FREE_PERCENT = 10.0
 internal const val BATTERY_WARNING_TEMPERATURE_C = 40.0
+
+/** Routing stays strict JSON; final prose may be JSON-wrapped or plain text. */
+internal fun parseFinalAnswer(raw: String): String {
+    val trimmed = raw.trim()
+    if (trimmed.isBlank()) return CLARIFICATION_MESSAGE
+    if (trimmed.startsWith("{") || trimmed.startsWith("```") || trimmed.startsWith("[")) {
+        val decision = parseAgentDecision(trimmed)
+        require(decision.action == "answer") { "Final response must use action=answer" }
+        return decision.text.orEmpty().trim().ifBlank { CLARIFICATION_MESSAGE }
+    }
+    return trimmed
+}
 
 internal fun parseAgentDecision(raw: String): AgentDecision {
     val (trimmed, fenceNormalized) = unwrapJsonFence(raw)

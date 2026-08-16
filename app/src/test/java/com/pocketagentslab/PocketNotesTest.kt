@@ -29,4 +29,18 @@ class PocketNotesTest {
     fun searchIntentExtractsQuery() {
         assertEquals("QLoRA", parseNoteSearchRequest("Search QLoRA in my notes"))
     }
+
+    @Test
+    fun naturalMemoryCommandsPersistAndRecallWithoutModelRouting() {
+        assertEquals("the pass is 777", parseNoteWriteRequest("Remember that the pass is 777")?.content)
+        assertEquals("launch code is 123", parseNoteWriteRequest("Save this: launch code is 123")?.content)
+        assertEquals("milk is needed", parseNoteWriteRequest("Write this to my notes: milk is needed")?.content)
+        assertEquals("the pass", parseNoteSearchRequest("What was the pass I told you before?"))
+    }
+
+    @Test
+    fun recallIgnoresConversationalStopWords() {
+        val notes = listOf(PocketNote("1", "the pass is 777", "the pass is 777", 1))
+        assertEquals("1", searchPocketNotes(notes, "the pass I told you before").single().id)
+    }
 }
