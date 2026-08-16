@@ -17,6 +17,7 @@ internal val READ_ONLY_TOOLS = setOf(
     "get_device_info",
     "get_battery_info",
     "get_storage_info",
+    "search_local_files",
 )
 
 internal data class AgentDecision(
@@ -49,7 +50,7 @@ internal fun interface AgentGenerator {
 }
 
 internal fun interface ReadOnlyToolExecutor {
-    fun execute(name: String): String
+    suspend fun execute(name: String, userPrompt: String): String
 }
 
 internal data class AgentProgress(val fraction: Float, val message: String)
@@ -157,7 +158,7 @@ internal class AgentBackend(
 
         val toolName = requireNotNull(decision.toolName)
         onProgress(AgentProgress(0.45f, "Reading ${toolName.toDisplayName()}…"))
-        val toolResult = tools.execute(toolName)
+        val toolResult = tools.execute(toolName, userPrompt)
         onProgress(AgentProgress(0.70f, "Generating a local explanation…"))
         val generated = generator.generate(
             buildFinalAnswerPrompt(userPrompt, toolName, toolResult),
@@ -184,11 +185,11 @@ internal class AgentBackend(
     ): AgentRunResult {
         require(selection.decision.workflowName == PHONE_HEALTH_CHECK)
         onProgress(AgentProgress(0.30f, "Reading device information…"))
-        val device = tools.execute("get_device_info")
+        val device = tools.execute("get_device_info", userPrompt)
         onProgress(AgentProgress(0.40f, "Reading battery information…"))
-        val battery = tools.execute("get_battery_info")
+        val battery = tools.execute("get_battery_info", userPrompt)
         onProgress(AgentProgress(0.50f, "Reading storage information…"))
-        val storage = tools.execute("get_storage_info")
+        val storage = tools.execute("get_storage_info", userPrompt)
         onProgress(AgentProgress(0.60f, "Evaluating health thresholds in Kotlin…"))
         val diagnosis = evaluatePhoneHealth(device, battery, storage)
         onProgress(AgentProgress(0.72f, "Generating suggestions with the local model…"))
@@ -360,9 +361,10 @@ internal val APPROVED_DEVICE_ACTIONS = setOf(OPEN_STORAGE_SETTINGS, OPEN_BATTERY
 
 internal fun buildRoutingPrompt(userPrompt: String, allowDeviceActions: Boolean = false): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
-TOOL is exactly get_device_info, get_battery_info, or get_storage_info.
+TOOL is exactly get_device_info, get_battery_info, get_storage_info, or search_local_files.
 Device info covers model, manufacturer, Android, ABI, and RAM. Storage info covers disk space and room for files/models.
 Battery info covers live level, charging state, temperature, heat, and whether cooling is needed.
+Local file search finds filenames or text in the folder the user previously authorized. Its query is the original request.
 Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
 Two or more live categories, overall condition, or AI-workload readiness use phone_health_check.
 No live phone data needed: {"action":"answer","text":""}
@@ -371,6 +373,7 @@ Unclear: {"action":"answer","text":"$CLARIFICATION_MESSAGE"}
 Examples:
 Battery level -> {"action":"tool","name":"get_battery_info","args":{}}
 Free space -> {"action":"tool","name":"get_storage_info","args":{}}
+Find a file or phrase in local files -> {"action":"tool","name":"search_local_files","args":{}}
 Android version -> {"action":"tool","name":"get_device_info","args":{}}
 Physical RAM or manufacturer -> {"action":"tool","name":"get_device_info","args":{}}
 Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
@@ -534,6 +537,14 @@ private fun deterministicToolAnswer(toolName: String, rawResult: String): String
             "This is a ${result.getString("manufacturer")} ${result.getString("model")}, " +
                 "running Android ${result.getString("androidVersion")} on " +
                 "${result.getString("cpuAbi")}."
+        "search_local_files" -> {
+            val error = result.optString("error")
+            if (error.isNotBlank()) error else {
+                val matches = result.optJSONArray("matches") ?: JSONArray()
+                if (matches.length() == 0) "I found no matching local files." else
+                    "I found ${matches.length()} local file match(es). Review them below before opening one."
+            }
+        }
         else -> error("Unknown tool: $toolName")
     }
 }

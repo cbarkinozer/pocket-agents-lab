@@ -612,6 +612,7 @@ private fun PocketAgentsScreen() {
                     isBusy = true
                     output = ""
                     proposedAction = null
+                    fileMatches = emptyList()
                     metrics = "Agent is deciding…"
                     agentProgress = AgentProgress(0.05f, "Preparing a fresh local-model context…")
                     try {
@@ -643,9 +644,10 @@ private fun PocketAgentsScreen() {
                         val result = createAgentBackend(
                             context,
                             engine,
-                        ) { progress ->
-                            agentProgress = progress
-                        }.run(prompt.trim())
+                            onProgress = { progress -> agentProgress = progress },
+                            folderUri = folderUri,
+                            onFileMatches = { fileMatches = it },
+                        ).run(prompt.trim())
                         val generationMs = SystemClock.elapsedRealtime() - started
                         val pssAfterKb = Debug.getPss()
                         val piecesPerSecond = if (generationMs > 0) {
@@ -717,6 +719,17 @@ private fun PocketAgentsScreen() {
                 .fillMaxWidth()
                 .heightIn(min = 180.dp),
         )
+        if (fileMatches.isNotEmpty()) {
+            Text("Local file matches", style = MaterialTheme.typography.titleSmall)
+            Text("Review the matches below. A file opens only when you tap Open File.")
+            fileMatches.take(5).forEach { match ->
+                Text(match.name, style = MaterialTheme.typography.titleMedium)
+                Text(match.excerpt)
+                Button(onClick = { openLocalFile(context, match.uri) }, enabled = !controlsBusy) {
+                    Text("Open File")
+                }
+            }
+        }
         if (proposedAction != null) {
             Text("Agent proposed: ${proposedActionLabel(requireNotNull(proposedAction))}")
             Text("Nothing has happened yet. Confirm to leave the app and open Android Settings.")
@@ -993,6 +1006,7 @@ Allowed routes:
 {"action":"tool","name":"get_device_info","args":{}}
 {"action":"tool","name":"get_battery_info","args":{}}
 {"action":"tool","name":"get_storage_info","args":{}}
+{"action":"tool","name":"search_local_files","args":{}}
 {"action":"workflow","name":"phone_health_check","args":{}}
 {"action":"propose","name":"open_storage_settings","args":{}}
 {"action":"propose","name":"open_battery_settings","args":{}}
@@ -1214,6 +1228,8 @@ private fun createAgentBackend(
     context: Context,
     engine: InferenceEngine,
     onProgress: (AgentProgress) -> Unit = {},
+    folderUri: Uri? = null,
+    onFileMatches: (List<LocalFileMatch>) -> Unit = {},
 ): AgentBackend =
     AgentBackend(
         generator = AgentGenerator { request, maxTokens ->
@@ -1227,7 +1243,29 @@ private fun createAgentBackend(
             Log.i(TAG_AGENT, "model_json=$raw")
             GeneratedText(raw, pieces)
         },
-        tools = ReadOnlyToolExecutor { name -> executeReadOnlyTool(context, name).toString() },
+        tools = ReadOnlyToolExecutor { name, userPrompt ->
+            if (name == "search_local_files") {
+                if (folderUri == null) {
+                    JSONObject().put("error", "No local folder has been authorized. Select one under Capabilities > Local Files.").toString()
+                } else {
+                    val matches = withContext(Dispatchers.IO) {
+                        searchDocumentTree(context, folderUri, userPrompt)
+                    }
+                    onFileMatches(matches)
+                    JSONObject().put(
+                        "matches",
+                        JSONArray(matches.take(5).map { match ->
+                            JSONObject()
+                                .put("name", match.name)
+                                .put("path", match.relativePath)
+                                .put("excerpt", match.excerpt)
+                        }),
+                    ).toString()
+                }
+            } else {
+                executeReadOnlyTool(context, name).toString()
+            }
+        },
         beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         onProgress = onProgress,
         allowDeviceActions = true,
@@ -1372,7 +1410,7 @@ private suspend fun runAgentTests(
                     RoutingGrammar.setMode(RoutingGrammar.NONE)
                 }
             },
-            tools = ReadOnlyToolExecutor { error("Evaluation must not execute tools") },
+            tools = ReadOnlyToolExecutor { _, _ -> error("Evaluation must not execute tools") },
             beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         )
         var actualTool: String? = null

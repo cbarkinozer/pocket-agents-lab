@@ -76,6 +76,13 @@ class AgentBackendTest {
     }
 
     @Test
+    fun localFileSearchIsAnAcceptedReadOnlyTool() {
+        val decision = parseAgentDecision("""{"action":"tool","name":"search_local_files","args":{}}""")
+        assertEquals("search_local_files", decision.toolName)
+        assertTrue(buildRoutingPrompt("Find my QLoRA document").contains("search_local_files"))
+    }
+
+    @Test
     fun directAnswerUsesOneModelCallAndNoTool() = runBlocking {
         val fixture = fixture("""{"action":"answer","text":"A local joke"}""")
 
@@ -200,7 +207,7 @@ class AgentBackendTest {
         val progress = mutableListOf<AgentProgress>()
         val backend = AgentBackend(
             generator = AgentGenerator { _, _ -> GeneratedText(responses.removeFirst(), 1) },
-            tools = ReadOnlyToolExecutor { name ->
+            tools = ReadOnlyToolExecutor { name, _ ->
                 calls += name
                 when (name) {
                     "get_device_info" -> """{"model":"A32","androidVersion":"13","cpuAbi":"arm64-v8a"}"""
@@ -329,7 +336,7 @@ class AgentBackendTest {
         )
         val backend = AgentBackend(
             generator = AgentGenerator { _, _ -> GeneratedText(responses.removeFirst(), 1) },
-            tools = ReadOnlyToolExecutor { error("No tool expected") },
+            tools = ReadOnlyToolExecutor { _, _ -> error("No tool expected") },
             beforeRepair = { resets++ },
         )
 
@@ -391,7 +398,7 @@ class AgentBackendTest {
                 prompts += prompt
                 GeneratedText(queued.removeFirst(), pieces = 1)
             },
-            tools = ReadOnlyToolExecutor { name ->
+            tools = ReadOnlyToolExecutor { name, _ ->
                 toolCalls += name
                 toolResult
             },
