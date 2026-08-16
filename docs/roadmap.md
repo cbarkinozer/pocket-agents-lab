@@ -90,6 +90,8 @@ Add capabilities beyond basic tool routing.
 
 Current MVP: one user-selected `.txt` or `.md` document, deterministic local keyword retrieval over bounded chunks, a small retrieved context, and a local-SLM answer that cites visible source excerpt numbers. Files remain read-only; the PoC has a 1 MB limit and no embeddings database or broad storage permission.
 
+Pocket Notes MVP: app-owned offline notes stored in private files, manual creation, deterministic title/content search, and natural-language write/search commands. A write command creates an editable proposal; deterministic Kotlin saves only after a separate confirmation. No third-party notes app integration or embeddings are required.
+
 ## 6. Model Adaptation Layer
 
 Make models specifically effective in this environment.

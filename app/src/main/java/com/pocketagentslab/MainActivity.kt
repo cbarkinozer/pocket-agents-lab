@@ -116,6 +116,11 @@ private fun PocketAgentsScreen() {
     var documentQuestion by remember { mutableStateOf("What are the main points?") }
     var documentAnswer by remember { mutableStateOf("") }
     var documentSources by remember { mutableStateOf("") }
+    var pendingNote by remember { mutableStateOf<NoteProposal?>(null) }
+    var noteTitle by remember { mutableStateOf("") }
+    var noteContent by remember { mutableStateOf("") }
+    var noteQuery by remember { mutableStateOf("") }
+    var noteStatus by remember { mutableStateOf("No notes yet") }
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
@@ -379,6 +384,28 @@ private fun PocketAgentsScreen() {
                     val activity = context as? ComponentActivity
                     activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     try {
+                        val noteProposal = parseNoteWriteRequest(prompt.trim())
+                        if (noteProposal != null) {
+                            pendingNote = noteProposal
+                            noteTitle = noteProposal.title
+                            noteContent = noteProposal.content
+                            output = "I prepared a local note. Review it below and confirm Save note."
+                            metrics = "note proposal | no model call | nothing saved yet"
+                            agentProgress = AgentProgress(1f, "Waiting for note confirmation")
+                            return@launch
+                        }
+                        val noteSearch = parseNoteSearchRequest(prompt.trim())
+                        if (noteSearch != null) {
+                            val matches = searchPocketNotes(loadPocketNotes(context), noteSearch).take(5)
+                            output = if (matches.isEmpty()) {
+                                "No local notes matched “$noteSearch”."
+                            } else {
+                                matches.joinToString("\n\n") { "${it.title}\n${it.content.take(300)}" }
+                            }
+                            metrics = "notes search | ${matches.size} match(es) | no model call"
+                            agentProgress = AgentProgress(1f, "Local note search complete")
+                            return@launch
+                        }
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         actionTestStatus = runActionSafetyTests(
                             context,
@@ -512,6 +539,64 @@ private fun PocketAgentsScreen() {
                 }
             }
         }
+
+        HorizontalDivider()
+        Text("Pocket Notes", style = MaterialTheme.typography.titleLarge)
+        Text("Create and search app-owned notes locally. Agent note requests create an editable proposal; saving always requires confirmation.")
+        OutlinedTextField(
+            value = noteTitle,
+            onValueChange = { noteTitle = it },
+            label = { Text("Note title") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !controlsBusy,
+        )
+        OutlinedTextField(
+            value = noteContent,
+            onValueChange = { noteContent = it },
+            label = { Text("Note content") },
+            modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
+            enabled = !controlsBusy,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = {
+                    val saved = savePocketNote(context, NoteProposal(noteTitle, noteContent))
+                    noteStatus = "Saved locally: ${saved.title}"
+                    pendingNote = null
+                    noteTitle = ""
+                    noteContent = ""
+                },
+                enabled = noteTitle.isNotBlank() && noteContent.isNotBlank() && !controlsBusy,
+            ) { Text(if (pendingNote != null) "Confirm Save Note" else "Save Note") }
+            if (pendingNote != null) {
+                Button(
+                    onClick = {
+                        pendingNote = null
+                        noteTitle = ""
+                        noteContent = ""
+                        noteStatus = "Note proposal cancelled"
+                    },
+                    enabled = !controlsBusy,
+                ) { Text("Cancel") }
+            }
+        }
+        OutlinedTextField(
+            value = noteQuery,
+            onValueChange = { noteQuery = it },
+            label = { Text("Search note titles and content") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !controlsBusy,
+        )
+        Button(
+            onClick = {
+                val matches = searchPocketNotes(loadPocketNotes(context), noteQuery).take(10)
+                noteStatus = if (matches.isEmpty()) "No matching notes" else matches.joinToString("\n\n") {
+                    "${it.title}\n${it.content.take(300)}"
+                }
+            },
+            enabled = noteQuery.isNotBlank() && !controlsBusy,
+        ) { Text("Search Notes") }
+        Text(noteStatus)
 
         HorizontalDivider()
         Text("Local Document Agent", style = MaterialTheme.typography.titleLarge)
