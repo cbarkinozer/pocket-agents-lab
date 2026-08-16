@@ -352,6 +352,8 @@ private fun PocketAgentsScreen() {
                 scope.launch {
                     isActionTestRunning = true
                     actionTestProgress = 0f
+                    val activity = context as? ComponentActivity
+                    activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     try {
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         actionTestStatus = runActionSafetyTests(
@@ -365,6 +367,7 @@ private fun PocketAgentsScreen() {
                     } catch (error: Throwable) {
                         actionTestStatus = "Action safety failed: ${rootCauseDescription(error)}"
                     } finally {
+                        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                         isActionTestRunning = false
                     }
                 }
