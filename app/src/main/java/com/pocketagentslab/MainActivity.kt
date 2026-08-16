@@ -1,6 +1,10 @@
 package com.pocketagentslab
 
+import android.Manifest
 import android.app.ActivityManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -13,6 +17,9 @@ import android.os.Environment
 import android.os.PowerManager
 import android.os.StatFs
 import android.os.SystemClock
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
@@ -41,6 +48,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +57,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.arm.aichat.AiChat
 import com.arm.aichat.ConversationReset
 import com.arm.aichat.InferenceEngine
@@ -143,8 +152,50 @@ private fun PocketAgentsScreen() {
     var isFileSearchRunning by remember { mutableStateOf(false) }
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
+    var isListening by remember { mutableStateOf(false) }
+    var speechStatus by remember { mutableStateOf("Tap the microphone to dictate a prompt") }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
+    val speechRecognizer = remember {
+        if (Build.VERSION.SDK_INT >= 31 && SpeechRecognizer.isOnDeviceRecognitionAvailable(context)) {
+            SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
+        } else {
+            SpeechRecognizer.createSpeechRecognizer(context)
+        }
+    }
     val controlsBusy = isBusy || isBenchmarkRunning || isAgentTestRunning || isActionTestRunning
+
+    DisposableEffect(speechRecognizer) {
+        speechRecognizer.setRecognitionListener(object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) { speechStatus = "Listening…" }
+            override fun onBeginningOfSpeech() { speechStatus = "Hearing you…" }
+            override fun onRmsChanged(rmsdB: Float) = Unit
+            override fun onBufferReceived(buffer: ByteArray?) = Unit
+            override fun onEndOfSpeech() { speechStatus = "Finishing transcription…" }
+            override fun onError(error: Int) {
+                isListening = false
+                speechStatus = "Speech recognition stopped (error $error). Tap mic to retry."
+            }
+            override fun onResults(results: Bundle?) {
+                results?.bestSpeechText()?.let { prompt = it }
+                isListening = false
+                speechStatus = "Transcription ready"
+            }
+            override fun onPartialResults(partialResults: Bundle?) {
+                partialResults?.bestSpeechText()?.let { prompt = it }
+            }
+            override fun onEvent(eventType: Int, params: Bundle?) = Unit
+        })
+        onDispose { speechRecognizer.destroy() }
+    }
+
+    val microphonePermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            isListening = true
+            speechRecognizer.startListening(buildOfflineSpeechIntent())
+        } else {
+            speechStatus = "Microphone permission is required for voice input"
+        }
+    }
 
     LaunchedEffect(engine) {
         val preferredFile = modelPreferences.getString("model_path", null)?.let(::File)
@@ -164,10 +215,12 @@ private fun PocketAgentsScreen() {
                         it is InferenceEngine.State.Error
                 }
                 check(initializedState !is InferenceEngine.State.Error) { "llama.cpp initialization failed" }
-                if (initializedState is InferenceEngine.State.ModelReady) engine.cleanUp()
+                if (initializedState is InferenceEngine.State.ModelReady) withContext(Dispatchers.IO) { engine.cleanUp() }
                 val started = SystemClock.elapsedRealtime()
-                engine.loadModel(savedPath)
-                engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+                withContext(Dispatchers.IO) {
+                    engine.loadModel(savedPath)
+                    engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+                }
                 loadedModelPath = savedPath
                 selectedName = savedName ?: File(savedPath).name
                 isModelLoaded = true
@@ -644,6 +697,29 @@ private fun PocketAgentsScreen() {
             LinearProgressIndicator(progress = { actionTestProgress }, modifier = Modifier.fillMaxWidth())
         }
         Text(actionTestStatus)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+                        android.content.pm.PackageManager.PERMISSION_GRANTED
+                    ) {
+                        isListening = true
+                        speechRecognizer.startListening(buildOfflineSpeechIntent())
+                    } else {
+                        microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
+                    }
+                },
+                enabled = !controlsBusy && !isListening,
+            ) { Text("Start Mic") }
+            Button(
+                onClick = {
+                    speechRecognizer.stopListening()
+                    speechStatus = "Finishing transcription…"
+                },
+                enabled = isListening,
+            ) { Text("Stop Mic") }
+        }
+        Text(speechStatus)
         OutlinedTextField(
             value = prompt,
             onValueChange = { prompt = it },
@@ -681,6 +757,7 @@ private fun PocketAgentsScreen() {
                         }
                         output = result.answer
                         proposedAction = result.proposedAction
+                        showAgentCompletionNotification(context, result.answer)
                         metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | " +
                             "%.2f exposed pieces/s | PSS %.1f MB".format(
                             Locale.US,
@@ -985,6 +1062,44 @@ private fun acquireInferenceWakeLock(context: Context, label: String, timeoutMs:
     return powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PocketAgentsLab:$label").apply {
         acquire(timeoutMs)
     }
+}
+
+private fun buildOfflineSpeechIntent(): Intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+    putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+}
+
+private fun Bundle.bestSpeechText(): String? =
+    getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()?.trim()?.takeIf { it.isNotBlank() }
+
+private fun showAgentCompletionNotification(context: Context, answer: String) {
+    runCatching {
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "local_agent_results"
+        manager.createNotificationChannel(
+            NotificationChannel(channelId, "Local agent results", NotificationManager.IMPORTANCE_DEFAULT),
+        )
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            1,
+            launchIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        manager.notify(
+            1001,
+            android.app.Notification.Builder(context, channelId)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle("Pocket Agent finished")
+                .setContentText(answer.take(120))
+                .setStyle(android.app.Notification.BigTextStyle().bigText(answer.take(1000)))
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .build(),
+        )
+    }.onFailure { Log.w(TAG, "Unable to show completion notification", it) }
 }
 
 private fun openAndroidSettings(context: Context, action: String) {
