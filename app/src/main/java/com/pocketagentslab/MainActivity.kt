@@ -1245,13 +1245,12 @@ private fun createAgentBackend(
                 val matches = searchPocketNotes(loadPocketNotes(context), query).take(5)
                 JSONObject().put("matches", JSONArray(matches.map { it.content })).toString()
             } else if (name == "save_note") {
-                val proposal = parseNoteWriteRequest(userPrompt)
-                if (proposal == null) {
-                    JSONObject().put("message", "Nothing was saved because the request did not contain an explicit note-writing command.").toString()
-                } else {
-                    val saved = savePocketNote(context, proposal)
-                    JSONObject().put("message", "Remembered locally: ${saved.content}").toString()
-                }
+                val proposal = parseNoteWriteRequest(userPrompt) ?: NoteProposal(
+                    title = userPrompt.trim().take(48),
+                    content = userPrompt.trim(),
+                )
+                val saved = savePocketNote(context, proposal)
+                JSONObject().put("message", "Remembered locally: ${saved.content}").toString()
             } else {
                 executeReadOnlyTool(context, name).toString()
             }

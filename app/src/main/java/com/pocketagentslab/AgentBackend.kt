@@ -75,7 +75,7 @@ internal class AgentBackend(
             AGENT_DECISION_TOKENS,
         )
         return try {
-            AgentSelection(normalizeNoteRoute(userPrompt, parseAgentDecision(generated.text)), generated.pieces)
+            AgentSelection(parseAgentDecision(generated.text), generated.pieces)
         } catch (validationError: Throwable) {
             onProgress(AgentProgress(0.22f, "Repairing one invalid routing response…"))
             beforeRepair()
@@ -88,7 +88,7 @@ internal class AgentBackend(
                 AGENT_DECISION_TOKENS,
             )
             AgentSelection(
-                decision = normalizeNoteRoute(userPrompt, parseAgentDecision(repaired.text)),
+                decision = parseAgentDecision(repaired.text),
                 generatedPieces = generated.pieces + repaired.pieces,
                 repairAttempted = true,
             )
@@ -236,12 +236,6 @@ internal fun parseFinalAnswer(raw: String): String {
     return trimmed
 }
 
-private fun normalizeNoteRoute(userPrompt: String, decision: AgentDecision): AgentDecision = when {
-    parseNoteWriteRequest(userPrompt) != null -> AgentDecision(action = "tool", toolName = "save_note")
-    parseNoteSearchRequest(userPrompt) != null -> AgentDecision(action = "tool", toolName = "search_notes")
-    else -> decision
-}
-
 internal fun parseAgentDecision(raw: String): AgentDecision {
     val (trimmed, fenceNormalized) = unwrapJsonFence(raw)
     if (trimmed.startsWith("[")) {
@@ -378,7 +372,7 @@ TOOL is exactly get_device_info, get_battery_info, get_storage_info, search_loca
 Device info covers model, manufacturer, Android, ABI, and RAM. Storage info covers disk space and room for files/models.
 Battery info covers live level, charging state, temperature, heat, and whether cooling is needed.
 Local file search finds filenames or text in the folder the user previously authorized. Its query is the original request.
-Note search recalls app-private notes. Save note is only for an explicit request to remember, save, or write something to notes. Kotlin uses the original request as the query or content.
+Note search recalls something the user previously asked the app to remember. Save note is for any explicit request to retain information for later. Kotlin uses the original request as the query or content.
 Overall phone health: {"action":"workflow","name":"phone_health_check","args":{}}
 Two or more live categories, overall condition, or AI-workload readiness use phone_health_check.
 No live phone data needed: {"action":"answer","text":""}
@@ -390,6 +384,10 @@ Free space -> {"action":"tool","name":"get_storage_info","args":{}}
 Find a file or phrase in local files -> {"action":"tool","name":"search_local_files","args":{}}
 Recall something previously saved -> {"action":"tool","name":"search_notes","args":{}}
 Remember or save something to notes -> {"action":"tool","name":"save_note","args":{}}
+Don't forget the experiment number -> {"action":"tool","name":"save_note","args":{}}
+Keep this for later -> {"action":"tool","name":"save_note","args":{}}
+Make a note that the meeting is Monday -> {"action":"tool","name":"save_note","args":{}}
+What was the experiment number? -> {"action":"tool","name":"search_notes","args":{}}
 Android version -> {"action":"tool","name":"get_device_info","args":{}}
 Physical RAM or manufacturer -> {"action":"tool","name":"get_device_info","args":{}}
 Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}

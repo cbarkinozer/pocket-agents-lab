@@ -95,10 +95,10 @@ class AgentBackendTest {
     }
 
     @Test
-    fun deterministicValidatorCorrectsMisroutedExplicitNoteCommand() = runBlocking {
+    fun modelNoteRouteIsMeasuredRatherThanSilentlyOverridden() = runBlocking {
         val fixture = fixture("""{"action":"tool","name":"search_notes","args":{}}""")
         val selection = fixture.backend.select("experiment number is 842 remember it")
-        assertEquals("save_note", selection.decision.toolName)
+        assertEquals("search_notes", selection.decision.toolName)
     }
 
     @Test
