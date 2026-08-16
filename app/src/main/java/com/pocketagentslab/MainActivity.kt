@@ -479,6 +479,55 @@ private fun PocketAgentsScreen() {
         HorizontalDivider()
         Text("Tiny Agent", style = MaterialTheme.typography.titleLarge)
         Text("Ask about this device, battery health, storage, or request a phone health check with practical suggestions. Everything runs locally.")
+        Text("Model", style = MaterialTheme.typography.titleSmall)
+        Text(if (isModelLoaded) "$selectedName • Ready" else modelStatus)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = { picker.launch(arrayOf("application/octet-stream", "*/*")) },
+                enabled = !controlsBusy,
+            ) { Text(if (selectedUri == null) "Select GGUF" else "Change Model") }
+            Button(
+                onClick = {
+                    val uri = selectedUri ?: return@Button
+                    scope.launch {
+                        isBusy = true
+                        isModelLoaded = false
+                        modelStatus = "Copying model to app storage…"
+                        try {
+                            val modelFile = withContext(Dispatchers.IO) {
+                                copyModelToPrivateStorage(context, uri, selectedName)
+                            }
+                            modelStatus = "Loading ${modelFile.name}…"
+                            val initializedState = engine.state.first {
+                                it is InferenceEngine.State.Initialized ||
+                                    it is InferenceEngine.State.ModelReady ||
+                                    it is InferenceEngine.State.Error
+                            }
+                            check(initializedState !is InferenceEngine.State.Error) { "llama.cpp initialization failed" }
+                            if (initializedState is InferenceEngine.State.ModelReady) {
+                                engine.cleanUp()
+                                engine.state.first { it is InferenceEngine.State.Initialized }
+                            }
+                            val started = SystemClock.elapsedRealtime()
+                            engine.loadModel(modelFile.absolutePath)
+                            engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+                            loadedModelPath = modelFile.absolutePath
+                            val loadMs = SystemClock.elapsedRealtime() - started
+                            isModelLoaded = true
+                            modelStatus = "Model loaded successfully in ${loadMs} ms"
+                            metrics = "Load: ${loadMs} ms"
+                            Log.i(TAG_METRICS, "model=${modelFile.name} load_ms=$loadMs context_tokens=1024 cpu_only=true")
+                        } catch (error: Throwable) {
+                            modelStatus = "Load failed: ${error.message ?: error.javaClass.simpleName}"
+                            Log.e(TAG, "Model load failed", error)
+                        } finally {
+                            isBusy = false
+                        }
+                    }
+                },
+                enabled = selectedUri != null && !controlsBusy,
+            ) { Text(if (isBusy) "Loading…" else "Load Model") }
+        }
         Text("Active read-only tools: Device info • Battery info • Storage info")
         Text("Approved device actions", style = MaterialTheme.typography.titleSmall)
         Text("These buttons only open Android Settings after you tap them; the agent cannot change settings silently.")
