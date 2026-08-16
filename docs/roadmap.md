@@ -40,7 +40,7 @@ Make sub-1B and 1B models useful despite their limitations.
 - validators and limited repair
 - tool retrieval
 
-Current MVP: five-route native grammar, three read-only Android tools, deterministic Phone Health, strict validation, and at most one repair. Version 6 tested hierarchical answer/live routing but regressed from v5's 40/50 to 26/50. Version 7 returns to the single-stage design and narrowly tests ordered boundary rules and contrastive examples with unchanged weights and labels.
+Current MVP: five-route native grammar, three read-only Android tools, deterministic Phone Health, strict validation, and at most one repair. Both v6 hierarchy and v7 contrastive prompting regressed to 26/50 through different failure distributions. Freeze the v5 40/50 router and require a new held-out set before further prompt optimization.
 
 ## 3. Mobile Capability Layer
 

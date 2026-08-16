@@ -1875,6 +1875,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 4. [x] Preserve Run 001 of `tool-routing-3-tools-v1`: 13/50 correct routes, 29/50 final accepted selections, 42.3 s average latency, about 825-851 MB PSS, and 30.4-36.7 C observed temperature.
 5. [x] Compare hierarchical grammar-constrained `tool-routing-3-tools-v6` against the preserved v5 baseline. It regressed from 40/50 to 26/50 despite retaining 50/50 strict JSON, so v5 remains the best measured harness. Preserve every version under its original scoring semantics.
    Version 7 restores single-stage routing and tests only concise ordered rules and contrastive examples for the direct-answer and Phone Health boundaries.
+   The completed v7 run also scored 26/50: Direct Answer reached 9/10 and Phone Health 10/10, but the three single-tool classes collapsed. Freeze v5 and require a held-out prompt set before further routing tuning.
    The app supports an ordered, thermally gated overnight multi-model queue with isolated artifacts for each GGUF.
    Compatibility guards now cover xLAM fenced JSON and crash-safe Qwen non-thinking Jinja formatting/fresh-repair operation while preserving normalization labels and raw outputs.
 6. [ ] Add authoritative native token counts and repeatable cold-load/warm-generation measurements for model-load time, TTFT, token/s, peak RAM, CPU, battery, and thermal samples.
