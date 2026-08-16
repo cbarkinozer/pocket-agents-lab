@@ -57,9 +57,9 @@ class AgentBackendTest {
     fun routingPromptDistinguishesRamFromStorageCapacity() {
         val prompt = buildRoutingPrompt("How much RAM is available?")
 
-        assertTrue(prompt.contains("ABI, and RAM"))
-        assertTrue(prompt.contains("Room for another model"))
-        assertTrue(prompt.contains("get_storage_info"))
+        assertTrue(prompt.contains("physical RAM"))
+        assertTrue(prompt.contains("file/model fits"))
+        assertTrue(prompt.contains("Define RAM -> ANSWER"))
     }
 
     @Test
@@ -85,7 +85,6 @@ class AgentBackendTest {
         assertEquals(CLARIFICATION_MESSAGE, result.answer)
         assertEquals("clarify:copied-example", result.route)
         assertTrue(fixture.toolCalls.isEmpty())
-        assertTrue(fixture.prompts.single().contains(CLARIFICATION_MESSAGE))
         assertTrue(!fixture.prompts.single().contains("byte cross"))
     }
 

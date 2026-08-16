@@ -6,7 +6,7 @@ The next result this project targets is a reproducible statement of the form:
 
 ## Version 6 suite
 
-The Android app's **Run Agent Test** button runs `tool-routing-3-tools-v6`: 50 fixed prompts, with ten prompts in each class:
+The Android app's **Run Agent Test** button runs `tool-routing-3-tools-v7`: 50 fixed prompts, with ten prompts in each class:
 
 - `get_storage_info`
 - `get_device_info`
@@ -53,6 +53,7 @@ The portable protocol keeps one logical schema across models but applies narrowl
 - Version 5 freezes Qwen3.5 0.8B Q4_K_M as the quality/efficiency reference and constrains routing in llama.cpp with a five-choice GBNF grammar. The model still chooses the route; native sampling guarantees an exact valid JSON decision. Direct answers use a second, unconstrained generation after the route decision. Compare v5 route accuracy separately from earlier free-form JSON protocols.
 - Version 6 tests hierarchical constrained routing with the same frozen weights. Stage one chooses `answer` or `live_device`; live requests then choose device, battery, storage, or Phone Health under a second native grammar. This isolates the two semantic boundaries responsible for every v5 miss. Its extra model call and latency are part of the measured architectural tradeoff.
 - The completed v6 run scored 26/50 versus v5's 40/50, while both achieved 50/50 strict schema validity. Hierarchy improved average measured latency to 18.70 seconds but introduced new scope and live-route errors across every class. It is preserved as a negative result; v5 remains the reference harness.
+- Version 7 returns to v5's single five-route grammar and changes only the routing prompt. Ordered rules and contrastive examples distinguish current phone facts from general explanations, and single live categories from multi-category or overall health requests. It is evaluated separately against v5; the fixed prompt labels and frozen Qwen Q4 weights are unchanged.
 - For user turns, the JNI formatter safely attempts the model's Jinja chat template with `enable_thinking=false`; this is required for Qwen3.5 because the official Android sample's legacy template path cannot pass that setting. System/history turns retain the stable legacy path, and caught Jinja incompatibilities fall back to it instead of crossing JNI and aborting Android. Routing/repair output remains capped at 64 tokens, and the prompt also forbids reasoning and `<think>` output.
 - A repair runs in a fresh conversation context and includes the original request plus at most 256 characters of rejected output. This prevents a reasoning trace from being duplicated into the 1024-token context.
 - Native generation stops at the context boundary. It never invokes the upstream sample's context-shift path, which was observed aborting in `llama_memory_hybrid::seq_add` for Qwen3.5-0.8B.

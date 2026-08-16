@@ -40,7 +40,7 @@ Make sub-1B and 1B models useful despite their limitations.
 - validators and limited repair
 - tool retrieval
 
-Current MVP: five-route native grammar, three read-only Android tools, deterministic Phone Health, strict validation, and at most one repair. Version 6 tested hierarchical answer/live routing but regressed from v5's 40/50 to 26/50, so the single-stage v5 design remains the best measured baseline. The next iteration should make only narrow, versioned boundary improvements around that design.
+Current MVP: five-route native grammar, three read-only Android tools, deterministic Phone Health, strict validation, and at most one repair. Version 6 tested hierarchical answer/live routing but regressed from v5's 40/50 to 26/50. Version 7 returns to the single-stage design and narrowly tests ordered boundary rules and contrastive examples with unchanged weights and labels.
 
 ## 3. Mobile Capability Layer
 

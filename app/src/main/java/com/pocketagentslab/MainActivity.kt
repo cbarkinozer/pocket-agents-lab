@@ -593,7 +593,6 @@ private fun createAgentBackend(
         tools = ReadOnlyToolExecutor { name -> executeReadOnlyTool(context, name).toString() },
         beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         onProgress = onProgress,
-        hierarchicalRouting = true,
     )
 
 private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {
@@ -690,7 +689,7 @@ private suspend fun runAgentTests(
     val csvName = if (artifactStem == "agent") "agent-evaluation.csv" else "$artifactStem.csv"
     val report = JSONObject()
         .put("schemaVersion", 2)
-        .put("suite", "tool-routing-3-tools-v6")
+        .put("suite", "tool-routing-3-tools-v7")
         .put("llamaCppCommit", LLAMA_CPP_COMMIT)
         .put("buildFlags", LLAMA_BUILD_FLAGS)
         .put("modelFile", File(modelPath).name)
@@ -737,7 +736,6 @@ private suspend fun runAgentTests(
             },
             tools = ReadOnlyToolExecutor { error("Evaluation must not execute tools") },
             beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
-            hierarchicalRouting = true,
         )
         var actualTool: String? = null
         var actualWorkflow: String? = null
@@ -808,7 +806,7 @@ private suspend fun runAgentTests(
                         attempts.put(
                             JSONObject()
                                 .put("attempt", index + 1)
-                                .put("kind", if (index == 0) "scope" else "live_route")
+                                .put("kind", if (index == 0) "route" else "repair")
                                 .put("rawOutput", generation.text)
                                 .put("latencyMs", generation.latencyMs)
                                 .put("ttftMs", generation.ttftMs ?: JSONObject.NULL)
@@ -964,7 +962,7 @@ private fun writeQueueManifest(
     val report = JSONObject()
         .put("schemaVersion", 1)
         .put("runId", runId)
-        .put("suite", "tool-routing-3-tools-v6")
+        .put("suite", "tool-routing-3-tools-v7")
         .put("state", state)
         .put("cancelled", state == "cancelled")
         .put("selectedModels", selected)
