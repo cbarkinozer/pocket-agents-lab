@@ -18,6 +18,8 @@ internal data class NoteProposal(val title: String, val content: String)
 internal fun parseNoteWriteRequest(request: String): NoteProposal? {
     val trimmed = request.trim()
     val match = Regex(
+        "(?i)^(?:please\\s+)?(?:don['’]?t|do\\s+not)\\s+forget\\s+(?:that\\s+)?(.+?)[.!]?$",
+    ).matchEntire(trimmed) ?: Regex(
         "(?i)^(?:please\\s+)?(?:write|save|remember|add)\\s+(.+?)\\s+(?:in|to)\\s+(?:my\\s+)?notes?[.!]?$",
     ).matchEntire(trimmed) ?: Regex(
         "(?i)^(?:please\\s+)?(?:remember|save)\\s+(?:this\\s*:?\\s*|that\\s+)?(.+)$",
