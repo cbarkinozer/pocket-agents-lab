@@ -131,6 +131,12 @@ storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
 )grammar";
 
+static constexpr const char * POCKET_NOTE_ROUTING_GRAMMAR = R"grammar(
+root ::= save-note | search-notes
+save-note ::= "{\"action\":\"tool\",\"name\":\"save_note\",\"args\":{}}"
+search-notes ::= "{\"action\":\"tool\",\"name\":\"search_notes\",\"args\":{}}"
+)grammar";
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_arm_aichat_RoutingGrammar_setModeNative(JNIEnv * env, jclass, jint mode) {
@@ -146,6 +152,7 @@ Java_com_arm_aichat_RoutingGrammar_setModeNative(JNIEnv * env, jclass, jint mode
             const char * grammar = mode == 2 ? POCKET_SCOPE_GRAMMAR
                     : mode == 3 ? POCKET_LIVE_GRAMMAR
                     : mode == 4 ? POCKET_AGENT_ROUTING_GRAMMAR
+                    : mode == 5 ? POCKET_NOTE_ROUTING_GRAMMAR
                     : POCKET_ROUTING_GRAMMAR;
             params.grammar = common_grammar(COMMON_GRAMMAR_TYPE_USER, grammar);
         }

@@ -10,6 +10,7 @@ internal const val GRAMMAR_SCOPE_PREFIX = "[[POCKET_GRAMMAR_SCOPE]]\n"
 internal const val GRAMMAR_LIVE_PREFIX = "[[POCKET_GRAMMAR_LIVE]]\n"
 internal const val GRAMMAR_ROUTE_PREFIX = "[[POCKET_GRAMMAR_ROUTE]]\n"
 internal const val GRAMMAR_AGENT_ROUTE_PREFIX = "[[POCKET_GRAMMAR_AGENT_ROUTE]]\n"
+internal const val GRAMMAR_NOTE_ROUTE_PREFIX = "[[POCKET_GRAMMAR_NOTE_ROUTE]]\n"
 internal const val CLARIFICATION_MESSAGE =
     "I could not understand what you meant. Please rephrase your request."
 
@@ -74,7 +75,7 @@ internal class AgentBackend(
                 buildRoutingPrompt(userPrompt, allowDeviceActions),
             AGENT_DECISION_TOKENS,
         )
-        return try {
+        val initial = try {
             AgentSelection(parseAgentDecision(generated.text), generated.pieces)
         } catch (validationError: Throwable) {
             onProgress(AgentProgress(0.22f, "Repairing one invalid routing response…"))
@@ -93,6 +94,21 @@ internal class AgentBackend(
                 repairAttempted = true,
             )
         }
+        return refineNoteRoute(userPrompt, initial)
+    }
+
+    private suspend fun refineNoteRoute(userPrompt: String, initial: AgentSelection): AgentSelection {
+        if (initial.decision.toolName !in setOf("search_notes", "save_note")) return initial
+        onProgress(AgentProgress(0.28f, "Distinguishing note save from recall…"))
+        val refined = generator.generate(
+            GRAMMAR_NOTE_ROUTE_PREFIX + buildNoteRoutingPrompt(userPrompt),
+            AGENT_DECISION_TOKENS,
+        )
+        return AgentSelection(
+            decision = parseAgentDecision(refined.text),
+            generatedPieces = initial.generatedPieces + refined.pieces,
+            repairAttempted = initial.repairAttempted,
+        )
     }
 
     private suspend fun selectHierarchically(userPrompt: String): AgentSelection {
@@ -395,6 +411,17 @@ Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
 ${if (allowDeviceActions) """Explicit request to open Storage Settings -> {"action":"propose","name":"open_storage_settings","args":{}}
 Explicit request to open Battery Settings -> {"action":"propose","name":"open_battery_settings","args":{}}
 Only propose an action when the user asks to open or navigate to that settings page. Reading facts still uses a read-only tool. A proposal never executes without confirmation.""" else ""}
+Request: $userPrompt
+JSON:"""
+
+internal fun buildNoteRoutingPrompt(userPrompt: String): String = """Choose exactly one note operation.
+SAVE_NOTE: the user provides information now and asks the app to retain, remember, keep, record, or not forget it for later.
+SEARCH_NOTES: the user asks to retrieve, recall, find, or tell them information saved earlier.
+Contrast:
+"Don't forget the experiment number is 842" -> SAVE_NOTE
+"What was the experiment number?" -> SEARCH_NOTES
+"Keep this for later" -> SAVE_NOTE
+"What did I tell you before?" -> SEARCH_NOTES
 Request: $userPrompt
 JSON:"""
 

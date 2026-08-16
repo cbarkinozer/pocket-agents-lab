@@ -12,4 +12,5 @@ object RoutingGrammar {
     const val SCOPE = 2
     const val LIVE = 3
     const val AGENT_ROUTE = 4
+    const val NOTE_ROUTE = 5
 }

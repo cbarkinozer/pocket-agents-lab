@@ -1199,6 +1199,10 @@ private fun prepareGrammarRequest(request: String): PreparedGrammarRequest = whe
         request.removePrefix(GRAMMAR_ROUTE_PREFIX),
         RoutingGrammar.ROUTE,
     )
+    request.startsWith(GRAMMAR_NOTE_ROUTE_PREFIX) -> PreparedGrammarRequest(
+        request.removePrefix(GRAMMAR_NOTE_ROUTE_PREFIX),
+        RoutingGrammar.NOTE_ROUTE,
+    )
     else -> PreparedGrammarRequest(request, RoutingGrammar.NONE)
 }
 

@@ -95,10 +95,15 @@ class AgentBackendTest {
     }
 
     @Test
-    fun modelNoteRouteIsMeasuredRatherThanSilentlyOverridden() = runBlocking {
-        val fixture = fixture("""{"action":"tool","name":"search_notes","args":{}}""")
+    fun focusedModelPassCanCorrectAmbiguousNoteRoute() = runBlocking {
+        val fixture = fixture(
+            """{"action":"tool","name":"search_notes","args":{}}""",
+            """{"action":"tool","name":"save_note","args":{}}""",
+        )
         val selection = fixture.backend.select("experiment number is 842 remember it")
-        assertEquals("search_notes", selection.decision.toolName)
+        assertEquals("save_note", selection.decision.toolName)
+        assertEquals(2, fixture.prompts.size)
+        assertTrue(fixture.prompts.last().contains("SAVE_NOTE"))
     }
 
     @Test
