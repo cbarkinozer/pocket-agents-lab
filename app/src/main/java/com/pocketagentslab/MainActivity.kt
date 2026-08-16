@@ -10,12 +10,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Debug
 import android.os.Environment
+import android.os.PowerManager
 import android.os.StatFs
 import android.os.SystemClock
 import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -40,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,6 +91,7 @@ class MainActivity : ComponentActivity() {
 private fun PocketAgentsScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val modelPreferences = remember { context.getSharedPreferences("model_defaults", Context.MODE_PRIVATE) }
     val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     val memoryInfo = remember {
         ActivityManager.MemoryInfo().also(activityManager::getMemoryInfo)
@@ -97,7 +99,9 @@ private fun PocketAgentsScreen() {
 
     var selectedModels by remember { mutableStateOf<List<SelectedModel>>(emptyList()) }
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
-    var selectedName by remember { mutableStateOf("No GGUF selected") }
+    var selectedName by remember {
+        mutableStateOf(modelPreferences.getString("model_name", null) ?: "No GGUF selected")
+    }
     var modelStatus by remember { mutableStateOf("Select a GGUF model, then load it") }
     var prompt by remember { mutableStateOf("What is 2+2?") }
     var output by remember { mutableStateOf("") }
@@ -141,6 +145,41 @@ private fun PocketAgentsScreen() {
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
     val controlsBusy = isBusy || isBenchmarkRunning || isAgentTestRunning || isActionTestRunning
+
+    LaunchedEffect(engine) {
+        val preferredFile = modelPreferences.getString("model_path", null)?.let(::File)
+            ?.takeIf { it.isFile }
+            ?: File(context.filesDir, "models").listFiles { file -> file.extension.equals("gguf", true) }
+                .orEmpty().maxByOrNull { it.lastModified() }
+        val savedPath = preferredFile?.absolutePath
+        val savedName = modelPreferences.getString("model_name", null) ?: preferredFile?.name
+        if (savedPath != null) {
+            modelPreferences.edit().putString("model_path", savedPath).putString("model_name", savedName).apply()
+            isBusy = true
+            modelStatus = "Automatically loading ${savedName ?: File(savedPath).name}…"
+            try {
+                val initializedState = engine.state.first {
+                    it is InferenceEngine.State.Initialized ||
+                        it is InferenceEngine.State.ModelReady ||
+                        it is InferenceEngine.State.Error
+                }
+                check(initializedState !is InferenceEngine.State.Error) { "llama.cpp initialization failed" }
+                if (initializedState is InferenceEngine.State.ModelReady) engine.cleanUp()
+                val started = SystemClock.elapsedRealtime()
+                engine.loadModel(savedPath)
+                engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+                loadedModelPath = savedPath
+                selectedName = savedName ?: File(savedPath).name
+                isModelLoaded = true
+                modelStatus = "Default model ready in ${SystemClock.elapsedRealtime() - started} ms"
+            } catch (error: Throwable) {
+                modelStatus = "Automatic model load failed: ${rootCauseDescription(error)}"
+                isModelLoaded = false
+            } finally {
+                isBusy = false
+            }
+        }
+    }
 
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
         if (uris.isNotEmpty()) {
@@ -363,6 +402,10 @@ private fun PocketAgentsScreen() {
                             engine.loadModel(modelFile.absolutePath)
                             engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
                             loadedModelPath = modelFile.absolutePath
+                            modelPreferences.edit()
+                                .putString("model_path", modelFile.absolutePath)
+                                .putString("model_name", modelFile.name)
+                                .apply()
                             val loadMs = SystemClock.elapsedRealtime() - started
                             isModelLoaded = true
                             modelStatus = "Model loaded successfully in ${loadMs} ms"
@@ -388,8 +431,7 @@ private fun PocketAgentsScreen() {
                     isAgentTestRunning = true
                     isModelLoaded = false
                     agentTestProgress = 0f
-                    val activity = context as? ComponentActivity
-                    activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    val wakeLock = acquireInferenceWakeLock(context, "agent-test", 8 * 60 * 60 * 1000L)
                     val runId = System.currentTimeMillis()
                     val outcomes = mutableListOf<JSONObject>()
                     writeQueueManifest(context, runId, queue, outcomes, state = "running")
@@ -451,7 +493,7 @@ private fun PocketAgentsScreen() {
                         agentTestStatus = "Agent test cancelled\n" +
                             outcomes.joinToString("\n") { formatQueueOutcome(it) }
                     } finally {
-                        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        if (wakeLock.isHeld) wakeLock.release()
                         isAgentTestRunning = false
                         agentTestJob = null
                     }
@@ -512,6 +554,10 @@ private fun PocketAgentsScreen() {
                             engine.loadModel(modelFile.absolutePath)
                             engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
                             loadedModelPath = modelFile.absolutePath
+                            modelPreferences.edit()
+                                .putString("model_path", modelFile.absolutePath)
+                                .putString("model_name", modelFile.name)
+                                .apply()
                             val loadMs = SystemClock.elapsedRealtime() - started
                             isModelLoaded = true
                             modelStatus = "Model loaded successfully in ${loadMs} ms"
@@ -550,8 +596,7 @@ private fun PocketAgentsScreen() {
                 scope.launch {
                     isActionTestRunning = true
                     actionTestProgress = 0f
-                    val activity = context as? ComponentActivity
-                    activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    val wakeLock = acquireInferenceWakeLock(context, "action-test", 60 * 60 * 1000L)
                     try {
                         val noteProposal = parseNoteWriteRequest(prompt.trim())
                         if (noteProposal != null) {
@@ -588,7 +633,7 @@ private fun PocketAgentsScreen() {
                     } catch (error: Throwable) {
                         actionTestStatus = "Action safety failed: ${rootCauseDescription(error)}"
                     } finally {
-                        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        if (wakeLock.isHeld) wakeLock.release()
                         isActionTestRunning = false
                     }
                 }
@@ -615,6 +660,7 @@ private fun PocketAgentsScreen() {
                     fileMatches = emptyList()
                     metrics = "Agent is deciding…"
                     agentProgress = AgentProgress(0.05f, "Preparing a fresh local-model context…")
+                    val wakeLock = acquireInferenceWakeLock(context, "interactive-agent", 30 * 60 * 1000L)
                     try {
                         prepareFreshAgent(engine, requireNotNull(loadedModelPath))
                         val pssBeforeKb = Debug.getPss()
@@ -669,6 +715,7 @@ private fun PocketAgentsScreen() {
                         output = "Generation failed: $cause"
                         Log.e(TAG, "Generation failed", error)
                     } finally {
+                        if (wakeLock.isHeld) wakeLock.release()
                         isBusy = false
                     }
                 }
@@ -931,6 +978,13 @@ private fun openLocalFile(context: Context, uri: Uri) {
     val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, mimeType)
         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     context.startActivity(Intent.createChooser(intent, "Open file with"))
+}
+
+private fun acquireInferenceWakeLock(context: Context, label: String, timeoutMs: Long): PowerManager.WakeLock {
+    val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    return powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PocketAgentsLab:$label").apply {
+        acquire(timeoutMs)
+    }
 }
 
 private fun openAndroidSettings(context: Context, action: String) {
