@@ -1873,7 +1873,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 2. [x] Integrate CPU-only llama.cpp for `arm64-v8a` with GGUF selection, model loading, generation, and timing telemetry.
 3. [x] Pin the llama.cpp commit/build flags and define the first versioned 50-prompt, JSON/CSV tool-routing harness with warm context reset, progress, and cancellation.
 4. [x] Preserve Run 001 of `tool-routing-3-tools-v1`: 13/50 correct routes, 29/50 final accepted selections, 42.3 s average latency, about 825-851 MB PSS, and 30.4-36.7 C observed temperature.
-5. [ ] Compare hierarchical grammar-constrained `tool-routing-3-tools-v6` against the preserved 40/50 v5 Qwen3.5 0.8B Q4_K_M baseline. Preserve v2-v4 under their original free-form semantics.
+5. [x] Compare hierarchical grammar-constrained `tool-routing-3-tools-v6` against the preserved v5 baseline. It regressed from 40/50 to 26/50 despite retaining 50/50 strict JSON, so v5 remains the best measured harness. Preserve every version under its original scoring semantics.
    The app supports an ordered, thermally gated overnight multi-model queue with isolated artifacts for each GGUF.
    Compatibility guards now cover xLAM fenced JSON and crash-safe Qwen non-thinking Jinja formatting/fresh-repair operation while preserving normalization labels and raw outputs.
 6. [ ] Add authoritative native token counts and repeatable cold-load/warm-generation measurements for model-load time, TTFT, token/s, peak RAM, CPU, battery, and thermal samples.
