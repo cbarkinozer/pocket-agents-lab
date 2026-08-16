@@ -111,6 +111,11 @@ private fun PocketAgentsScreen() {
     var agentTestJob by remember { mutableStateOf<Job?>(null) }
     var agentProgress by remember { mutableStateOf(AgentProgress(0f, "Ready")) }
     var proposedAction by remember { mutableStateOf<String?>(null) }
+    var documentName by remember { mutableStateOf("No document selected") }
+    var documentText by remember { mutableStateOf<String?>(null) }
+    var documentQuestion by remember { mutableStateOf("What are the main points?") }
+    var documentAnswer by remember { mutableStateOf("") }
+    var documentSources by remember { mutableStateOf("") }
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
@@ -133,6 +138,25 @@ private fun PocketAgentsScreen() {
             selectedName = selectedModels.first().name
             modelStatus = "Selected ${selectedModels.size} model(s) in displayed order"
             isModelLoaded = false
+        }
+    }
+    val documentPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            try {
+                context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            } catch (error: SecurityException) {
+                Log.w(TAG, "Document provider did not grant persistable access", error)
+            }
+            try {
+                documentName = displayName(context, uri)
+                documentText = readLocalTextDocument(context, uri, documentName)
+                documentAnswer = ""
+                documentSources = "Loaded ${documentText?.length ?: 0} characters locally"
+            } catch (error: Throwable) {
+                documentName = "Document load failed"
+                documentText = null
+                documentSources = rootCauseDescription(error)
+            }
         }
     }
 
@@ -488,6 +512,61 @@ private fun PocketAgentsScreen() {
                 }
             }
         }
+
+        HorizontalDivider()
+        Text("Local Document Agent", style = MaterialTheme.typography.titleLarge)
+        Text("Select one .txt or .md file. Kotlin retrieves the most relevant excerpts, then the local SLM answers only from those excerpts with source numbers.")
+        Button(
+            onClick = { documentPicker.launch(arrayOf("text/plain", "text/markdown", "text/*")) },
+            enabled = !controlsBusy,
+        ) { Text("Select Text Document") }
+        Text(documentName)
+        OutlinedTextField(
+            value = documentQuestion,
+            onValueChange = { documentQuestion = it },
+            label = { Text("Question about document") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !controlsBusy,
+        )
+        Button(
+            onClick = {
+                scope.launch {
+                    isBusy = true
+                    documentAnswer = ""
+                    try {
+                        val text = requireNotNull(documentText)
+                        val chunks = retrieveDocumentChunks(text, documentQuestion)
+                        documentSources = chunks.joinToString("\n\n") { "[${it.index}] ${it.text}" }
+                        prepareFreshAgent(engine, requireNotNull(loadedModelPath))
+                        RoutingGrammar.setMode(RoutingGrammar.NONE)
+                        val generated = collectGeneration(
+                            engine.sendUserPrompt(
+                                buildDocumentAnswerPrompt(documentName, documentQuestion, chunks),
+                                AGENT_ANSWER_TOKENS,
+                            ),
+                        )
+                        val decision = parseAgentDecision(generated.first)
+                        require(decision.action == "answer") { "Document response must use action=answer" }
+                        documentAnswer = decision.text.orEmpty().ifBlank { CLARIFICATION_MESSAGE }
+                    } catch (error: Throwable) {
+                        documentAnswer = "Document answer failed: ${rootCauseDescription(error)}"
+                    } finally {
+                        RoutingGrammar.setMode(RoutingGrammar.NONE)
+                        isBusy = false
+                    }
+                }
+            },
+            enabled = isModelLoaded && documentText != null && documentQuestion.isNotBlank() && !controlsBusy,
+        ) { Text(if (isBusy && documentText != null) "Reading locally…" else "Ask Document") }
+        OutlinedTextField(
+            value = documentAnswer,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Grounded answer") },
+            modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
+        )
+        Text("Retrieved source excerpts", style = MaterialTheme.typography.titleSmall)
+        Text(documentSources)
     }
 }
 
@@ -496,6 +575,19 @@ private fun openAndroidSettings(context: Context, action: String) {
     val fallback = Intent(Settings.ACTION_SETTINGS)
     context.startActivity(if (requested.resolveActivity(context.packageManager) != null) requested else fallback)
 }
+
+private fun readLocalTextDocument(context: Context, uri: Uri, name: String): String {
+    require(name.endsWith(".txt", ignoreCase = true) || name.endsWith(".md", ignoreCase = true)) {
+        "Only .txt and .md files are supported in this PoC"
+    }
+    val bytes = context.contentResolver.openInputStream(uri)?.use { input ->
+        input.readNBytes(MAX_LOCAL_DOCUMENT_BYTES + 1)
+    } ?: error("Unable to open selected document")
+    require(bytes.size <= MAX_LOCAL_DOCUMENT_BYTES) { "Document exceeds the 1 MB PoC limit" }
+    return bytes.toString(Charsets.UTF_8)
+}
+
+private const val MAX_LOCAL_DOCUMENT_BYTES = 1024 * 1024
 
 private fun proposedActionLabel(action: String): String = when (action) {
     OPEN_STORAGE_SETTINGS -> "Open Storage Settings"

@@ -88,7 +88,7 @@ Add capabilities beyond basic tool routing.
 - constrained code execution
 - generated workflows
 
-MVP target: one small local retrieval or memory workflow evaluated end to end; do not build a broad RAG platform first.
+Current MVP: one user-selected `.txt` or `.md` document, deterministic local keyword retrieval over bounded chunks, a small retrieved context, and a local-SLM answer that cites visible source excerpt numbers. Files remain read-only; the PoC has a 1 MB limit and no embeddings database or broad storage permission.
 
 ## 6. Model Adaptation Layer
 
