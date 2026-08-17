@@ -419,6 +419,28 @@ class AgentBackendTest {
     }
 
     @Test
+    fun xlamNativeOptimizationWorkflowIsNormalized() {
+        val decision = parseAgentDecision(
+            """[{"name":"phone_optimization_report","arguments":{}}]""",
+        )
+
+        assertEquals("workflow", decision.action)
+        assertEquals(PHONE_OPTIMIZATION_REPORT, decision.workflowName)
+        assertTrue(decision.schemaRepaired)
+    }
+
+    @Test
+    fun xlamNativeApprovedActionIsProposedRatherThanExecuted() {
+        val decision = parseAgentDecision(
+            """[{"name":"media_next","arguments":{}}]""",
+        )
+
+        assertEquals("propose", decision.action)
+        assertEquals(MEDIA_NEXT, decision.proposedAction)
+        assertTrue(decision.schemaRepaired)
+    }
+
+    @Test
     fun xlamNativeTwoCategoryBundleMapsToHealthWorkflow() {
         val decision = parseAgentDecision(
             """[{"name":"get_storage_info","arguments":{}},{"name":"get_battery_info","arguments":{}}]""",

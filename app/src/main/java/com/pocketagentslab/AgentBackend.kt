@@ -451,6 +451,16 @@ internal fun parseNativeToolCalls(raw: String): AgentDecision {
             workflowName = PHONE_HEALTH_CHECK,
             schemaRepaired = true,
         )
+        names.size == 1 && names.single() == PHONE_OPTIMIZATION_REPORT -> AgentDecision(
+            action = "workflow",
+            workflowName = PHONE_OPTIMIZATION_REPORT,
+            schemaRepaired = true,
+        )
+        names.size == 1 && names.single() in APPROVED_DEVICE_ACTIONS -> AgentDecision(
+            action = "propose",
+            proposedAction = names.single(),
+            schemaRepaired = true,
+        )
         names.size >= 2 && names.all { it in READ_ONLY_TOOLS } -> AgentDecision(
             action = "workflow",
             workflowName = PHONE_HEALTH_CHECK,

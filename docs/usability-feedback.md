@@ -29,6 +29,22 @@ treated as product requirements and routing regressions, not merely as anecdotal
 - A deterministic phone-optimization report using current available RAM, storage, low-memory state,
   and battery temperature. It recommends management actions without bulk-killing processes.
 
+## Validity and permission boundaries
+
+- An Android intent or media command proves that the request was handed to Android, not that a
+  third-party app completed the user's intended result. Spotify/YouTube results remain app-owned;
+  Telegram still requires the user to choose a chat and press Send.
+- Notification Access is a broad, optional, user-revocable permission. This app uses it only to ask
+  Android for active media sessions and does not persist notification contents, but users should not
+  grant it merely to use unrelated agent features.
+- Android's available-memory value includes memory the OS considers reclaimable. It is not a count
+  of unnecessary apps, and low available RAM alone does not prove that background apps caused lag.
+- Modern Android limits visibility and control of other apps' processes. The optimization report is
+  a point-in-time advisory based on exposed memory, storage, thermal, and battery signals; it neither
+  performs bulk process termination nor claims a causal performance diagnosis.
+- Active-media selection prefers a playing session. When several sessions exist or none is playing,
+  Android may expose an ambiguous first session, so the user should verify the target app and result.
+
 ## Deferred medium-hard work
 
 - Local photo collage generation with the system photo picker.

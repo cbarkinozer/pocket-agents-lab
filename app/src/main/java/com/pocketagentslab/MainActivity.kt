@@ -799,7 +799,7 @@ private fun PocketAgentsScreen() {
                         runCatching {
                             executeProposedAction(context, requireNotNull(proposedAction))
                         }.onSuccess {
-                            output = "Action handed to Android successfully."
+                            output = "Request handed to Android. Verify the result in the opened app."
                             proposedAction = null
                         }.onFailure { error ->
                             output = "Action could not run: ${rootCauseDescription(error)}"
