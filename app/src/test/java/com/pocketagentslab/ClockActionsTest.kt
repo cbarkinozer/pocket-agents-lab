@@ -38,4 +38,14 @@ class ClockActionsTest {
         assertNull(parseAlarmProposal("Set an alarm"))
         assertNull(parseAlarmProposal("Set an alarm for 25:80"))
     }
+
+    @Test
+    fun dottedTimeWithToAndEverydayIsAccepted() {
+        val proposal = parseAlarmProposal("Set alarm to 9.13 am everyday")
+
+        assertEquals(9, proposal?.hour)
+        assertEquals(13, proposal?.minute)
+        assertEquals(listOf(1, 2, 3, 4, 5, 6, 7), proposal?.repeatDays)
+        assertEquals("Set an alarm for 09:13 every day", deviceActionLabel(requireNotNull(proposal)))
+    }
 }

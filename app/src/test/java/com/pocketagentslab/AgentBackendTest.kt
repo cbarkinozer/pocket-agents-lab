@@ -171,6 +171,22 @@ class AgentBackendTest {
     }
 
     @Test
+    fun everydayAlarmProposalCarriesValidatedSchedule() = runBlocking {
+        val fixture = fixture(
+            """{"action":"propose","name":"set_alarm","args":{}}""",
+            allowDeviceActions = true,
+        )
+
+        val result = fixture.backend.run("Set alarm to 9.13 am everyday")
+
+        assertEquals("propose:set_alarm", result.route)
+        assertEquals(9, result.proposedAction?.hour)
+        assertEquals(13, result.proposedAction?.minute)
+        assertEquals(7, result.proposedAction?.repeatDays?.size)
+        assertTrue(result.answer.contains("09:13 every day"))
+    }
+
+    @Test
     fun proposedActionRejectsUnknownOrArgumentBearingActions() {
         expectFailureSync("Unknown proposed action") {
             parseAgentDecision("""{"action":"propose","name":"wipe_storage","args":{}}""")

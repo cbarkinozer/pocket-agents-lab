@@ -11,6 +11,7 @@ internal data class DeviceActionProposal(
     val minute: Int? = null,
     val durationSeconds: Int? = null,
     val label: String? = null,
+    val repeatDays: List<Int> = emptyList(),
 )
 
 internal fun buildDeviceActionProposal(action: String, request: String): DeviceActionProposal? = when (action) {
@@ -42,7 +43,7 @@ internal fun parseTimerProposal(request: String): DeviceActionProposal? {
 
 internal fun parseAlarmProposal(request: String): DeviceActionProposal? {
     val match = Regex(
-        "(?i)(?:at|for)\\s+(\\d{1,2})(?:[:.](\\d{2}))?\\s*(am|pm)?\\b",
+        "(?i)(?:at|for|to)\\s+(\\d{1,2})(?:[:.](\\d{2}))?\\s*(am|pm)?\\b",
     ).find(request) ?: return null
     var hour = match.groupValues[1].toIntOrNull() ?: return null
     val minute = match.groupValues[2].ifBlank { "0" }.toIntOrNull() ?: return null
@@ -66,6 +67,11 @@ internal fun parseAlarmProposal(request: String): DeviceActionProposal? {
         hour = hour,
         minute = minute,
         label = extractClockLabel(request),
+        repeatDays = if (Regex("(?i)\\bevery\\s*day\\b").containsMatchIn(request)) {
+            listOf(1, 2, 3, 4, 5, 6, 7)
+        } else {
+            emptyList()
+        },
     )
 }
 
@@ -81,6 +87,7 @@ internal fun deviceActionLabel(proposal: DeviceActionProposal): String = when (p
     SET_ALARM -> "Set an alarm for %02d:%02d".format(
         requireNotNull(proposal.hour),
         requireNotNull(proposal.minute),
-    ) + proposal.label?.let { " called ‘$it’" }.orEmpty()
+    ) + proposal.label?.let { " called ‘$it’" }.orEmpty() +
+        if (proposal.repeatDays.isNotEmpty()) " every day" else ""
     else -> "Unknown action"
 }

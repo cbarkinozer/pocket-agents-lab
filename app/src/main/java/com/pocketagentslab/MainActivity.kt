@@ -1135,6 +1135,9 @@ private fun executeProposedAction(context: Context, proposal: DeviceActionPropos
             putExtra(AlarmClock.EXTRA_HOUR, requireNotNull(proposal.hour))
             putExtra(AlarmClock.EXTRA_MINUTES, requireNotNull(proposal.minute))
             putExtra(AlarmClock.EXTRA_MESSAGE, proposal.label ?: "Pocket Agents alarm")
+            if (proposal.repeatDays.isNotEmpty()) {
+                putIntegerArrayListExtra(AlarmClock.EXTRA_DAYS, ArrayList(proposal.repeatDays))
+            }
             putExtra(AlarmClock.EXTRA_SKIP_UI, true)
         }
         OPEN_STORAGE_SETTINGS -> Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
