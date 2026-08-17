@@ -55,7 +55,9 @@ Give the agent useful things it can actually do.
 - accessibility helpers
 - app/device actions
 
-Current MVP: device, battery, storage, and actionable deterministic Phone Health.
+Current MVP: device, battery, storage, actionable deterministic Phone Health, private notes,
+bounded local-file retrieval, and confirmed alarm/timer actions. The SLM selects the Clock
+action while Kotlin validates its time or duration before Android receives an intent.
 
 ## 4. Mobile Control Layer
 

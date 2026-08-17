@@ -110,7 +110,7 @@ live ::= "{\"scope\":\"live_device\"}"
 )grammar";
 
 static constexpr const char * POCKET_AGENT_ROUTING_GRAMMAR = R"grammar(
-root ::= answer | device | battery | storage | files | notes | save-note | health | open-storage | open-battery
+root ::= answer | device | battery | storage | files | notes | save-note | health | open-storage | open-battery | set-timer | set-alarm
 answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
 battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
@@ -121,6 +121,8 @@ save-note ::= "{\"action\":\"tool\",\"name\":\"save_note\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
 open-storage ::= "{\"action\":\"propose\",\"name\":\"open_storage_settings\",\"args\":{}}"
 open-battery ::= "{\"action\":\"propose\",\"name\":\"open_battery_settings\",\"args\":{}}"
+set-timer ::= "{\"action\":\"propose\",\"name\":\"set_timer\",\"args\":{}}"
+set-alarm ::= "{\"action\":\"propose\",\"name\":\"set_alarm\",\"args\":{}}"
 )grammar";
 
 static constexpr const char * POCKET_LIVE_GRAMMAR = R"grammar(

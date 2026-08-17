@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -133,10 +134,40 @@ class AgentBackendTest {
         val result = fixture.backend.run("Open storage settings")
 
         assertEquals("propose:open_storage_settings", result.route)
-        assertEquals(OPEN_STORAGE_SETTINGS, result.proposedAction)
+        assertEquals(OPEN_STORAGE_SETTINGS, result.proposedAction?.name)
         assertTrue(result.answer.contains("Confirm"))
         assertTrue(fixture.toolCalls.isEmpty())
         assertTrue(fixture.prompts.single().startsWith(GRAMMAR_AGENT_ROUTE_PREFIX))
+    }
+
+    @Test
+    fun timerProposalIsValidatedBeforeConfirmation() = runBlocking {
+        val fixture = fixture(
+            """{"action":"propose","name":"set_timer","args":{}}""",
+            allowDeviceActions = true,
+        )
+
+        val result = fixture.backend.run("Set a timer for 15 minutes")
+
+        assertEquals("propose:set_timer", result.route)
+        assertEquals(SET_TIMER, result.proposedAction?.name)
+        assertEquals(900, result.proposedAction?.durationSeconds)
+        assertTrue(result.answer.contains("Confirm"))
+        assertTrue(fixture.toolCalls.isEmpty())
+    }
+
+    @Test
+    fun incompleteTimerProposalAsksForDetailsAndCannotExecute() = runBlocking {
+        val fixture = fixture(
+            """{"action":"propose","name":"set_timer","args":{}}""",
+            allowDeviceActions = true,
+        )
+
+        val result = fixture.backend.run("Set a timer")
+
+        assertEquals("clarify:set_timer", result.route)
+        assertNull(result.proposedAction)
+        assertTrue(result.answer.contains("duration"))
     }
 
     @Test

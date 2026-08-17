@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.provider.AlarmClock
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -126,7 +127,7 @@ private fun PocketAgentsScreen() {
     var actionTestProgress by remember { mutableStateOf(0f) }
     var agentTestJob by remember { mutableStateOf<Job?>(null) }
     var agentProgress by remember { mutableStateOf(AgentProgress(0f, "Ready")) }
-    var proposedAction by remember { mutableStateOf<String?>(null) }
+    var proposedAction by remember { mutableStateOf<DeviceActionProposal?>(null) }
     var documentName by remember { mutableStateOf("No document selected") }
     var documentText by remember { mutableStateOf<String?>(null) }
     var documentQuestion by remember { mutableStateOf("What are the main points?") }
@@ -833,16 +834,16 @@ private fun PocketAgentsScreen() {
             }
         }
         if (proposedAction != null) {
-            Text("Agent proposed: ${proposedActionLabel(requireNotNull(proposedAction))}")
-            Text("Nothing has happened yet. Confirm to leave the app and open Android Settings.")
+            Text("Agent proposed: ${deviceActionLabel(requireNotNull(proposedAction))}")
+            Text("Nothing has happened yet. Confirm to let Android perform this action.")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = {
-                        openProposedAction(context, requireNotNull(proposedAction))
+                        executeProposedAction(context, requireNotNull(proposedAction))
                         proposedAction = null
                     },
                     enabled = !controlsBusy,
-                ) { Text("Confirm open") }
+                ) { Text("Confirm action") }
                 Button(onClick = { proposedAction = null }, enabled = !controlsBusy) {
                     Text("Cancel")
                 }
@@ -1123,19 +1124,25 @@ private fun readLocalTextDocument(context: Context, uri: Uri, name: String): Str
 
 private const val MAX_LOCAL_DOCUMENT_BYTES = 1024 * 1024
 
-private fun proposedActionLabel(action: String): String = when (action) {
-    OPEN_STORAGE_SETTINGS -> "Open Storage Settings"
-    OPEN_BATTERY_SETTINGS -> "Open Battery Settings"
-    else -> "Unknown action"
-}
-
-private fun openProposedAction(context: Context, action: String) {
-    val settingsAction = when (action) {
-        OPEN_STORAGE_SETTINGS -> Settings.ACTION_INTERNAL_STORAGE_SETTINGS
-        OPEN_BATTERY_SETTINGS -> Settings.ACTION_BATTERY_SAVER_SETTINGS
-        else -> error("Action is not approved: $action")
+private fun executeProposedAction(context: Context, proposal: DeviceActionProposal) {
+    val intent = when (proposal.name) {
+        SET_TIMER -> Intent(AlarmClock.ACTION_SET_TIMER).apply {
+            putExtra(AlarmClock.EXTRA_LENGTH, requireNotNull(proposal.durationSeconds))
+            putExtra(AlarmClock.EXTRA_MESSAGE, proposal.label ?: "Pocket Agents timer")
+            putExtra(AlarmClock.EXTRA_SKIP_UI, true)
+        }
+        SET_ALARM -> Intent(AlarmClock.ACTION_SET_ALARM).apply {
+            putExtra(AlarmClock.EXTRA_HOUR, requireNotNull(proposal.hour))
+            putExtra(AlarmClock.EXTRA_MINUTES, requireNotNull(proposal.minute))
+            putExtra(AlarmClock.EXTRA_MESSAGE, proposal.label ?: "Pocket Agents alarm")
+            putExtra(AlarmClock.EXTRA_SKIP_UI, true)
+        }
+        OPEN_STORAGE_SETTINGS -> Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
+        OPEN_BATTERY_SETTINGS -> Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
+        else -> error("Action is not approved: ${proposal.name}")
     }
-    openAndroidSettings(context, settingsAction)
+    check(intent.resolveActivity(context.packageManager) != null) { "No Android app can perform this action" }
+    context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 }
 
 internal fun rootCauseDescription(error: Throwable): String {
@@ -1159,6 +1166,8 @@ Allowed routes:
 {"action":"workflow","name":"phone_health_check","args":{}}
 {"action":"propose","name":"open_storage_settings","args":{}}
 {"action":"propose","name":"open_battery_settings","args":{}}
+{"action":"propose","name":"set_timer","args":{}}
+{"action":"propose","name":"set_alarm","args":{}}
 Use a tool only for current phone facts. Use the workflow for overall health. Otherwise answer. Never invent names or arguments. After tool data, return action=answer."""
 
 private data class SelectedModel(val uri: Uri, val name: String)

@@ -45,7 +45,7 @@ internal data class AgentRunResult(
     val route: String,
     val generatedPieces: Int,
     val diagnosis: String? = null,
-    val proposedAction: String? = null,
+    val proposedAction: DeviceActionProposal? = null,
 )
 
 internal fun interface AgentGenerator {
@@ -162,15 +162,26 @@ internal class AgentBackend(
 
         if (decision.action == "propose") {
             val action = requireNotNull(decision.proposedAction)
+            val proposal = buildDeviceActionProposal(action, userPrompt)
+                ?: return AgentRunResult(
+                    answer = when (action) {
+                        SET_TIMER -> "Tell me a timer duration, for example: set a timer for 15 minutes."
+                        SET_ALARM -> "Tell me an alarm time, for example: set an alarm for 9 PM."
+                        else -> "I could not validate that action. Please rephrase it."
+                    },
+                    route = "clarify:$action",
+                    generatedPieces = selection.generatedPieces,
+                ).also { onProgress(AgentProgress(1.0f, "Waiting for clearer action details")) }
             return AgentRunResult(
                 answer = when (action) {
                     OPEN_STORAGE_SETTINGS -> "I can open Android Storage Settings. Confirm below before anything happens."
                     OPEN_BATTERY_SETTINGS -> "I can open Android Battery Settings. Confirm below before anything happens."
+                    SET_TIMER, SET_ALARM -> "I understood: ${deviceActionLabel(proposal)}. Confirm below before anything happens."
                     else -> error("Unknown proposed action: $action")
                 },
                 route = "propose:$action",
                 generatedPieces = selection.generatedPieces,
-                proposedAction = action,
+                proposedAction = proposal,
             ).also { onProgress(AgentProgress(1.0f, "Waiting for your confirmation")) }
         }
 
@@ -390,7 +401,7 @@ internal fun unwrapJsonFence(raw: String): Pair<String, Boolean> {
 
 internal const val OPEN_STORAGE_SETTINGS = "open_storage_settings"
 internal const val OPEN_BATTERY_SETTINGS = "open_battery_settings"
-internal val APPROVED_DEVICE_ACTIONS = setOf(OPEN_STORAGE_SETTINGS, OPEN_BATTERY_SETTINGS)
+internal val APPROVED_DEVICE_ACTIONS = setOf(OPEN_STORAGE_SETTINGS, OPEN_BATTERY_SETTINGS, SET_TIMER, SET_ALARM)
 
 internal fun buildRoutingPrompt(userPrompt: String, allowDeviceActions: Boolean = false): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
@@ -420,6 +431,8 @@ Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
 Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
 ${if (allowDeviceActions) """Explicit request to open Storage Settings -> {"action":"propose","name":"open_storage_settings","args":{}}
 Explicit request to open Battery Settings -> {"action":"propose","name":"open_battery_settings","args":{}}
+Set/count down a duration -> {"action":"propose","name":"set_timer","args":{}}
+Wake/remind at a clock time -> {"action":"propose","name":"set_alarm","args":{}}
 Only propose an action when the user asks to open or navigate to that settings page. Reading facts still uses a read-only tool. A proposal never executes without confirmation.""" else ""}
 Request: $userPrompt
 JSON:"""
