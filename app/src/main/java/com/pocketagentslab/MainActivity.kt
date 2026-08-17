@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.provider.AlarmClock
+import android.provider.CalendarContract
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -853,7 +854,10 @@ private fun PocketAgentsScreen() {
 
         if (currentPage == AppPage.CAPABILITIES) {
         Text("Capabilities", style = MaterialTheme.typography.titleLarge)
-        Text("Use local notes, search a granted folder, or ask questions grounded in one selected document.")
+        Text(
+            "Use private notes and local-file search, inspect device health, or safely propose " +
+                "alarms, timers, and calendar events. Device-changing actions always require confirmation.",
+        )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { showNotesPage = true }, enabled = !controlsBusy) {
                 Text("Pocket Notes")
@@ -1126,6 +1130,12 @@ private const val MAX_LOCAL_DOCUMENT_BYTES = 1024 * 1024
 
 private fun executeProposedAction(context: Context, proposal: DeviceActionProposal) {
     val intent = when (proposal.name) {
+        CREATE_CALENDAR_EVENT -> Intent(Intent.ACTION_INSERT).apply {
+            data = CalendarContract.Events.CONTENT_URI
+            putExtra(CalendarContract.Events.TITLE, requireNotNull(proposal.title))
+            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, requireNotNull(proposal.startEpochMillis))
+            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, requireNotNull(proposal.endEpochMillis))
+        }
         SET_TIMER -> Intent(AlarmClock.ACTION_SET_TIMER).apply {
             putExtra(AlarmClock.EXTRA_LENGTH, requireNotNull(proposal.durationSeconds))
             putExtra(AlarmClock.EXTRA_MESSAGE, proposal.label ?: "Pocket Agents timer")
@@ -1171,6 +1181,7 @@ Allowed routes:
 {"action":"propose","name":"open_battery_settings","args":{}}
 {"action":"propose","name":"set_timer","args":{}}
 {"action":"propose","name":"set_alarm","args":{}}
+{"action":"propose","name":"create_calendar_event","args":{}}
 Use a tool only for current phone facts. Use the workflow for overall health. Otherwise answer. Never invent names or arguments. After tool data, return action=answer."""
 
 private data class SelectedModel(val uri: Uri, val name: String)

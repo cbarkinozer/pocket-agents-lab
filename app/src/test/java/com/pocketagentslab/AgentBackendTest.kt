@@ -187,6 +187,22 @@ class AgentBackendTest {
     }
 
     @Test
+    fun calendarEventRequiresConfirmationAndNeverExecutesInBackend() = runBlocking {
+        val fixture = fixture(
+            """{"action":"propose","name":"create_calendar_event","args":{}}""",
+            allowDeviceActions = true,
+        )
+
+        val result = fixture.backend.run("Add dentist appointment tomorrow at 3 PM")
+
+        assertEquals("propose:create_calendar_event", result.route)
+        assertEquals(CREATE_CALENDAR_EVENT, result.proposedAction?.name)
+        assertEquals("dentist appointment", result.proposedAction?.title)
+        assertTrue(result.answer.contains("Confirm"))
+        assertTrue(fixture.toolCalls.isEmpty())
+    }
+
+    @Test
     fun proposedActionRejectsUnknownOrArgumentBearingActions() {
         expectFailureSync("Unknown proposed action") {
             parseAgentDecision("""{"action":"propose","name":"wipe_storage","args":{}}""")

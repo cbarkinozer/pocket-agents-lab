@@ -14,6 +14,9 @@
         <intent>
             <action android:name="android.intent.action.SET_ALARM" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.INSERT" />
+        </intent>
     </queries>
     <application
         android:label="Pocket Agents Lab"

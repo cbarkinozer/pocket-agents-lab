@@ -167,6 +167,7 @@ internal class AgentBackend(
                     answer = when (action) {
                         SET_TIMER -> "Tell me a timer duration, for example: set a timer for 15 minutes."
                         SET_ALARM -> "Tell me an alarm time, for example: set an alarm for 9 PM."
+                        CREATE_CALENDAR_EVENT -> "Tell me the event title, day, and time, for example: add dentist tomorrow at 3 PM."
                         else -> "I could not validate that action. Please rephrase it."
                     },
                     route = "clarify:$action",
@@ -176,7 +177,7 @@ internal class AgentBackend(
                 answer = when (action) {
                     OPEN_STORAGE_SETTINGS -> "I can open Android Storage Settings. Confirm below before anything happens."
                     OPEN_BATTERY_SETTINGS -> "I can open Android Battery Settings. Confirm below before anything happens."
-                    SET_TIMER, SET_ALARM -> "I understood: ${deviceActionLabel(proposal)}. Confirm below before anything happens."
+                    SET_TIMER, SET_ALARM, CREATE_CALENDAR_EVENT -> "I understood: ${deviceActionLabel(proposal)}. Confirm below before anything happens."
                     else -> error("Unknown proposed action: $action")
                 },
                 route = "propose:$action",
@@ -401,7 +402,13 @@ internal fun unwrapJsonFence(raw: String): Pair<String, Boolean> {
 
 internal const val OPEN_STORAGE_SETTINGS = "open_storage_settings"
 internal const val OPEN_BATTERY_SETTINGS = "open_battery_settings"
-internal val APPROVED_DEVICE_ACTIONS = setOf(OPEN_STORAGE_SETTINGS, OPEN_BATTERY_SETTINGS, SET_TIMER, SET_ALARM)
+internal val APPROVED_DEVICE_ACTIONS = setOf(
+    OPEN_STORAGE_SETTINGS,
+    OPEN_BATTERY_SETTINGS,
+    SET_TIMER,
+    SET_ALARM,
+    CREATE_CALENDAR_EVENT,
+)
 
 internal fun buildRoutingPrompt(userPrompt: String, allowDeviceActions: Boolean = false): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
@@ -433,6 +440,7 @@ ${if (allowDeviceActions) """Explicit request to open Storage Settings -> {"acti
 Explicit request to open Battery Settings -> {"action":"propose","name":"open_battery_settings","args":{}}
 Set/count down a duration -> {"action":"propose","name":"set_timer","args":{}}
 Wake/remind at a clock time -> {"action":"propose","name":"set_alarm","args":{}}
+Add/schedule an event or appointment -> {"action":"propose","name":"create_calendar_event","args":{}}
 Only propose an action when the user asks to open or navigate to that settings page. Reading facts still uses a read-only tool. A proposal never executes without confirmation.""" else ""}
 Request: $userPrompt
 JSON:"""

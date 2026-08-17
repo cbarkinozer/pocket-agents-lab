@@ -56,8 +56,9 @@ Give the agent useful things it can actually do.
 - app/device actions
 
 Current MVP: device, battery, storage, actionable deterministic Phone Health, private notes,
-bounded local-file retrieval, and confirmed alarm/timer actions. The SLM selects the Clock
-action while Kotlin validates its time or duration before Android receives an intent.
+bounded local-file retrieval, confirmed alarm/timer actions, and confirmed calendar-event
+drafts. The SLM selects the capability while Kotlin validates its parameters before Android
+receives an intent; calendar events still require the user to save them in the calendar editor.
 
 ## 4. Mobile Control Layer
 

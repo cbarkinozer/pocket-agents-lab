@@ -1892,6 +1892,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 16. [x] Connect folder search to the Tiny Agent as a grammar-constrained fourth read-only tool: the SLM selects `search_local_files`, Kotlin searches the authorized folder using the original request, and opening any match remains explicitly user-confirmed.
 17. [x] Route private note memory through the constrained agent harness: `search_notes` retrieves deterministically and `save_note` writes only when the original request contains an explicit remember/save/write command. Kotlin remains authoritative for parsing and storage.
 18. [x] Add confirmed Clock actions: the local SLM selects `set_timer` or `set_alarm`, Kotlin validates and normalizes the requested duration/time, the UI shows the exact proposal, and Android's Clock intent runs only after an explicit confirmation tap.
+19. [x] Add a confirmed calendar-event MVP: the SLM selects `create_calendar_event`, Kotlin requires a title plus a today/tomorrow time, and confirmation opens Android's calendar editor with a one-hour draft rather than silently saving it.
 9. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
 10. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
 11. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.
