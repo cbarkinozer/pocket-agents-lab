@@ -92,11 +92,12 @@ string(REPLACE
 string(APPEND AI_CHAT_SOURCE [=[
 
 static constexpr const char * POCKET_ROUTING_GRAMMAR = R"grammar(
-root ::= answer | device | battery | storage | files | notes | save-note | health
+root ::= answer | device | battery | storage | media-info | files | notes | save-note | health
 answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
 battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
 storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
+media-info ::= "{\"action\":\"tool\",\"name\":\"get_media_info\",\"args\":{}}"
 files ::= "{\"action\":\"tool\",\"name\":\"search_local_files\",\"args\":{}}"
 notes ::= "{\"action\":\"tool\",\"name\":\"search_notes\",\"args\":{}}"
 save-note ::= "{\"action\":\"tool\",\"name\":\"save_note\",\"args\":{}}"
@@ -110,21 +111,30 @@ live ::= "{\"scope\":\"live_device\"}"
 )grammar";
 
 static constexpr const char * POCKET_AGENT_ROUTING_GRAMMAR = R"grammar(
-root ::= answer | device | battery | storage | files | notes | save-note | health | open-storage | open-battery | open-camera | open-wallpaper | review-background | launch-app | set-timer | set-alarm | calendar-event
+root ::= answer | device | battery | storage | media-info | files | notes | save-note | health | optimize | open-storage | open-battery | open-camera | open-wallpaper | review-background | launch-app | spotify-search | youtube-search | telegram-draft | media-toggle | media-next | media-previous | open-media-access | set-timer | set-alarm | calendar-event
 answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
 battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
 storage ::= "{\"action\":\"tool\",\"name\":\"get_storage_info\",\"args\":{}}"
+media-info ::= "{\"action\":\"tool\",\"name\":\"get_media_info\",\"args\":{}}"
 files ::= "{\"action\":\"tool\",\"name\":\"search_local_files\",\"args\":{}}"
 notes ::= "{\"action\":\"tool\",\"name\":\"search_notes\",\"args\":{}}"
 save-note ::= "{\"action\":\"tool\",\"name\":\"save_note\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
+optimize ::= "{\"action\":\"workflow\",\"name\":\"phone_optimization_report\",\"args\":{}}"
 open-storage ::= "{\"action\":\"propose\",\"name\":\"open_storage_settings\",\"args\":{}}"
 open-battery ::= "{\"action\":\"propose\",\"name\":\"open_battery_settings\",\"args\":{}}"
 open-camera ::= "{\"action\":\"propose\",\"name\":\"open_camera\",\"args\":{}}"
 open-wallpaper ::= "{\"action\":\"propose\",\"name\":\"open_wallpaper_settings\",\"args\":{}}"
 review-background ::= "{\"action\":\"propose\",\"name\":\"review_background_apps\",\"args\":{}}"
 launch-app ::= "{\"action\":\"propose\",\"name\":\"launch_app\",\"args\":{}}"
+spotify-search ::= "{\"action\":\"propose\",\"name\":\"search_spotify\",\"args\":{}}"
+youtube-search ::= "{\"action\":\"propose\",\"name\":\"search_youtube\",\"args\":{}}"
+telegram-draft ::= "{\"action\":\"propose\",\"name\":\"draft_telegram_message\",\"args\":{}}"
+media-toggle ::= "{\"action\":\"propose\",\"name\":\"media_play_pause\",\"args\":{}}"
+media-next ::= "{\"action\":\"propose\",\"name\":\"media_next\",\"args\":{}}"
+media-previous ::= "{\"action\":\"propose\",\"name\":\"media_previous\",\"args\":{}}"
+open-media-access ::= "{\"action\":\"propose\",\"name\":\"open_media_access\",\"args\":{}}"
 set-timer ::= "{\"action\":\"propose\",\"name\":\"set_timer\",\"args\":{}}"
 set-alarm ::= "{\"action\":\"propose\",\"name\":\"set_alarm\",\"args\":{}}"
 calendar-event ::= "{\"action\":\"propose\",\"name\":\"create_calendar_event\",\"args\":{}}"

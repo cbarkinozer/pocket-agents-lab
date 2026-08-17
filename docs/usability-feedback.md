@@ -17,12 +17,17 @@ treated as product requirements and routing regressions, not merely as anecdotal
 
 ## Planned medium-effort capabilities
 
-- Spotify and YouTube search/deep-link handoff when the user supplies a song or video query.
-- WhatsApp message drafts when the recipient is unambiguous, with a preview and confirmation; the
-  user remains responsible for pressing Send.
-- A guided phone-optimization report that identifies pressure and opens the appropriate Android or
-  Samsung management surface. An ordinary app cannot reliably or safely force-stop every other app.
 - A fuller conversation-style Agent screen with compact model status and expandable technical data.
+
+## Implemented in the second capability sprint
+
+- Spotify and YouTube search/deep-link handoff when the user supplies a song or video query.
+- Telegram text sharing with a message and recipient hint preview. Telegram still requires chat
+  selection and the final Send tap because display-name lookup is not exposed to other apps.
+- Active-media title/artist reporting and play/pause/next/previous through Android MediaSession,
+  gated by user-controlled Notification Access.
+- A deterministic phone-optimization report using current available RAM, storage, low-memory state,
+  and battery temperature. It recommends management actions without bulk-killing processes.
 
 ## Deferred medium-hard work
 

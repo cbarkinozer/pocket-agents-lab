@@ -212,11 +212,10 @@ class AgentBackendTest {
             """{"action":"propose","name":"review_background_apps","args":{}}""",
             allowDeviceActions = true,
         )
-        val cleanup = cleanupFixture.backend.run("Please remove unnecessary processes running behind")
+        val cleanup = cleanupFixture.backend.select("Please remove unnecessary processes running behind")
 
         assertEquals(OPEN_CAMERA, camera.proposedAction?.name)
-        assertEquals(REVIEW_BACKGROUND_APPS, cleanup.proposedAction?.name)
-        assertTrue(cleanup.answer.contains("does not allow me to safely force-close"))
+        assertEquals(PHONE_OPTIMIZATION_REPORT, cleanup.decision.workflowName)
         assertTrue(cleanupFixture.toolCalls.isEmpty())
     }
 
@@ -545,8 +544,34 @@ class AgentBackendTest {
         assertTrue(trustedDirectAnswer("How can I change my wallpaper?")!!.contains("Wallpaper and style"))
         assertTrue(trustedDirectAnswer("Can you do a collage of my photos?")!!.contains("cannot create"))
         assertTrue(trustedDirectAnswer("Can you text my boyfriend from WhatsApp?")!!.contains("never press Send"))
-        assertTrue(trustedDirectAnswer("Can you control a YouTube video forward?")!!.contains("cannot control"))
         assertTrue(trustedDirectAnswer("Can you use ChatGPT for better results?")!!.contains("keeps inference local"))
+    }
+
+    @Test
+    fun optimizationWorkflowUsesDeterministicPhoneFacts() = runBlocking {
+        val calls = mutableListOf<String>()
+        val backend = AgentBackend(
+            generator = AgentGenerator { _, _ ->
+                GeneratedText("""{"action":"workflow","name":"phone_optimization_report","args":{}}""", 1)
+            },
+            tools = ReadOnlyToolExecutor { name, _ ->
+                calls += name
+                when (name) {
+                    "get_memory_info" -> """{"totalBytes":6000000000,"availableBytes":600000000,"lowMemory":true}"""
+                    "get_storage_info" -> """{"totalBytes":1000,"availableBytes":80}"""
+                    "get_battery_info" -> """{"temperatureC":32.0}"""
+                    else -> error(name)
+                }
+            },
+            allowDeviceActions = true,
+        )
+
+        val result = backend.run("Please optimize my slow phone")
+
+        assertEquals(listOf("get_memory_info", "get_storage_info", "get_battery_info"), calls)
+        assertTrue(result.answer.contains("low-memory pressure"))
+        assertTrue(result.answer.contains("below the 10%"))
+        assertEquals("workflow:$PHONE_OPTIMIZATION_REPORT", result.route)
     }
 
     @Test

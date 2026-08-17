@@ -21,6 +21,9 @@ internal data class DeviceActionProposal(
     val endEpochMillis: Long? = null,
     val appPackage: String? = null,
     val appLabel: String? = null,
+    val searchQuery: String? = null,
+    val messageText: String? = null,
+    val recipientHint: String? = null,
 )
 
 internal fun buildDeviceActionProposal(
@@ -38,6 +41,14 @@ internal fun buildDeviceActionProposal(
     SET_TIMER -> parseTimerProposal(request)
     SET_ALARM -> parseAlarmProposal(request)
     CREATE_CALENDAR_EVENT -> parseCalendarEventProposal(request, clock)
+    SEARCH_SPOTIFY,
+    SEARCH_YOUTUBE,
+    DRAFT_TELEGRAM_MESSAGE,
+    MEDIA_PLAY_PAUSE,
+    MEDIA_NEXT,
+    MEDIA_PREVIOUS,
+    OPEN_MEDIA_ACCESS,
+    -> parseExternalAppProposal(action, request)
     else -> null
 }
 
@@ -155,5 +166,12 @@ internal fun deviceActionLabel(proposal: DeviceActionProposal): String = when (p
             .toLocalDateTime()
             .toString()
     LAUNCH_APP -> "Open ${requireNotNull(proposal.appLabel)}"
+    SEARCH_SPOTIFY -> "Search Spotify for ‘${requireNotNull(proposal.searchQuery)}’"
+    SEARCH_YOUTUBE -> "Search YouTube for ‘${requireNotNull(proposal.searchQuery)}’"
+    DRAFT_TELEGRAM_MESSAGE -> "Prepare “${requireNotNull(proposal.messageText)}” for ${requireNotNull(proposal.recipientHint)} in Telegram"
+    MEDIA_PLAY_PAUSE -> "Toggle play/pause for the active media session"
+    MEDIA_NEXT -> "Skip to the next item in the active media session"
+    MEDIA_PREVIOUS -> "Return to the previous item in the active media session"
+    OPEN_MEDIA_ACCESS -> "Open Notification Access settings for media-session access"
     else -> "Unknown action"
 }
