@@ -203,6 +203,24 @@ class AgentBackendTest {
     }
 
     @Test
+    fun cameraAndBackgroundReviewAreConfirmedRatherThanExecuted() = runBlocking {
+        val camera = fixture(
+            """{"action":"propose","name":"open_camera","args":{}}""",
+            allowDeviceActions = true,
+        ).backend.run("Open camera")
+        val cleanupFixture = fixture(
+            """{"action":"propose","name":"review_background_apps","args":{}}""",
+            allowDeviceActions = true,
+        )
+        val cleanup = cleanupFixture.backend.run("Please remove unnecessary processes running behind")
+
+        assertEquals(OPEN_CAMERA, camera.proposedAction?.name)
+        assertEquals(REVIEW_BACKGROUND_APPS, cleanup.proposedAction?.name)
+        assertTrue(cleanup.answer.contains("does not allow me to safely force-close"))
+        assertTrue(cleanupFixture.toolCalls.isEmpty())
+    }
+
+    @Test
     fun proposedActionRejectsUnknownOrArgumentBearingActions() {
         expectFailureSync("Unknown proposed action") {
             parseAgentDecision("""{"action":"propose","name":"wipe_storage","args":{}}""")
@@ -452,16 +470,83 @@ class AgentBackendTest {
     }
 
     @Test
-    fun secondToolCallIsRejectedAfterFirstToolRuns() = runBlocking {
+    fun batteryFactsUseDeterministicAnswerWithoutSecondGeneration() = runBlocking {
         val fixture = fixture(
             """{"action":"tool","name":"get_battery_info","args":{}}""",
-            """{"action":"tool","name":"get_device_info","args":{}}""",
+            toolResult = """{"levelPercent":63,"temperatureC":31.2,"isCharging":false}""",
         )
 
-        expectFailure("Final response must use action=answer") {
-            fixture.backend.run("Is my battery hot?")
-        }
+        val result = fixture.backend.run("How much battery life do I have?")
+
         assertEquals(listOf("get_battery_info"), fixture.toolCalls)
+        assertTrue(result.answer.contains("remaining-hours estimate"))
+        assertEquals(1, fixture.prompts.size)
+    }
+
+    @Test
+    fun capabilityQuestionUsesTrustedLocalHelpWithoutLoadingTheModel() = runBlocking {
+        val fixture = fixture()
+
+        val result = fixture.backend.run("I generally do not know things to do on my phone, can you help me?")
+
+        assertEquals(CAPABILITY_HELP, result.answer)
+        assertTrue(fixture.prompts.isEmpty())
+        assertTrue(fixture.toolCalls.isEmpty())
+    }
+
+    @Test
+    fun unrelatedStorageRouteIsDowngradedToAnAnswer() = runBlocking {
+        val fixture = fixture(
+            """{"action":"tool","name":"get_storage_info","args":{}}""",
+            """{"action":"answer","text":"I cannot make a collage yet."}""",
+        )
+
+        val result = fixture.backend.run("Can you do a collage of my photos?")
+
+        assertTrue(result.answer.contains("cannot create photo collages yet"))
+        assertTrue(fixture.toolCalls.isEmpty())
+        assertEquals(1, fixture.prompts.size)
+    }
+
+    @Test
+    fun actionRelevancePolicyRejectsNearestUnrelatedAction() {
+        assertFalse(
+            isDecisionRelevant(
+                AgentDecision(action = "propose", proposedAction = OPEN_STORAGE_SETTINGS),
+                "Can you open a song from Spotify for me?",
+            ),
+        )
+        assertTrue(
+            isDecisionRelevant(
+                AgentDecision(action = "propose", proposedAction = OPEN_CAMERA),
+                "Open camera",
+            ),
+        )
+    }
+
+    @Test
+    fun installedAppLaunchIsResolvedBeforeConfirmation() = runBlocking {
+        val fixture = fixture(
+            """{"action":"propose","name":"launch_app","args":{}}""",
+            allowDeviceActions = true,
+            actionResolver = { action, _ ->
+                DeviceActionProposal(action, appPackage = "com.spotify.music", appLabel = "Spotify")
+            },
+        )
+
+        val result = fixture.backend.run("Open Spotify")
+
+        assertEquals("com.spotify.music", result.proposedAction?.appPackage)
+        assertTrue(result.answer.contains("Open Spotify"))
+    }
+
+    @Test
+    fun unsupportedRealUserRequestsReceiveTruthfulProductAnswers() {
+        assertTrue(trustedDirectAnswer("How can I change my wallpaper?")!!.contains("Wallpaper and style"))
+        assertTrue(trustedDirectAnswer("Can you do a collage of my photos?")!!.contains("cannot create"))
+        assertTrue(trustedDirectAnswer("Can you text my boyfriend from WhatsApp?")!!.contains("never press Send"))
+        assertTrue(trustedDirectAnswer("Can you control a YouTube video forward?")!!.contains("cannot control"))
+        assertTrue(trustedDirectAnswer("Can you use ChatGPT for better results?")!!.contains("keeps inference local"))
     }
 
     @Test
@@ -481,6 +566,9 @@ class AgentBackendTest {
         toolResult: String = """{"availableBytes":20000000000}""",
         hierarchicalRouting: Boolean = false,
         allowDeviceActions: Boolean = false,
+        actionResolver: (String, String) -> DeviceActionProposal? = { action, request ->
+            buildDeviceActionProposal(action, request)
+        },
     ): Fixture {
         val queued = ArrayDeque(responses.toList())
         val prompts = mutableListOf<String>()
@@ -496,6 +584,7 @@ class AgentBackendTest {
             },
             hierarchicalRouting = hierarchicalRouting,
             allowDeviceActions = allowDeviceActions,
+            actionResolver = actionResolver,
         )
         return Fixture(backend, prompts, toolCalls)
     }

@@ -66,8 +66,15 @@ internal class AgentBackend(
     private val onProgress: (AgentProgress) -> Unit = {},
     private val hierarchicalRouting: Boolean = false,
     private val allowDeviceActions: Boolean = false,
+    private val actionResolver: (String, String) -> DeviceActionProposal? = { action, request ->
+        buildDeviceActionProposal(action, request)
+    },
 ) {
     suspend fun select(userPrompt: String): AgentSelection {
+        capabilityHelpAnswer(userPrompt)?.let { answer ->
+            onProgress(AgentProgress(1.0f, "Capabilities ready"))
+            return AgentSelection(AgentDecision(action = "answer", text = answer), generatedPieces = 0)
+        }
         if (hierarchicalRouting) return selectHierarchically(userPrompt)
         onProgress(AgentProgress(0.15f, "Selecting an action with the local model…"))
         val generated = generator.generate(
@@ -94,7 +101,14 @@ internal class AgentBackend(
                 repairAttempted = true,
             )
         }
-        return refineNoteRoute(userPrompt, initial)
+        val conservative = if (isDecisionRelevant(initial.decision, userPrompt)) initial else {
+            AgentSelection(
+                decision = AgentDecision(action = "answer", text = ""),
+                generatedPieces = initial.generatedPieces,
+                repairAttempted = initial.repairAttempted,
+            )
+        }
+        return refineNoteRoute(userPrompt, conservative)
     }
 
     private suspend fun refineNoteRoute(userPrompt: String, initial: AgentSelection): AgentSelection {
@@ -139,6 +153,13 @@ internal class AgentBackend(
         if (decision.action == "answer") {
             val directAnswer = decision.text.orEmpty().trim()
             if (directAnswer.isBlank()) {
+                trustedDirectAnswer(userPrompt)?.let { trusted ->
+                    return AgentRunResult(
+                        answer = trusted,
+                        route = "answer:product-guardrail",
+                        generatedPieces = selection.generatedPieces,
+                    ).also { onProgress(AgentProgress(1.0f, "Complete")) }
+                }
                 onProgress(AgentProgress(0.70f, "Generating a local answer…"))
                 val generated = generator.generate(buildDirectAnswerPrompt(userPrompt), AGENT_ANSWER_TOKENS)
                 return AgentRunResult(
@@ -162,12 +183,13 @@ internal class AgentBackend(
 
         if (decision.action == "propose") {
             val action = requireNotNull(decision.proposedAction)
-            val proposal = buildDeviceActionProposal(action, userPrompt)
+            val proposal = actionResolver(action, userPrompt)
                 ?: return AgentRunResult(
                     answer = when (action) {
                         SET_TIMER -> "Tell me a timer duration, for example: set a timer for 15 minutes."
                         SET_ALARM -> "Tell me an alarm time, for example: set an alarm for 9 PM."
                         CREATE_CALENDAR_EVENT -> "Tell me the event title, day, and time, for example: add dentist tomorrow at 3 PM."
+                        LAUNCH_APP -> "Tell me which installed app to open, for example: open Spotify."
                         else -> "I could not validate that action. Please rephrase it."
                     },
                     route = "clarify:$action",
@@ -177,7 +199,10 @@ internal class AgentBackend(
                 answer = when (action) {
                     OPEN_STORAGE_SETTINGS -> "I can open Android Storage Settings. Confirm below before anything happens."
                     OPEN_BATTERY_SETTINGS -> "I can open Android Battery Settings. Confirm below before anything happens."
-                    SET_TIMER, SET_ALARM, CREATE_CALENDAR_EVENT -> "I understood: ${deviceActionLabel(proposal)}. Confirm below before anything happens."
+                    OPEN_CAMERA -> "I can open Camera. Confirm below before anything happens."
+                    OPEN_WALLPAPER_SETTINGS -> "I can open Android Wallpaper Settings. Confirm below before anything happens."
+                    REVIEW_BACKGROUND_APPS -> "Android does not allow me to safely force-close every other app. I can open app management so you can review or stop unnecessary apps. Confirm below."
+                    SET_TIMER, SET_ALARM, CREATE_CALENDAR_EVENT, LAUNCH_APP -> "I understood: ${deviceActionLabel(proposal)}. Confirm below before anything happens."
                     else -> error("Unknown proposed action: $action")
                 },
                 route = "propose:$action",
@@ -189,7 +214,7 @@ internal class AgentBackend(
         val toolName = requireNotNull(decision.toolName)
         onProgress(AgentProgress(0.45f, "Reading ${toolName.toDisplayName()}…"))
         val toolResult = tools.execute(toolName, userPrompt)
-        if (toolName == "search_notes") {
+        if (toolName == "search_notes" || toolName == "get_battery_info") {
             return AgentRunResult(
                 answer = deterministicToolAnswer(toolName, toolResult),
                 route = buildString {
@@ -402,13 +427,84 @@ internal fun unwrapJsonFence(raw: String): Pair<String, Boolean> {
 
 internal const val OPEN_STORAGE_SETTINGS = "open_storage_settings"
 internal const val OPEN_BATTERY_SETTINGS = "open_battery_settings"
+internal const val OPEN_CAMERA = "open_camera"
+internal const val OPEN_WALLPAPER_SETTINGS = "open_wallpaper_settings"
+internal const val REVIEW_BACKGROUND_APPS = "review_background_apps"
+internal const val LAUNCH_APP = "launch_app"
 internal val APPROVED_DEVICE_ACTIONS = setOf(
     OPEN_STORAGE_SETTINGS,
     OPEN_BATTERY_SETTINGS,
     SET_TIMER,
     SET_ALARM,
     CREATE_CALENDAR_EVENT,
+    OPEN_CAMERA,
+    OPEN_WALLPAPER_SETTINGS,
+    REVIEW_BACKGROUND_APPS,
+    LAUNCH_APP,
 )
+
+internal const val CAPABILITY_HELP = """I can work locally with:
+• device, battery, storage, and phone-health information
+• private notes that survive app restarts
+• keyword search in an authorized local folder
+• alarms, timers, and calendar-event drafts
+• opening Camera, Wallpaper Settings, Storage Settings, Battery Settings, and app-management screens
+
+Actions require confirmation. I cannot silently send messages, control media, close arbitrary apps, or modify system settings."""
+
+internal fun capabilityHelpAnswer(request: String): String? {
+    val normalized = request.lowercase(Locale.ROOT)
+    return CAPABILITY_HELP.takeIf {
+        normalized.contains("what can you do") ||
+            normalized.contains("how can you help") ||
+            normalized.contains("help me with my phone") ||
+            (normalized.contains("don't know") && normalized.contains("phone")) ||
+            (normalized.contains("do not know") && normalized.contains("phone"))
+    }
+}
+
+internal fun isDecisionRelevant(decision: AgentDecision, request: String): Boolean {
+    val text = request.lowercase(Locale.ROOT)
+    val relevant = when (decision.toolName ?: decision.workflowName ?: decision.proposedAction) {
+        "get_device_info" -> listOf("android", "phone", "device", "model", "manufacturer", "ram", "abi", "hardware").any(text::contains)
+        "get_battery_info" -> listOf("battery", "charge", "charging", "power", "temperature", "hot", "cool").any(text::contains)
+        "get_storage_info" -> listOf("storage", "space", "disk", "room", "fit", "capacity").any(text::contains)
+        "search_local_files" -> listOf("file", "document", "folder", "pdf").any(text::contains)
+        "search_notes", "save_note" -> listOf(
+            "note", "remember", "recall", "forget", "told you", "save this", "keep this", "what was", "what did i tell",
+        ).any(text::contains)
+        PHONE_HEALTH_CHECK -> listOf("health", "condition", "readiness", "check everything").any(text::contains)
+        OPEN_STORAGE_SETTINGS -> text.contains("storage") && listOf("open", "show", "settings", "take me").any(text::contains)
+        OPEN_BATTERY_SETTINGS -> text.contains("battery") && listOf("open", "show", "settings", "take me").any(text::contains)
+        OPEN_CAMERA -> text.contains("camera") && listOf("open", "launch", "start").any(text::contains)
+        OPEN_WALLPAPER_SETTINGS -> text.contains("wallpaper") && listOf("open", "show", "settings", "take me").any(text::contains)
+        REVIEW_BACKGROUND_APPS -> listOf("background", "process", "running apps", "lag", "slow phone").any(text::contains)
+        LAUNCH_APP -> listOf("open", "launch", "start").any(text::contains) &&
+            listOf("stop", "continue", "forward", "backward", "seek", "control playback").none(text::contains)
+        SET_TIMER -> text.contains("timer")
+        SET_ALARM -> text.contains("alarm") || text.contains("wake me")
+        CREATE_CALENDAR_EVENT -> listOf("calendar", "event", "appointment", "meeting", "schedule").any(text::contains)
+        else -> true
+    }
+    return relevant
+}
+
+internal fun trustedDirectAnswer(request: String): String? {
+    val text = request.lowercase(Locale.ROOT)
+    return when {
+        text.contains("wallpaper") ->
+            "Touch and hold an empty area of the Home screen, choose Wallpaper and style, select an image, then choose where to apply it. You can also ask me to open Wallpaper Settings."
+        text.contains("collage") && (text.contains("photo") || text.contains("picture")) ->
+            "I cannot create photo collages yet. That capability will require you to select photos explicitly; I will not access the gallery without permission."
+        text.contains("whatsapp") && listOf("text", "message", "send").any(text::contains) ->
+            "I cannot safely send WhatsApp messages yet. A future version can prepare a message for your review, but it will never press Send without you."
+        text.contains("youtube") && listOf("stop", "continue", "forward", "backward", "seek", "control").any(text::contains) ->
+            "I can open YouTube, but I cannot control playback yet. Pause, resume, and seeking need an explicitly approved media-control capability."
+        text.contains("chatgpt") && listOf("use", "result", "better").any(text::contains) ->
+            "I can open the ChatGPT app if it is installed, but Android does not give me a reliable way to operate it and retrieve its answer. Pocket Agents currently keeps inference local."
+        else -> null
+    }
+}
 
 internal fun buildRoutingPrompt(userPrompt: String, allowDeviceActions: Boolean = false): String = """Select exactly one route. Native grammar constructs the JSON, so choose by meaning:
 Live phone fact: {"action":"tool","name":"TOOL","args":{}}
@@ -438,10 +534,14 @@ Room for another model -> {"action":"tool","name":"get_storage_info","args":{}}
 Check everything -> {"action":"workflow","name":"phone_health_check","args":{}}
 ${if (allowDeviceActions) """Explicit request to open Storage Settings -> {"action":"propose","name":"open_storage_settings","args":{}}
 Explicit request to open Battery Settings -> {"action":"propose","name":"open_battery_settings","args":{}}
+Explicit request to open Camera -> {"action":"propose","name":"open_camera","args":{}}
+Explicit request to open Wallpaper Settings -> {"action":"propose","name":"open_wallpaper_settings","args":{}}
+Request to clean/review background apps or reduce lag -> {"action":"propose","name":"review_background_apps","args":{}}
+Explicit request to open an installed app -> {"action":"propose","name":"launch_app","args":{}}
 Set/count down a duration -> {"action":"propose","name":"set_timer","args":{}}
 Wake/remind at a clock time -> {"action":"propose","name":"set_alarm","args":{}}
 Add/schedule an event or appointment -> {"action":"propose","name":"create_calendar_event","args":{}}
-Only propose an action when the user asks to open or navigate to that settings page. Reading facts still uses a read-only tool. A proposal never executes without confirmation.""" else ""}
+Advice such as how to change wallpaper is an answer, not an action. Unsupported requests are answers or clarifications, never the nearest unrelated tool. A proposal never executes without confirmation.""" else ""}
 Request: $userPrompt
 JSON:"""
 
@@ -480,7 +580,8 @@ internal fun parseScopeDecision(raw: String): String {
 
 internal fun buildDirectAnswerPrompt(userPrompt: String): String =
     """Return exactly one compact JSON object: {"action":"answer","text":"your concise answer"}
-Answer this request without using device tools: $userPrompt
+Answer this request without using device tools. Do not claim you performed an action. If the app does not support the request, say so briefly and suggest a supported alternative. Supported actions are alarms, timers, calendar drafts, Camera, and Android management/settings screens. Current read-only capabilities are device, battery, storage, health, private notes, and authorized local-file search.
+Request: $userPrompt
 JSON:"""
 
 internal fun evaluatePhoneHealth(
@@ -603,7 +704,8 @@ internal fun deterministicToolAnswer(toolName: String, rawResult: String): Strin
             val level = result.optDouble("levelPercent", Double.NaN)
             val temperature = result.getDouble("temperatureC")
             val levelText = if (level.isNaN()) "an unknown charge level" else "${formatOne(level)}% charge"
-            "The battery is at $levelText and ${formatOne(temperature)}°C."
+            "The battery is at $levelText and ${formatOne(temperature)}°C. " +
+                "Android does not expose a reliable remaining-hours estimate here; actual battery life depends on current usage."
         }
         "get_device_info" ->
             "This is a ${result.getString("manufacturer")} ${result.getString("model")}, " +

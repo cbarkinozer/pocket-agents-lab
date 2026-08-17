@@ -110,7 +110,7 @@ live ::= "{\"scope\":\"live_device\"}"
 )grammar";
 
 static constexpr const char * POCKET_AGENT_ROUTING_GRAMMAR = R"grammar(
-root ::= answer | device | battery | storage | files | notes | save-note | health | open-storage | open-battery | set-timer | set-alarm | calendar-event
+root ::= answer | device | battery | storage | files | notes | save-note | health | open-storage | open-battery | open-camera | open-wallpaper | review-background | launch-app | set-timer | set-alarm | calendar-event
 answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
 battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
@@ -121,6 +121,10 @@ save-note ::= "{\"action\":\"tool\",\"name\":\"save_note\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
 open-storage ::= "{\"action\":\"propose\",\"name\":\"open_storage_settings\",\"args\":{}}"
 open-battery ::= "{\"action\":\"propose\",\"name\":\"open_battery_settings\",\"args\":{}}"
+open-camera ::= "{\"action\":\"propose\",\"name\":\"open_camera\",\"args\":{}}"
+open-wallpaper ::= "{\"action\":\"propose\",\"name\":\"open_wallpaper_settings\",\"args\":{}}"
+review-background ::= "{\"action\":\"propose\",\"name\":\"review_background_apps\",\"args\":{}}"
+launch-app ::= "{\"action\":\"propose\",\"name\":\"launch_app\",\"args\":{}}"
 set-timer ::= "{\"action\":\"propose\",\"name\":\"set_timer\",\"args\":{}}"
 set-alarm ::= "{\"action\":\"propose\",\"name\":\"set_alarm\",\"args\":{}}"
 calendar-event ::= "{\"action\":\"propose\",\"name\":\"create_calendar_event\",\"args\":{}}"

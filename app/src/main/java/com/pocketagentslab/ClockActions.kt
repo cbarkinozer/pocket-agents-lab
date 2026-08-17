@@ -19,6 +19,8 @@ internal data class DeviceActionProposal(
     val title: String? = null,
     val startEpochMillis: Long? = null,
     val endEpochMillis: Long? = null,
+    val appPackage: String? = null,
+    val appLabel: String? = null,
 )
 
 internal fun buildDeviceActionProposal(
@@ -26,7 +28,13 @@ internal fun buildDeviceActionProposal(
     request: String,
     clock: Clock = Clock.systemDefaultZone(),
 ): DeviceActionProposal? = when (action) {
-    OPEN_STORAGE_SETTINGS, OPEN_BATTERY_SETTINGS -> DeviceActionProposal(action)
+    OPEN_STORAGE_SETTINGS,
+    OPEN_BATTERY_SETTINGS,
+    OPEN_CAMERA,
+    OPEN_WALLPAPER_SETTINGS,
+    REVIEW_BACKGROUND_APPS,
+    -> DeviceActionProposal(action)
+    LAUNCH_APP -> null // Android resolves installed apps through the injected action resolver.
     SET_TIMER -> parseTimerProposal(request)
     SET_ALARM -> parseAlarmProposal(request)
     CREATE_CALENDAR_EVENT -> parseCalendarEventProposal(request, clock)
@@ -131,6 +139,9 @@ private fun extractClockLabel(request: String): String? = Regex(
 internal fun deviceActionLabel(proposal: DeviceActionProposal): String = when (proposal.name) {
     OPEN_STORAGE_SETTINGS -> "Open Storage Settings"
     OPEN_BATTERY_SETTINGS -> "Open Battery Settings"
+    OPEN_CAMERA -> "Open Camera"
+    OPEN_WALLPAPER_SETTINGS -> "Open Wallpaper Settings"
+    REVIEW_BACKGROUND_APPS -> "Review apps that may be using background resources"
     SET_TIMER -> "Set a ${requireNotNull(proposal.durationSeconds)}-second timer" +
         proposal.label?.let { " called ‘$it’" }.orEmpty()
     SET_ALARM -> "Set an alarm for %02d:%02d".format(
@@ -143,5 +154,6 @@ internal fun deviceActionLabel(proposal: DeviceActionProposal): String = when (p
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
             .toString()
+    LAUNCH_APP -> "Open ${requireNotNull(proposal.appLabel)}"
     else -> "Unknown action"
 }
