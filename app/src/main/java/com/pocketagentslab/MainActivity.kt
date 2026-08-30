@@ -208,7 +208,7 @@ private fun PocketAgentsScreen() {
                 speechStatus = when {
                     !currentAlwaysListen -> "Listening..."
                     currentWakeListeningPhase == WakeListeningPhase.WAITING_FOR_WAKE ->
-                        "Waiting silently for Hey Agent"
+                        "Waiting silently for Okay Pocket"
                     else -> "Listening for your command"
                 }
             }
@@ -248,7 +248,7 @@ private fun PocketAgentsScreen() {
 
                 if (currentWakeListeningPhase == WakeListeningPhase.WAITING_FOR_COMMAND) {
                     if (transcript != null && isAcceptedWakePhrase(transcript, confidence)) {
-                        speechStatus = "Hey Agent heard again. Speak your command now."
+                        speechStatus = "Okay Pocket heard again. Speak your command now."
                         acknowledgementTone.startTone(ToneGenerator.TONE_PROP_ACK, 160)
                         restartCommandListening()
                         return
@@ -259,7 +259,7 @@ private fun PocketAgentsScreen() {
                         queuedWakeCommand = transcript
                         speechStatus = "Heard command: $transcript"
                     } else {
-                        speechStatus = "No command heard. Waiting for Hey Agent."
+                        speechStatus = "No command heard. Waiting for Okay Pocket."
                         restartWakeListener()
                     }
                     return
@@ -277,7 +277,7 @@ private fun PocketAgentsScreen() {
                     }
                     else -> {
                         wakeListeningPhase = WakeListeningPhase.WAITING_FOR_COMMAND
-                        speechStatus = "Hey Agent heard. Speak your command now."
+                        speechStatus = "Okay Pocket heard. Speak your command now."
                         acknowledgementTone.startTone(ToneGenerator.TONE_PROP_ACK, 160)
                         restartCommandListening()
                     }
@@ -288,7 +288,7 @@ private fun PocketAgentsScreen() {
                 if (!currentControlsBusy) scope.launch {
                     delay(300)
                     if (currentAlwaysListen && !currentControlsBusy) {
-                        speechStatus = "Waiting silently for Hey Agent"
+                        speechStatus = "Waiting silently for Okay Pocket"
                         isListening = true
                         speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
                     }
@@ -562,7 +562,7 @@ private fun PocketAgentsScreen() {
                     if (alwaysListen && !isListening) {
                         isListening = true
                         wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
-                        speechStatus = "Waiting silently for Hey Agent"
+                        speechStatus = "Waiting silently for Okay Pocket"
                         speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
                     }
                 }
@@ -883,8 +883,8 @@ private fun PocketAgentsScreen() {
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {
-                Text("Hey Agent", style = MaterialTheme.typography.titleSmall)
-                Text("Say 'Hey Agent', wait for the acknowledgement sound, then speak your command.")
+                Text("Okay Pocket", style = MaterialTheme.typography.titleSmall)
+                Text("Say 'Okay Pocket', wait for the acknowledgement sound, then speak your command.")
             }
             Switch(
                 checked = alwaysListen,
@@ -901,10 +901,10 @@ private fun PocketAgentsScreen() {
                         android.content.pm.PackageManager.PERMISSION_GRANTED
                     ) {
                         isListening = true
-                        speechStatus = "Waiting for Hey Agent..."
+                        speechStatus = "Waiting for Okay Pocket..."
                         speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
                     } else {
-                        speechStatus = "Allow microphone access to use Hey Agent"
+                        speechStatus = "Allow microphone access to use Okay Pocket"
                         microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
                     }
                 },
