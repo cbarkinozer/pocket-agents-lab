@@ -42,8 +42,48 @@ the route source (`slm`, `slm_repair`, `deterministic`, or `fallback`).
 
 ## Internal Edge Agent Benchmark
 
-The current 50-case suite is the seed, not the final benchmark. Build a frozen, versioned benchmark
-with train/development/test separation and no test prompts in routing prompts or tuning data.
+The current 50-case suite is engineering evidence, not the final benchmark. It is now designated
+`PocketAgentBench-Pilot-v0` and belongs to the development split: its failures have been inspected,
+its labels have influenced prompts and harnesses, and Qwen Q4 was partly selected using its results.
+Its historical 40/50 and 44/50 results remain valid pilot findings, but it must never be used as an
+unseen confirmatory test for later prompt engineering or model adaptation.
+
+Build a frozen, versioned benchmark with train/development/test separation and no test prompts,
+semantic siblings, or answers in routing prompts, checkpoint selection, or tuning data. Split by
+semantic intent family rather than surface paraphrase so that closely related requests cannot leak
+across partitions.
+
+### Scientific construction plan
+
+1. **Pre-register the constructs and research questions.** Separate model capability, harness
+   contribution, mobile deployment cost, and model adaptation rather than changing several at once.
+2. **Specify a versioned scenario schema.** Record intent family, task category, difficulty,
+   linguistic form, required tools/actions, arguments, approval policy, deterministic device fixture,
+   expected final claims, scorer version, provenance, and split.
+3. **Create a 200--300-case candidate pool for a 100-case construction pilot.** Use real user
+   requests, Android capability boundaries, controlled contrast pairs, and generated paraphrase
+   candidates; generated candidates require human review and are never self-labeling ground truth.
+4. **Audit the pilot before scaling.** Check ambiguity, duplicates/near-duplicates, class and
+   difficulty balance, label agreement, scorer correctness, template-family dominance, and benchmark
+   infrastructure failures. Publish exclusions rather than counting defective cases as model errors.
+5. **Use the 100-case pilot to validate the instrument, not to make final category rankings.** Near
+   50% accuracy, 100 binary cases have roughly a +/-10 percentage-point 95% interval, and subdivision
+   across many categories is substantially less precise.
+6. **Construct and seal an approximately 300-case confirmatory set.** Freeze its content hash,
+   labels, exclusion policy, and scorer before evaluating the selected harness. Do not bundle visible
+   sealed cases into ordinary development builds.
+7. **Create adaptation data separately.** Training examples may derive from development failures and
+   explicitly assigned interactions, never from sealed internal tests or external benchmark answers.
+8. **Freeze base internal and external baselines before SFT/QLoRA.** DPO follows only defensible
+   chosen/rejected data; PPO or other RL follows only a validated, non-gameable reward.
+
+Maintain two related but distinct tracks:
+
+- **Capability track:** fixed deterministic Android fixtures and exact expected outcomes measure
+  route, tool set, arguments, clarification, approval, grounding, and end-to-end correctness.
+- **Deployment track:** real devices measure load time, TTFT, latency, authoritative token rate, PSS,
+  temperature, thermal status, energy where defensible, sustained degradation, crash, timeout, and
+  out-of-memory behavior. Live device state must not change the capability ground truth.
 
 ### Task categories
 
@@ -64,6 +104,38 @@ with train/development/test separation and no test prompts in routing prompts or
 
 Report macro accuracy across categories, per-category accuracy, and worst-category accuracy. A single
 aggregate score must never hide a category collapse.
+
+### Outcome gates
+
+Report progressively stricter gates separately:
+
+1. parseable output;
+2. valid schema;
+3. correct route;
+4. exact required tool set;
+5. correct arguments;
+6. correct clarification and approval behavior;
+7. successful execution;
+8. final response grounded in deterministic tool results;
+9. useful end-to-end task success.
+
+Valid JSON is not agent success, and Android accepting an Intent does not prove that the requested
+outcome occurred.
+
+### Statistical analysis plan
+
+- Report Wilson 95% confidence intervals for binary outcomes, macro and per-category accuracy,
+  worst-category accuracy, and safety-critical failure rates.
+- Compare paired systems on identical cases with exact McNemar tests, paired percentage-point
+  differences, and effect sizes. Apply Holm--Bonferroni correction within pre-registered contrast
+  families; label post-hoc comparisons exploratory.
+- Split and resample by semantic intent family to avoid treating paraphrases as independent tasks.
+- Report latency/TTFT with median, IQR, p90/p95, and task-cluster bootstrap intervals rather than a
+  mean alone.
+- Randomize or counterbalance model/quantization run order, repeat deployment runs, and block by
+  starting thermal state. Record charging, ambient protocol, cooldown, and background conditions.
+- Do not introduce an EdgeScore until weighting, quality gates, uncertainty, and ranking sensitivity
+  can be tested against enough raw results.
 
 ### Failure taxonomy
 

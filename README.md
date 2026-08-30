@@ -1896,12 +1896,22 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 20. [x] Complete the first real-user usability sprint: conservative route relevance checks, trusted capability help, accurate battery wording, confirmed Camera/Wallpaper/background-app-review actions, confirmed installed-app launching, honest indeterminate Agent progress, and a less cluttered Agent surface. Preserve follow-up scope in `docs/usability-feedback.md`.
 21. [x] Add external-app and media-control MVPs: parameterized Spotify/YouTube search handoffs, confirmed Telegram message drafts, permission-gated active-media metadata and transport controls, plus a deterministic RAM/storage/thermal phone-optimization report. Never claim a Telegram message was sent; recipient selection and Send remain user actions.
 22. [ ] Finish reliable wake-word voice control. The current "Okay Pocket" implementation is an unfinished experiment and must not be treated as a supported capability. A32 testing found missed activations, false acknowledgement sounds, ambiguous wake/command timing, and transcription errors. Android's general-purpose `SpeechRecognizer` is not yet a dependable always-listening hotword engine. Keep the prototype for later evaluation of a dedicated local wake-word detector, then retest foreground/background lifecycle, battery use, and command accuracy before marking this complete.
-9. [ ] Select a small, contamination-conscious quality suite and document licenses, versions, prompts, and scoring.
-10. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical protocol.
-11. [ ] Add capabilities only after the routing result: richer Android actions, then constrained local retrieval and sandboxed code execution.
-12. [ ] Design Edge Score only after enough raw results exist to test weighting, quality gates, stability, and ranking sensitivity.
-13. [ ] After frozen baselines, test SFT with LoRA/QLoRA, then DPO if SFT improves held-out results; consider RL-style optimization only after deterministic rewards and regression controls exist.
-14. [ ] Attempt on-device adapter training and custom/minimal runtimes only after inference, thermal, energy, and recovery tooling are reliable.
+23. [x] Reclassify the exposed 50-prompt routing suite as `PocketAgentBench-Pilot-v0` development evidence. Preserve its historical results, but never use it as an unseen confirmatory test after its failures influenced model, prompt, and harness choices.
+24. [ ] Pre-register PocketAgentBench research questions, task/difficulty taxonomy, scenario schema, outcome gates, split policy, exclusions, and statistical analysis before generating the scientific dataset.
+25. [ ] Generate a 200--300-case candidate pool and construct a balanced 100-case instrument pilot from real requests, controlled contrasts, Android capability boundaries, and human-reviewed generated paraphrases.
+26. [ ] Audit the 100-case pilot for ambiguity, near-duplicates, semantic-family leakage, class/difficulty balance, label agreement, scorer validity, template dominance, and benchmark-infrastructure defects. Publish an exclusion manifest.
+27. [ ] After correcting the instrument, construct and seal an approximately 300-case confirmatory set. Split by semantic intent family, freeze hashes and labels, and keep sealed prompts out of normal development builds and tuning data.
+28. [ ] Implement separate capability and deployment tracks: deterministic Android fixtures for correctness; repeated real-device runs for load time, TTFT, token/s, PSS, thermals, energy, crashes, timeouts, and sustained degradation.
+29. [ ] Score parseability, schema validity, route, exact tool set, arguments, clarification, approval, execution, grounded response, and end-to-end success separately. Valid JSON or an accepted Intent alone is not agent success.
+30. [ ] Add Wilson intervals, per-category/macro/worst-category reporting, paired McNemar comparisons, effect sizes, Holm correction, semantic-family cluster bootstrap, latency quantiles, and randomized/counterbalanced deployment order.
+31. [ ] Reproduce and freeze the untuned Qwen Q4 baseline on the sealed internal test and pinned external sentinels: MMLU-Pro, GPQA, IFEval, LongBench v2, BFCL V4, and MMMLU. Treat model-card figures only as references.
+32. [ ] Build adaptation data separately from tests. Compare SFT with LoRA/QLoRA against the identical base model; try DPO only with defensible preference pairs and RL-style optimization only after validating a non-gameable reward and catastrophic-forgetting gate.
+33. [ ] Add authoritative native token counts and repeatable cold-load/warm-generation measurements.
+34. [ ] After the sealed baseline, stress-test 3 -> 5 -> 10 tools with similar and irrelevant distractors as separately versioned experimental treatments.
+35. [ ] Benchmark several model sizes, quantizations, and compatible runtimes under the identical frozen protocol.
+36. [ ] Add further research capabilities only when they instantiate pre-registered benchmark categories; keep voice/STT/TTS, vision, and product polish in Product mode.
+37. [ ] Design Edge Score only after enough raw results exist to test weighting, quality gates, uncertainty, stability, and ranking sensitivity.
+38. [ ] Attempt on-device adapter training and custom/minimal runtimes only after inference, thermal, energy, and recovery tooling are reliable.
 
 The immediate priority is research measurement, not product polish or semantic search. Interactive
 requests now distinguish text-only Research mode (forced SLM routing, with STT/listening excluded)

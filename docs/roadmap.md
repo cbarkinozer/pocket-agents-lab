@@ -119,7 +119,11 @@ Measure what actually works.
 - latency, RAM, energy, and thermals
 - cross-device testing
 
-Current MVP: versioned 50-prompt routing suites, raw JSON/CSV artifacts, quantization comparisons, cooldown rules, and preserved result summaries. Next: repeat v5, then 5- and 10-tool distractor suites.
+Current MVP: versioned 50-prompt routing suites, raw JSON/CSV artifacts, quantization comparisons,
+cooldown rules, and preserved result summaries. These exposed cases are now
+`PocketAgentBench-Pilot-v0` development evidence, not an unseen test set. Next: pre-register the
+scientific design, validate the instrument on a separately constructed 100-case pilot, then freeze
+an approximately 300-case confirmatory set before further prompt optimization or adaptation claims.
 
 ## 8. Product / UX Layer — Pilav Tiny
 
@@ -145,12 +149,15 @@ adaptation.
 
 The immediate integrated sequence is:
 
-1. finish and repeat the frozen Qwen Q4 grammar-routing baseline;
-2. test hierarchical routing and then distractor tools;
-3. package Phone Health as the first polished end-to-end capability;
-4. add one safe mobile action with explicit approval;
-5. add one small local retrieval or memory capability;
-6. evaluate one targeted adapter only after the harness baseline is stable;
-7. continuously improve Pilav Tiny setup, permissions, progress, and explanations.
+1. preserve the existing 50-case suite as development-exposed `PocketAgentBench-Pilot-v0`;
+2. freeze research questions, task taxonomy, difficulty levels, scenario schema, outcome gates, and
+   statistical analysis before collecting the scientific benchmark;
+3. generate a 200--300-case candidate pool and manually audit a balanced 100-case construction pilot;
+4. correct the instrument, then construct and seal an approximately 300-case confirmatory set split
+   by semantic intent family rather than paraphrase;
+5. separate deterministic capability scoring from repeated real-device deployment measurement;
+6. establish frozen Qwen Q4 internal and external regression baselines;
+7. only then compare SFT/QLoRA, prompting, grammar, and orchestration on untouched tests; consider DPO
+   after defensible preference data and RL-style methods only after reward validation.
 
 Each step should produce a working demonstration and a preserved evaluation result. None requires the preceding layer to be “finished forever.”
