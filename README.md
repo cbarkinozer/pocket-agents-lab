@@ -1904,8 +1904,8 @@ The final user should not need to understand GGUF, JNI, quantization, context co
 14. [ ] Attempt on-device adapter training and custom/minimal runtimes only after inference, thermal, energy, and recovery tooling are reliable.
 
 The immediate priority is research measurement, not product polish or semantic search. Interactive
-requests now distinguish Research mode (forced SLM routing) from Product mode (deterministic fast
-paths plus SLM fallback). See [`docs/research-program.md`](docs/research-program.md) for the internal
+requests now distinguish text-only Research mode (forced SLM routing, with STT/listening excluded)
+from Product mode (deterministic fast paths plus SLM fallback). See [`docs/research-program.md`](docs/research-program.md) for the internal
 benchmark taxonomy, external regression sentinels, adaptation protocol, product backlog, and Android
 action inventory. See [`docs/tool-agent-evaluation.md`](docs/tool-agent-evaluation.md) for the pinned
 mobile protocol, thermal rule, wireless ADB setup, CSV schema, and single constrained repair policy.

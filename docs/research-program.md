@@ -18,6 +18,8 @@ The app exposes two routing modes. They must never be mixed in reported results.
 
 ### Research mode (default)
 
+- Input is typed text only. STT, wake-word listening, and voice lifecycle behavior are Product-mode
+  concerns and must not introduce transcription or timing noise into SLM-routing measurements.
 - Every eligible request is routed by the SLM.
 - Regex aliases and trusted product shortcuts do not rescue the route before it is scored.
 - Grammar constraints, schema validation, and the single constrained repair attempt remain explicit

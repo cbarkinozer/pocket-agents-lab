@@ -884,7 +884,15 @@ private fun PocketAgentsScreen() {
         Text("Routing mode", style = MaterialTheme.typography.titleSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
-                onClick = { agentRoutingMode = AgentRoutingMode.RESEARCH },
+                onClick = {
+                    alwaysListen = false
+                    wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
+                    queuedWakeCommand = null
+                    if (isListening) speechRecognizer.cancel()
+                    isListening = false
+                    speechStatus = "Voice input is available only in Product mode"
+                    agentRoutingMode = AgentRoutingMode.RESEARCH
+                },
                 enabled = !controlsBusy && agentRoutingMode != AgentRoutingMode.RESEARCH,
             ) { Text("Research") }
             Button(
@@ -894,66 +902,68 @@ private fun PocketAgentsScreen() {
         }
         Text(
             if (agentRoutingMode == AgentRoutingMode.RESEARCH) {
-                "Research: force routing through the SLM; deterministic app-search shortcuts are disabled."
+                "Research: typed input is routed through the SLM. Product shortcuts, STT, and listening are disabled."
             } else {
                 "Product: use safe deterministic shortcuts first, then fall back to the SLM."
             },
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column {
-                Text("Okay Pocket", style = MaterialTheme.typography.titleSmall)
-                Text("Say 'Okay Pocket', wait for the acknowledgement sound, then speak your command.")
+        if (agentRoutingMode == AgentRoutingMode.PRODUCT) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column {
+                    Text("Okay Pocket", style = MaterialTheme.typography.titleSmall)
+                    Text("Say 'Okay Pocket', wait for the acknowledgement sound, then speak your command.")
+                }
+                Switch(
+                    checked = alwaysListen,
+                    onCheckedChange = { enabled ->
+                        alwaysListen = enabled
+                        wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
+                        if (!enabled) {
+                            queuedWakeCommand = null
+                            if (isListening) speechRecognizer.cancel()
+                            isListening = false
+                            speechStatus = "Always listen is off"
+                        } else if (
+                            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+                            android.content.pm.PackageManager.PERMISSION_GRANTED
+                        ) {
+                            isListening = true
+                            speechStatus = "Waiting for Okay Pocket..."
+                            speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
+                        } else {
+                            speechStatus = "Allow microphone access to use Okay Pocket"
+                            microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    },
+                    enabled = !controlsBusy,
+                )
             }
-            Switch(
-                checked = alwaysListen,
-                onCheckedChange = { enabled ->
-                    alwaysListen = enabled
-                    wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
-                    if (!enabled) {
+            Button(
+                onClick = {
+                    if (isListening) {
+                        alwaysListen = false
+                        wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
                         queuedWakeCommand = null
-                        if (isListening) speechRecognizer.cancel()
+                        speechRecognizer.cancel()
                         isListening = false
-                        speechStatus = "Always listen is off"
+                        speechStatus = "Listening stopped"
                     } else if (
                         ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
                         android.content.pm.PackageManager.PERMISSION_GRANTED
                     ) {
                         isListening = true
-                        speechStatus = "Waiting for Okay Pocket..."
-                        speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
+                        speechRecognizer.startListening(buildOfflineSpeechIntent())
                     } else {
-                        speechStatus = "Allow microphone access to use Okay Pocket"
                         microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
                     }
                 },
-                enabled = !controlsBusy,
-            )
+                enabled = !controlsBusy || isListening,
+            ) { Text(if (isListening) "Stop listening" else "Speak") }
+            Text(speechStatus)
         }
-        Button(
-            onClick = {
-                if (isListening) {
-                    alwaysListen = false
-                    wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
-                    queuedWakeCommand = null
-                    speechRecognizer.cancel()
-                    isListening = false
-                    speechStatus = "Listening stopped"
-                } else if (
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
-                    android.content.pm.PackageManager.PERMISSION_GRANTED
-                ) {
-                    isListening = true
-                    speechRecognizer.startListening(buildOfflineSpeechIntent())
-                } else {
-                    microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
-                }
-            },
-            enabled = !controlsBusy || isListening,
-        ) { Text(if (isListening) "Stop listening" else "Speak") }
-        Text(speechStatus)
         OutlinedTextField(
             value = prompt,
             onValueChange = { prompt = it },
