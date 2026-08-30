@@ -6,3 +6,5 @@ private val WAKE_PHRASE = Regex("^\\s*hey[,.!]?\\s+agent[,.!]?\\s*(.*)$", RegexO
 internal fun commandAfterWakePhrase(transcript: String): String? =
     WAKE_PHRASE.matchEntire(transcript)?.groupValues?.get(1)?.trim()
 
+internal fun isAcceptedWakePhrase(transcript: String, confidence: Float?): Boolean =
+    commandAfterWakePhrase(transcript) != null && (confidence == null || confidence < 0f || confidence >= 0.55f)

@@ -1,10 +1,23 @@
 package com.pocketagentslab
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ExternalAppActionsTest {
+    @Test
+    fun handsFreeAllowlistOpensMediaButNeverMessages() {
+        assertTrue(isHandsFreeVoiceAction(DeviceActionProposal(SEARCH_YOUTUBE, searchQuery = "PewDiePie")))
+        assertTrue(isHandsFreeVoiceAction(DeviceActionProposal(MEDIA_PLAY_PAUSE)))
+        assertFalse(
+            isHandsFreeVoiceAction(
+                DeviceActionProposal(DRAFT_TELEGRAM_MESSAGE, messageText = "hello", recipientHint = "Efe"),
+            ),
+        )
+    }
+
     @Test
     fun spotifyAndYouTubeQueriesAreExtracted() {
         assertEquals(

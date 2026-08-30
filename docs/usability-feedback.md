@@ -48,7 +48,9 @@ treated as product requirements and routing regressions, not merely as anecdotal
   offline recognition, but actual offline support is device-dependent. It is not a screen-off
   hotword service and does not pretend to provide background listening yet. On Android 13+, the
   app requests a segmented session to avoid noisy recognition restarts, then uses an explicit
-  wake-word -> acknowledgement tone -> command state machine.
+  wake-word -> acknowledgement tone -> command state machine. Recognition is cancelled and the
+  toggle is reset when the activity stops, so the foreground-only implementation cannot keep the
+  microphone active after Home, screen lock, or an external-app handoff.
 
 ## Deferred medium-hard work
 

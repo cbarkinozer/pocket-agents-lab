@@ -64,8 +64,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.arm.aichat.AiChat
 import com.arm.aichat.ConversationReset
 import com.arm.aichat.InferenceEngine
@@ -108,6 +111,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun PocketAgentsScreen() {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
     val modelPreferences = remember { context.getSharedPreferences("model_defaults", Context.MODE_PRIVATE) }
     val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -180,6 +184,21 @@ private fun PocketAgentsScreen() {
     val currentControlsBusy by rememberUpdatedState(controlsBusy)
     val currentWakeListeningPhase by rememberUpdatedState(wakeListeningPhase)
 
+    DisposableEffect(lifecycleOwner, speechRecognizer) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                alwaysListen = false
+                wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
+                queuedWakeCommand = null
+                runCatching { speechRecognizer.cancel() }
+                isListening = false
+                speechStatus = "Listening stopped because the app left the foreground"
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
     // Two-stage wake-word interaction.
     // Segmented recognition keeps a supported recognition service open instead of
     // repeatedly starting it and triggering Samsung's start/error sounds.
@@ -219,6 +238,7 @@ private fun PocketAgentsScreen() {
 
             private fun handleRecognition(results: Bundle?) {
                 val transcript = results?.bestSpeechText()
+                val confidence = results?.bestSpeechConfidence()
                 isListening = false
                 if (!currentAlwaysListen) {
                     transcript?.let { prompt = it }
@@ -227,6 +247,12 @@ private fun PocketAgentsScreen() {
                 }
 
                 if (currentWakeListeningPhase == WakeListeningPhase.WAITING_FOR_COMMAND) {
+                    if (transcript != null && isAcceptedWakePhrase(transcript, confidence)) {
+                        speechStatus = "Hey Agent heard again. Speak your command now."
+                        acknowledgementTone.startTone(ToneGenerator.TONE_PROP_ACK, 160)
+                        restartCommandListening()
+                        return
+                    }
                     wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
                     if (!transcript.isNullOrBlank()) {
                         prompt = transcript
@@ -239,7 +265,9 @@ private fun PocketAgentsScreen() {
                     return
                 }
 
-                val inlineCommand = transcript?.let(::commandAfterWakePhrase)
+                val inlineCommand = transcript
+                    ?.takeIf { isAcceptedWakePhrase(it, confidence) }
+                    ?.let(::commandAfterWakePhrase)
                 when {
                     inlineCommand == null -> restartWakeListener()
                     inlineCommand.isNotBlank() -> {
@@ -251,13 +279,7 @@ private fun PocketAgentsScreen() {
                         wakeListeningPhase = WakeListeningPhase.WAITING_FOR_COMMAND
                         speechStatus = "Hey Agent heard. Speak your command now."
                         acknowledgementTone.startTone(ToneGenerator.TONE_PROP_ACK, 160)
-                        scope.launch {
-                            delay(250)
-                            if (currentAlwaysListen && !currentControlsBusy) {
-                                isListening = true
-                                speechRecognizer.startListening(buildOfflineSpeechIntent())
-                            }
-                        }
+                        restartCommandListening()
                     }
                 }
             }
@@ -269,6 +291,16 @@ private fun PocketAgentsScreen() {
                         speechStatus = "Waiting silently for Hey Agent"
                         isListening = true
                         speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
+                    }
+                }
+            }
+
+            private fun restartCommandListening() {
+                scope.launch {
+                    delay(350)
+                    if (currentAlwaysListen && !currentControlsBusy) {
+                        isListening = true
+                        speechRecognizer.startListening(buildOfflineSpeechIntent(commandCapture = true))
                     }
                 }
             }
@@ -470,9 +502,26 @@ private fun PocketAgentsScreen() {
                 val piecesPerSecond = if (generationMs > 0) {
                     result.generatedPieces * 1000.0 / generationMs
                 } else 0.0
-                output = result.answer
-                proposedAction = result.proposedAction
-                showAgentCompletionNotification(context, result.answer)
+                val voiceProposal = result.proposedAction
+                if (voiceProposal != null && isHandsFreeVoiceAction(voiceProposal)) {
+                    runCatching { executeProposedAction(context, voiceProposal) }
+                        .onSuccess {
+                            proposedAction = null
+                            output = "Voice action handed to Android: ${deviceActionLabel(voiceProposal)}"
+                            if (voiceProposal.name in setOf(SEARCH_YOUTUBE, SEARCH_SPOTIFY)) {
+                                alwaysListen = false
+                                isListening = false
+                            }
+                        }
+                        .onFailure {
+                            proposedAction = voiceProposal
+                            output = "Voice action could not open automatically: ${rootCauseDescription(it)}"
+                        }
+                } else {
+                    output = result.answer
+                    proposedAction = voiceProposal
+                }
+                showAgentCompletionNotification(context, output)
                 metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | " +
                     "%.2f exposed pieces/s | PSS %.1f MB".format(
                         Locale.US, piecesPerSecond, pssAfterKb / 1024.0,
@@ -1268,7 +1317,10 @@ private fun acquireInferenceWakeLock(context: Context, label: String, timeoutMs:
     }
 }
 
-private fun buildOfflineSpeechIntent(segmented: Boolean = false): Intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+private fun buildOfflineSpeechIntent(
+    segmented: Boolean = false,
+    commandCapture: Boolean = false,
+): Intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
     putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
     putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
     putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
@@ -1280,10 +1332,18 @@ private fun buildOfflineSpeechIntent(segmented: Boolean = false): Intent = Inten
         )
         putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1_500L)
     }
+    if (commandCapture) {
+        putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 6_000L)
+        putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3_000L)
+        putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 3_000L)
+    }
 }
 
 private fun Bundle.bestSpeechText(): String? =
     getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()?.trim()?.takeIf { it.isNotBlank() }
+
+private fun Bundle.bestSpeechConfidence(): Float? =
+    getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)?.firstOrNull()
 
 private fun showAgentCompletionNotification(context: Context, answer: String) {
     runCatching {
@@ -1331,6 +1391,14 @@ private fun readLocalTextDocument(context: Context, uri: Uri, name: String): Str
 }
 
 private const val MAX_LOCAL_DOCUMENT_BYTES = 1024 * 1024
+
+internal fun isHandsFreeVoiceAction(proposal: DeviceActionProposal): Boolean = proposal.name in setOf(
+    SEARCH_SPOTIFY,
+    SEARCH_YOUTUBE,
+    MEDIA_PLAY_PAUSE,
+    MEDIA_NEXT,
+    MEDIA_PREVIOUS,
+)
 
 private fun executeProposedAction(context: Context, proposal: DeviceActionProposal) {
     if (proposal.name in setOf(MEDIA_PLAY_PAUSE, MEDIA_NEXT, MEDIA_PREVIOUS)) {
