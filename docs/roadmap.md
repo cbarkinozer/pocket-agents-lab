@@ -135,6 +135,12 @@ Turn the best research into something normal people can use.
 
 Current MVP: a three-section Android UI for device capability, model evaluation, and the Tiny Agent. Product work should continue alongside research rather than waiting for every underlying layer to be complete.
 
+Product work is now deferred behind the research program. The unfinished product backlog includes
+reliable local wake-word voice control, broader local search, offline STT/TTS, vision, background
+voice lifecycle, onboarding, and consumer UI polish. See `research-program.md`. The active path is
+Research mode -> internal benchmark -> external regression sentinels -> parameter-efficient model
+adaptation.
+
 ## Near-term vertical slice
 
 The immediate integrated sequence is:
