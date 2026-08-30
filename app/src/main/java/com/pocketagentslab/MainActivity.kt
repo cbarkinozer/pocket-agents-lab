@@ -26,6 +26,7 @@ import android.speech.SpeechRecognizer
 import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -48,6 +49,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +58,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -89,6 +92,7 @@ import org.tensorflow.lite.Interpreter
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -156,6 +160,8 @@ private fun PocketAgentsScreen() {
     var isModelLoaded by remember { mutableStateOf(false) }
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     var isListening by remember { mutableStateOf(false) }
+    var alwaysListen by remember { mutableStateOf(false) }
+    var queuedWakeCommand by remember { mutableStateOf<String?>(null) }
     var speechStatus by remember { mutableStateOf("Tap the microphone to dictate a prompt") }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
     val speechRecognizer = remember {
@@ -166,6 +172,8 @@ private fun PocketAgentsScreen() {
         }
     }
     val controlsBusy = isBusy || isBenchmarkRunning || isAgentTestRunning || isActionTestRunning
+    val currentAlwaysListen by rememberUpdatedState(alwaysListen)
+    val currentControlsBusy by rememberUpdatedState(controlsBusy)
 
     DisposableEffect(speechRecognizer) {
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
@@ -176,15 +184,49 @@ private fun PocketAgentsScreen() {
             override fun onEndOfSpeech() { speechStatus = "Finishing transcription…" }
             override fun onError(error: Int) {
                 isListening = false
-                speechStatus = "Speech recognition stopped (error $error). Tap mic to retry."
+                if (currentAlwaysListen && !currentControlsBusy) {
+                    speechStatus = "Wake listener restartingâ€¦"
+                    scope.launch {
+                        delay(600)
+                        if (currentAlwaysListen && !currentControlsBusy) {
+                            isListening = true
+                            speechRecognizer.startListening(buildOfflineSpeechIntent())
+                        }
+                    }
+                } else {
+                    speechStatus = "Speech recognition stopped (error $error). Tap mic to retry."
+                }
             }
             override fun onResults(results: Bundle?) {
-                results?.bestSpeechText()?.let { prompt = it }
+                val transcript = results?.bestSpeechText()
                 isListening = false
-                speechStatus = "Transcription ready"
+                if (currentAlwaysListen) {
+                    val command = transcript?.let(::commandAfterWakePhrase)
+                    when {
+                        command == null -> speechStatus = "Waiting for Hey Agentâ€¦"
+                        command.isBlank() -> speechStatus = "Wake phrase heard. Say: Hey Agent, then your request."
+                        else -> {
+                            prompt = command
+                            queuedWakeCommand = command
+                            speechStatus = "Heard: $command"
+                        }
+                    }
+                    if (command.isNullOrBlank() && !currentControlsBusy) {
+                        scope.launch {
+                            delay(350)
+                            if (currentAlwaysListen && !currentControlsBusy) {
+                                isListening = true
+                                speechRecognizer.startListening(buildOfflineSpeechIntent())
+                            }
+                        }
+                    }
+                } else {
+                    transcript?.let { prompt = it }
+                    speechStatus = "Transcription ready"
+                }
             }
             override fun onPartialResults(partialResults: Bundle?) {
-                partialResults?.bestSpeechText()?.let { prompt = it }
+                if (!currentAlwaysListen) partialResults?.bestSpeechText()?.let { prompt = it }
             }
             override fun onEvent(eventType: Int, params: Bundle?) = Unit
         })
@@ -196,6 +238,7 @@ private fun PocketAgentsScreen() {
             isListening = true
             speechRecognizer.startListening(buildOfflineSpeechIntent())
         } else {
+            alwaysListen = false
             speechStatus = "Microphone permission is required for voice input"
         }
     }
@@ -336,6 +379,103 @@ private fun PocketAgentsScreen() {
             },
         )
         return
+    }
+
+    val runAgentRequest: (String) -> Unit = { request ->
+        scope.launch {
+            isBusy = true
+            output = ""
+            proposedAction = null
+            fileMatches = emptyList()
+            metrics = "Agent is decidingâ€¦"
+            agentProgress = AgentProgress(0.05f, "Preparing a fresh local-model contextâ€¦")
+            val wakeLock = acquireInferenceWakeLock(context, "interactive-agent", 30 * 60 * 1000L)
+            try {
+                if (!isModelLoaded) {
+                    agentProgress = AgentProgress(0.02f, "Loading the default modelâ€¦")
+                    modelStatus = "Loading ${selectedName}..."
+                    val modelPath = requireNotNull(loadedModelPath) { "Select a GGUF model first" }
+                    val initializedState = engine.state.first {
+                        it is InferenceEngine.State.Initialized ||
+                            it is InferenceEngine.State.ModelReady ||
+                            it is InferenceEngine.State.Error
+                    }
+                    check(initializedState !is InferenceEngine.State.Error) { "llama.cpp initialization failed" }
+                    withContext(Dispatchers.IO) {
+                        if (initializedState is InferenceEngine.State.ModelReady) engine.cleanUp()
+                        engine.loadModel(modelPath)
+                        engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+                    }
+                    isModelLoaded = true
+                    modelStatus = "$selectedName â€¢ Ready"
+                }
+                prepareFreshAgent(engine, requireNotNull(loadedModelPath))
+                val pssBeforeKb = Debug.getPss()
+                val started = SystemClock.elapsedRealtime()
+                val result = createAgentBackend(
+                    context,
+                    engine,
+                    onProgress = { progress -> agentProgress = progress },
+                    folderUri = folderUri,
+                    onFileMatches = { fileMatches = it },
+                ).run(request.trim())
+                val generationMs = SystemClock.elapsedRealtime() - started
+                val pssAfterKb = Debug.getPss()
+                val piecesPerSecond = if (generationMs > 0) {
+                    result.generatedPieces * 1000.0 / generationMs
+                } else 0.0
+                output = result.answer
+                proposedAction = result.proposedAction
+                showAgentCompletionNotification(context, result.answer)
+                metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | " +
+                    "%.2f exposed pieces/s | PSS %.1f MB".format(
+                        Locale.US, piecesPerSecond, pssAfterKb / 1024.0,
+                    )
+                Log.i(
+                    TAG_METRICS,
+                    "agent_route=${result.route} generation_ms=$generationMs " +
+                        "generated_token_pieces=${result.generatedPieces} " +
+                        "pss_before_kb=$pssBeforeKb pss_after_kb=$pssAfterKb " +
+                        "tokens_per_second=${"%.3f".format(Locale.US, piecesPerSecond)}",
+                )
+                if (result.diagnosis != null) {
+                    val report = JSONObject()
+                        .put("workflow", PHONE_HEALTH_CHECK)
+                        .put("diagnosis", JSONObject(result.diagnosis))
+                        .put("latencyMs", generationMs)
+                        .put("generatedPieces", result.generatedPieces)
+                        .put("exposedPiecesPerSecond", piecesPerSecond)
+                        .put("pssBeforeKb", pssBeforeKb)
+                        .put("pssAfterKb", pssAfterKb)
+                        .put("route", result.route)
+                    context.openFileOutput("phone-health-check-result.json", Context.MODE_PRIVATE).use {
+                        it.write(report.toString(2).toByteArray())
+                    }
+                    Log.i(TAG_HEALTH, report.toString())
+                }
+            } catch (error: Throwable) {
+                val cause = rootCauseDescription(error)
+                agentProgress = AgentProgress(0f, "Stopped: $cause")
+                output = "Generation failed: $cause"
+                Log.e(TAG, "Generation failed", error)
+            } finally {
+                if (wakeLock.isHeld) wakeLock.release()
+                isBusy = false
+                queuedWakeCommand = null
+                if (alwaysListen) {
+                    delay(350)
+                    if (alwaysListen && !isListening) {
+                        isListening = true
+                        speechStatus = "Waiting for Hey Agentâ€¦"
+                        speechRecognizer.startListening(buildOfflineSpeechIntent())
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(queuedWakeCommand) {
+        queuedWakeCommand?.takeIf { it.isNotBlank() }?.let(runAgentRequest)
     }
 
     Scaffold(
@@ -642,6 +782,38 @@ private fun PocketAgentsScreen() {
         }
         Text("Local capabilities: device health • private notes • authorized files • confirmed phone actions")
         Text("Ask naturally. Any action that changes or opens another app is shown for confirmation first.")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column {
+                Text("Hey Agent", style = MaterialTheme.typography.titleSmall)
+                Text("While this screen is open, listen for 'Hey Agent' and run the spoken request.")
+            }
+            Switch(
+                checked = alwaysListen,
+                onCheckedChange = { enabled ->
+                    alwaysListen = enabled
+                    if (!enabled) {
+                        queuedWakeCommand = null
+                        if (isListening) speechRecognizer.cancel()
+                        isListening = false
+                        speechStatus = "Always listen is off"
+                    } else if (
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+                        android.content.pm.PackageManager.PERMISSION_GRANTED
+                    ) {
+                        isListening = true
+                        speechStatus = "Waiting for Hey Agent..."
+                        speechRecognizer.startListening(buildOfflineSpeechIntent())
+                    } else {
+                        speechStatus = "Allow microphone access to use Hey Agent"
+                        microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
+                    }
+                },
+                enabled = !controlsBusy,
+            )
+        }
         Button(
             onClick = {
                 if (isListening) {

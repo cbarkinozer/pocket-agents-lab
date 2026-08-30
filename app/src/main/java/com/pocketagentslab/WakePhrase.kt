@@ -1,0 +1,8 @@
+package com.pocketagentslab
+
+private val WAKE_PHRASE = Regex("^\\s*hey[,.!]?\\s+agent[,.!]?\\s*(.*)$", RegexOption.IGNORE_CASE)
+
+/** Returns the command following "Hey Agent", or null when the wake phrase was not spoken. */
+internal fun commandAfterWakePhrase(transcript: String): String? =
+    WAKE_PHRASE.matchEntire(transcript)?.groupValues?.get(1)?.trim()
+

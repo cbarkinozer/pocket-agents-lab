@@ -44,6 +44,9 @@ treated as product requirements and routing regressions, not merely as anecdotal
   performs bulk process termination nor claims a causal performance diagnosis.
 - Active-media selection prefers a playing session. When several sessions exist or none is playing,
   Android may expose an ambiguous first session, so the user should verify the target app and result.
+- The Hey Agent toggle is foreground-only. It asks Android's installed speech recognizer to prefer
+  offline recognition, but actual offline support is device-dependent. It is not a screen-off
+  hotword service and does not pretend to provide background listening yet.
 
 ## Deferred medium-hard work
 
