@@ -59,6 +59,11 @@ internal fun interface ReadOnlyToolExecutor {
 
 internal data class AgentProgress(val fraction: Float, val message: String)
 
+internal enum class AgentRoutingMode {
+    PRODUCT,
+    RESEARCH,
+}
+
 /** UI-independent two-step agent state machine. */
 internal class AgentBackend(
     private val generator: AgentGenerator,
@@ -67,22 +72,25 @@ internal class AgentBackend(
     private val onProgress: (AgentProgress) -> Unit = {},
     private val hierarchicalRouting: Boolean = false,
     private val allowDeviceActions: Boolean = false,
+    private val routingMode: AgentRoutingMode = AgentRoutingMode.PRODUCT,
     private val actionResolver: (String, String) -> DeviceActionProposal? = { action, request ->
         buildDeviceActionProposal(action, request)
     },
 ) {
     suspend fun select(userPrompt: String): AgentSelection {
-        capabilityHelpAnswer(userPrompt)?.let { answer ->
-            onProgress(AgentProgress(1.0f, "Capabilities ready"))
-            return AgentSelection(AgentDecision(action = "answer", text = answer), generatedPieces = 0)
-        }
-        if (allowDeviceActions) {
-            explicitExternalSearchAction(userPrompt)?.let { action ->
-                onProgress(AgentProgress(0.20f, "Explicit app destination recognized"))
-                return AgentSelection(
-                    AgentDecision(action = "propose", proposedAction = action),
-                    generatedPieces = 0,
-                )
+        if (routingMode == AgentRoutingMode.PRODUCT) {
+            capabilityHelpAnswer(userPrompt)?.let { answer ->
+                onProgress(AgentProgress(1.0f, "Capabilities ready"))
+                return AgentSelection(AgentDecision(action = "answer", text = answer), generatedPieces = 0)
+            }
+            if (allowDeviceActions) {
+                explicitExternalSearchAction(userPrompt)?.let { action ->
+                    onProgress(AgentProgress(0.20f, "Explicit app destination recognized"))
+                    return AgentSelection(
+                        AgentDecision(action = "propose", proposedAction = action),
+                        generatedPieces = 0,
+                    )
+                }
             }
         }
         if (hierarchicalRouting) return selectHierarchically(userPrompt)

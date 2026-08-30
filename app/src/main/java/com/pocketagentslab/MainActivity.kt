@@ -153,6 +153,7 @@ private fun PocketAgentsScreen() {
     var showNotesPage by remember { mutableStateOf(false) }
     var showFilesPage by remember { mutableStateOf(false) }
     var currentPage by remember { mutableStateOf(AppPage.AGENT) }
+    var agentRoutingMode by remember { mutableStateOf(AgentRoutingMode.RESEARCH) }
     var folderUri by remember {
         mutableStateOf(
             context.getSharedPreferences("local_files", Context.MODE_PRIVATE)
@@ -493,6 +494,7 @@ private fun PocketAgentsScreen() {
                 val result = createAgentBackend(
                     context,
                     engine,
+                    routingMode = agentRoutingMode,
                     onProgress = { progress -> agentProgress = progress },
                     folderUri = folderUri,
                     onFileMatches = { fileMatches = it },
@@ -522,7 +524,8 @@ private fun PocketAgentsScreen() {
                     proposedAction = voiceProposal
                 }
                 showAgentCompletionNotification(context, output)
-                metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | " +
+                metrics = "${agentRoutingMode.name.lowercase(Locale.ROOT)} | ${result.route} | " +
+                    "valid JSON: yes | ${generationMs} ms | " +
                     "%.2f exposed pieces/s | PSS %.1f MB".format(
                         Locale.US, piecesPerSecond, pssAfterKb / 1024.0,
                     )
@@ -878,6 +881,24 @@ private fun PocketAgentsScreen() {
         }
         Text("Local capabilities: device health • private notes • authorized files • confirmed phone actions")
         Text("Ask naturally. Any action that changes or opens another app is shown for confirmation first.")
+        Text("Routing mode", style = MaterialTheme.typography.titleSmall)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = { agentRoutingMode = AgentRoutingMode.RESEARCH },
+                enabled = !controlsBusy && agentRoutingMode != AgentRoutingMode.RESEARCH,
+            ) { Text("Research") }
+            Button(
+                onClick = { agentRoutingMode = AgentRoutingMode.PRODUCT },
+                enabled = !controlsBusy && agentRoutingMode != AgentRoutingMode.PRODUCT,
+            ) { Text("Product") }
+        }
+        Text(
+            if (agentRoutingMode == AgentRoutingMode.RESEARCH) {
+                "Research: force routing through the SLM; deterministic app-search shortcuts are disabled."
+            } else {
+                "Product: use safe deterministic shortcuts first, then fall back to the SLM."
+            },
+        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -975,6 +996,7 @@ private fun PocketAgentsScreen() {
                         val result = createAgentBackend(
                             context,
                             engine,
+                            routingMode = agentRoutingMode,
                             onProgress = { progress -> agentProgress = progress },
                             folderUri = folderUri,
                             onFileMatches = { fileMatches = it },
@@ -989,7 +1011,8 @@ private fun PocketAgentsScreen() {
                         output = result.answer
                         proposedAction = result.proposedAction
                         showAgentCompletionNotification(context, result.answer)
-                        metrics = "${result.route} | valid JSON: yes | ${generationMs} ms | " +
+                        metrics = "${agentRoutingMode.name.lowercase(Locale.ROOT)} | ${result.route} | " +
+                            "valid JSON: yes | ${generationMs} ms | " +
                             "%.2f exposed pieces/s | PSS %.1f MB".format(
                             Locale.US,
                             piecesPerSecond,
@@ -1733,6 +1756,7 @@ private fun createAgentBackend(
     onProgress: (AgentProgress) -> Unit = {},
     folderUri: Uri? = null,
     onFileMatches: (List<LocalFileMatch>) -> Unit = {},
+    routingMode: AgentRoutingMode = AgentRoutingMode.RESEARCH,
 ): AgentBackend =
     AgentBackend(
         generator = AgentGenerator { request, maxTokens ->
@@ -1785,6 +1809,7 @@ private fun createAgentBackend(
         beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         onProgress = onProgress,
         allowDeviceActions = true,
+        routingMode = routingMode,
         actionResolver = { action, request ->
             if (action == LAUNCH_APP) resolveInstalledAppProposal(context, request)
             else buildDeviceActionProposal(action, request)
@@ -1904,6 +1929,7 @@ private suspend fun runAgentTests(
     val report = JSONObject()
         .put("schemaVersion", 2)
         .put("suite", "tool-routing-3-tools-v5")
+        .put("routingMode", AgentRoutingMode.RESEARCH.name.lowercase(Locale.ROOT))
         .put("llamaCppCommit", LLAMA_CPP_COMMIT)
         .put("buildFlags", LLAMA_BUILD_FLAGS)
         .put("modelFile", File(modelPath).name)
@@ -1950,6 +1976,7 @@ private suspend fun runAgentTests(
             },
             tools = ReadOnlyToolExecutor { _, _ -> error("Evaluation must not execute tools") },
             beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
+            routingMode = AgentRoutingMode.RESEARCH,
         )
         var actualTool: String? = null
         var actualWorkflow: String? = null
@@ -1998,6 +2025,7 @@ private suspend fun runAgentTests(
         details.put(
             JSONObject()
                 .put("id", case.id)
+                .put("taskCategory", agentTestCategory(case))
                 .put("prompt", case.prompt)
                 .put("expectedRoute", expectedRoute(case))
                 .put("actualRoute", when {
@@ -2039,7 +2067,7 @@ private suspend fun runAgentTests(
                 .put("temperatureAfterC", temperatureAfterC),
         )
         csv.appendCsvRow(
-            case.id, case.prompt, expectedRoute(case),
+            case.id, agentTestCategory(case), case.prompt, expectedRoute(case),
             if (jsonValid) when {
                 actualWorkflow != null -> "workflow:$actualWorkflow"
                 actualTool != null -> "tool:$actualTool"
@@ -2146,6 +2174,17 @@ private fun classifyAgentEvaluationError(error: Throwable): String = when {
     error.message.orEmpty().contains("schema") -> "invalid_schema"
     error.message.orEmpty().contains("Unknown") -> "unknown_action_or_tool"
     else -> "generation_or_runtime_error"
+}
+
+private fun agentTestCategory(case: AgentTestCase): String = case.id.substringBefore('-').let { prefix ->
+    when (prefix) {
+        "device" -> "single_tool_device"
+        "battery" -> "single_tool_battery"
+        "storage" -> "single_tool_storage"
+        "answer" -> "no_tool_direct_answer"
+        "health" -> "multi_tool_workflow"
+        else -> "uncategorized"
+    }
 }
 
 private fun StringBuilder.appendCsvRow(vararg fields: Any?) {
@@ -2379,5 +2418,5 @@ private const val LLAMA_BUILD_FLAGS = "arm64-v8a;GGML_SYSTEM_ARCH=ARM;GGML_CPU_K
 private const val AGENT_EVAL_MAX_START_TEMPERATURE_C = 38.0
 private const val AGENT_EVAL_CASE_TIMEOUT_MS = 120_000L
 private const val AGENT_EVAL_COOLDOWN_POLL_MS = 30_000L
-private const val AGENT_EVAL_CSV_HEADER = "id,prompt,expected_route,actual_route,correct,strict_schema_first_attempt,schema_normalized,repair_attempted,final_schema_accepted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
+private const val AGENT_EVAL_CSV_HEADER = "id,task_category,prompt,expected_route,actual_route,correct,strict_schema_first_attempt,schema_normalized,repair_attempted,final_schema_accepted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
 private const val TAG_HEALTH = "PocketHealth"

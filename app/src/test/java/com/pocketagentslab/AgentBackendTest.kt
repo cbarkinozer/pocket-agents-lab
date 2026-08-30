@@ -586,6 +586,20 @@ class AgentBackendTest {
     }
 
     @Test
+    fun researchModeForcesExplicitYouTubeRequestThroughTheModel() = runBlocking {
+        val fixture = fixture(
+            """{"action":"propose","name":"search_youtube","args":{}}""",
+            allowDeviceActions = true,
+            routingMode = AgentRoutingMode.RESEARCH,
+        )
+
+        val result = fixture.backend.run("search pewds on youtube")
+
+        assertEquals("propose:$SEARCH_YOUTUBE", result.route)
+        assertEquals(1, fixture.prompts.size)
+    }
+
+    @Test
     fun unsupportedRealUserRequestsReceiveTruthfulProductAnswers() {
         assertTrue(trustedDirectAnswer("How can I change my wallpaper?")!!.contains("Wallpaper and style"))
         assertTrue(trustedDirectAnswer("Can you do a collage of my photos?")!!.contains("cannot create"))
@@ -637,6 +651,7 @@ class AgentBackendTest {
         toolResult: String = """{"availableBytes":20000000000}""",
         hierarchicalRouting: Boolean = false,
         allowDeviceActions: Boolean = false,
+        routingMode: AgentRoutingMode = AgentRoutingMode.PRODUCT,
         actionResolver: (String, String) -> DeviceActionProposal? = { action, request ->
             buildDeviceActionProposal(action, request)
         },
@@ -655,6 +670,7 @@ class AgentBackendTest {
             },
             hierarchicalRouting = hierarchicalRouting,
             allowDeviceActions = allowDeviceActions,
+            routingMode = routingMode,
             actionResolver = actionResolver,
         )
         return Fixture(backend, prompts, toolCalls)
