@@ -20,6 +20,9 @@ class ExternalAppActionsTest {
 
     @Test
     fun spotifyAndYouTubeQueriesAreExtracted() {
+        assertEquals(SEARCH_YOUTUBE, explicitExternalSearchAction("search pewds on youtube"))
+        assertEquals(SEARCH_SPOTIFY, explicitExternalSearchAction("find Daft Punk on Spotify"))
+        assertNull(explicitExternalSearchAction("search my local notes for YouTube ideas"))
         assertEquals(
             "Daft Punk Around the World",
             parseExternalAppProposal(SEARCH_SPOTIFY, "Play Daft Punk Around the World on Spotify")?.searchQuery,

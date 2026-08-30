@@ -8,6 +8,19 @@ internal const val MEDIA_NEXT = "media_next"
 internal const val MEDIA_PREVIOUS = "media_previous"
 internal const val OPEN_MEDIA_ACCESS = "open_media_access"
 
+internal fun explicitExternalSearchAction(request: String): String? {
+    val text = request.lowercase()
+    val requestsSearch = listOf("search", "find", "open", "play", "look for").any(text::contains)
+    if (!requestsSearch) return null
+    fun namesAsDestination(app: String): Boolean =
+        Regex("\\b(?:on|in|from)\\s+$app\\b").containsMatchIn(text)
+    return when {
+        namesAsDestination("youtube") -> SEARCH_YOUTUBE
+        namesAsDestination("spotify") -> SEARCH_SPOTIFY
+        else -> null
+    }
+}
+
 internal fun parseExternalAppProposal(action: String, request: String): DeviceActionProposal? = when (action) {
     SEARCH_SPOTIFY -> searchProposal(action, request, "spotify")
     SEARCH_YOUTUBE -> searchProposal(action, request, "youtube")

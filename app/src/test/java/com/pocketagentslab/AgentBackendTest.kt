@@ -562,6 +562,18 @@ class AgentBackendTest {
     }
 
     @Test
+    fun explicitYouTubeSearchBypassesLocalRetrievalAndModelRouting() = runBlocking {
+        val fixture = fixture(allowDeviceActions = true)
+
+        val result = fixture.backend.run("search pewds on youtube")
+
+        assertEquals("propose:$SEARCH_YOUTUBE", result.route)
+        assertEquals("pewds", result.proposedAction?.searchQuery)
+        assertTrue(fixture.prompts.isEmpty())
+        assertTrue(fixture.toolCalls.isEmpty())
+    }
+
+    @Test
     fun unsupportedRealUserRequestsReceiveTruthfulProductAnswers() {
         assertTrue(trustedDirectAnswer("How can I change my wallpaper?")!!.contains("Wallpaper and style"))
         assertTrue(trustedDirectAnswer("Can you do a collage of my photos?")!!.contains("cannot create"))

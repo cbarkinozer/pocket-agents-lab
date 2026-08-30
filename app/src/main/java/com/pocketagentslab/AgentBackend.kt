@@ -76,6 +76,15 @@ internal class AgentBackend(
             onProgress(AgentProgress(1.0f, "Capabilities ready"))
             return AgentSelection(AgentDecision(action = "answer", text = answer), generatedPieces = 0)
         }
+        if (allowDeviceActions) {
+            explicitExternalSearchAction(userPrompt)?.let { action ->
+                onProgress(AgentProgress(0.20f, "Explicit app destination recognized"))
+                return AgentSelection(
+                    AgentDecision(action = "propose", proposedAction = action),
+                    generatedPieces = 0,
+                )
+            }
+        }
         if (hierarchicalRouting) return selectHierarchically(userPrompt)
         onProgress(AgentProgress(0.15f, "Selecting an action with the local model…"))
         val generated = generator.generate(
