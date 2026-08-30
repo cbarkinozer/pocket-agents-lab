@@ -44,13 +44,12 @@ treated as product requirements and routing regressions, not merely as anecdotal
   performs bulk process termination nor claims a causal performance diagnosis.
 - Active-media selection prefers a playing session. When several sessions exist or none is playing,
   Android may expose an ambiguous first session, so the user should verify the target app and result.
-- The Okay Pocket toggle is foreground-only. It asks Android's installed speech recognizer to prefer
-  offline recognition, but actual offline support is device-dependent. It is not a screen-off
-  hotword service and does not pretend to provide background listening yet. On Android 13+, the
-  app requests a segmented session to avoid noisy recognition restarts, then uses an explicit
-  wake-word -> acknowledgement tone -> command state machine. Recognition is cancelled and the
-  toggle is reset when the activity stops, so the foreground-only implementation cannot keep the
-  microphone active after Home, screen lock, or an external-app handoff.
+- Wake-word voice control is **not complete**. The retained Okay Pocket prototype uses Android's
+  installed speech recognizer with an offline preference and segmented sessions, but A32 testing
+  produced missed wakes, false acknowledgement sounds, confusing wake/command timing, and imperfect
+  command transcription. Recognition is cancelled when the activity stops, but this does not make
+  it a dependable hotword system. Revisit it later with a dedicated local wake-word detector and a
+  measured wake-word/false-activation evaluation; do not list it as a supported capability yet.
 
 ## Deferred medium-hard work
 
