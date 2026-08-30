@@ -574,6 +574,18 @@ class AgentBackendTest {
     }
 
     @Test
+    fun spokenSpotifyAliasStillBypassesModelRouting() = runBlocking {
+        val fixture = fixture(allowDeviceActions = true)
+
+        val result = fixture.backend.run("on spoti search abugat")
+
+        assertEquals("propose:$SEARCH_SPOTIFY", result.route)
+        assertEquals("abugat", result.proposedAction?.searchQuery)
+        assertTrue(fixture.prompts.isEmpty())
+        assertTrue(fixture.toolCalls.isEmpty())
+    }
+
+    @Test
     fun unsupportedRealUserRequestsReceiveTruthfulProductAnswers() {
         assertTrue(trustedDirectAnswer("How can I change my wallpaper?")!!.contains("Wallpaper and style"))
         assertTrue(trustedDirectAnswer("Can you do a collage of my photos?")!!.contains("cannot create"))

@@ -12,11 +12,12 @@ internal fun explicitExternalSearchAction(request: String): String? {
     val text = request.lowercase()
     val requestsSearch = listOf("search", "find", "open", "play", "look for").any(text::contains)
     if (!requestsSearch) return null
-    fun namesAsDestination(app: String): Boolean =
-        Regex("\\b(?:on|in|from)\\s+$app\\b").containsMatchIn(text)
+    fun namesAsDestination(vararg aliases: String): Boolean = aliases.any { alias ->
+        Regex("\\b(?:on|in|from)\\s+${Regex.escape(alias)}\\b").containsMatchIn(text)
+    }
     return when {
-        namesAsDestination("youtube") -> SEARCH_YOUTUBE
-        namesAsDestination("spotify") -> SEARCH_SPOTIFY
+        namesAsDestination("youtube", "you tube", "yt") -> SEARCH_YOUTUBE
+        namesAsDestination("spotify", "spoti") -> SEARCH_SPOTIFY
         else -> null
     }
 }
