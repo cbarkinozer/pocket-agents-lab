@@ -46,7 +46,9 @@ treated as product requirements and routing regressions, not merely as anecdotal
   Android may expose an ambiguous first session, so the user should verify the target app and result.
 - The Hey Agent toggle is foreground-only. It asks Android's installed speech recognizer to prefer
   offline recognition, but actual offline support is device-dependent. It is not a screen-off
-  hotword service and does not pretend to provide background listening yet.
+  hotword service and does not pretend to provide background listening yet. On Android 13+, the
+  app requests a segmented session to avoid noisy recognition restarts, then uses an explicit
+  wake-word -> acknowledgement tone -> command state machine.
 
 ## Deferred medium-hard work
 

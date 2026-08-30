@@ -5,6 +5,8 @@ import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.provider.AlarmClock
 import android.provider.CalendarContract
 import android.provider.MediaStore
@@ -161,6 +163,7 @@ private fun PocketAgentsScreen() {
     var loadedModelPath by remember { mutableStateOf<String?>(null) }
     var isListening by remember { mutableStateOf(false) }
     var alwaysListen by remember { mutableStateOf(false) }
+    var wakeListeningPhase by remember { mutableStateOf(WakeListeningPhase.WAITING_FOR_WAKE) }
     var queuedWakeCommand by remember { mutableStateOf<String?>(null) }
     var speechStatus by remember { mutableStateOf("Tap the microphone to dictate a prompt") }
     val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
@@ -171,72 +174,115 @@ private fun PocketAgentsScreen() {
             SpeechRecognizer.createSpeechRecognizer(context)
         }
     }
+    val acknowledgementTone = remember { ToneGenerator(AudioManager.STREAM_NOTIFICATION, 65) }
     val controlsBusy = isBusy || isBenchmarkRunning || isAgentTestRunning || isActionTestRunning
     val currentAlwaysListen by rememberUpdatedState(alwaysListen)
     val currentControlsBusy by rememberUpdatedState(controlsBusy)
+    val currentWakeListeningPhase by rememberUpdatedState(wakeListeningPhase)
 
-    DisposableEffect(speechRecognizer) {
+    // Two-stage wake-word interaction.
+    // Segmented recognition keeps a supported recognition service open instead of
+    // repeatedly starting it and triggering Samsung's start/error sounds.
+    DisposableEffect(speechRecognizer, acknowledgementTone) {
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) { speechStatus = "Listening…" }
-            override fun onBeginningOfSpeech() { speechStatus = "Hearing you…" }
+            override fun onReadyForSpeech(params: Bundle?) {
+                speechStatus = when {
+                    !currentAlwaysListen -> "Listening..."
+                    currentWakeListeningPhase == WakeListeningPhase.WAITING_FOR_WAKE ->
+                        "Waiting silently for Hey Agent"
+                    else -> "Listening for your command"
+                }
+            }
+            override fun onBeginningOfSpeech() {
+                if (!currentAlwaysListen || currentWakeListeningPhase == WakeListeningPhase.WAITING_FOR_COMMAND) {
+                    speechStatus = "Hearing you..."
+                }
+            }
             override fun onRmsChanged(rmsdB: Float) = Unit
             override fun onBufferReceived(buffer: ByteArray?) = Unit
-            override fun onEndOfSpeech() { speechStatus = "Finishing transcription…" }
+            override fun onEndOfSpeech() = Unit
             override fun onError(error: Int) {
                 isListening = false
                 if (currentAlwaysListen && !currentControlsBusy) {
-                    speechStatus = "Wake listener restartingâ€¦"
-                    scope.launch {
-                        delay(600)
-                        if (currentAlwaysListen && !currentControlsBusy) {
-                            isListening = true
-                            speechRecognizer.startListening(buildOfflineSpeechIntent())
-                        }
-                    }
-                } else {
-                    speechStatus = "Speech recognition stopped (error $error). Tap mic to retry."
+                    speechStatus = "Wake listener recovering..."
+                    restartWakeListener()
+                } else if (!currentAlwaysListen) {
+                    speechStatus = "Listening stopped"
                 }
             }
-            override fun onResults(results: Bundle?) {
+            override fun onResults(results: Bundle?) = handleRecognition(results)
+            override fun onSegmentResults(segmentResults: Bundle) = handleRecognition(segmentResults)
+            override fun onPartialResults(partialResults: Bundle?) {
+                if (!currentAlwaysListen) partialResults?.bestSpeechText()?.let { prompt = it }
+            }
+            override fun onEvent(eventType: Int, params: Bundle?) = Unit
+
+            private fun handleRecognition(results: Bundle?) {
                 val transcript = results?.bestSpeechText()
                 isListening = false
-                if (currentAlwaysListen) {
-                    val command = transcript?.let(::commandAfterWakePhrase)
-                    when {
-                        command == null -> speechStatus = "Waiting for Hey Agentâ€¦"
-                        command.isBlank() -> speechStatus = "Wake phrase heard. Say: Hey Agent, then your request."
-                        else -> {
-                            prompt = command
-                            queuedWakeCommand = command
-                            speechStatus = "Heard: $command"
-                        }
+                if (!currentAlwaysListen) {
+                    transcript?.let { prompt = it }
+                    speechStatus = "Transcription ready"
+                    return
+                }
+
+                if (currentWakeListeningPhase == WakeListeningPhase.WAITING_FOR_COMMAND) {
+                    wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
+                    if (!transcript.isNullOrBlank()) {
+                        prompt = transcript
+                        queuedWakeCommand = transcript
+                        speechStatus = "Heard command: $transcript"
+                    } else {
+                        speechStatus = "No command heard. Waiting for Hey Agent."
+                        restartWakeListener()
                     }
-                    if (command.isNullOrBlank() && !currentControlsBusy) {
+                    return
+                }
+
+                val inlineCommand = transcript?.let(::commandAfterWakePhrase)
+                when {
+                    inlineCommand == null -> restartWakeListener()
+                    inlineCommand.isNotBlank() -> {
+                        prompt = inlineCommand
+                        queuedWakeCommand = inlineCommand
+                        speechStatus = "Heard command: $inlineCommand"
+                    }
+                    else -> {
+                        wakeListeningPhase = WakeListeningPhase.WAITING_FOR_COMMAND
+                        speechStatus = "Hey Agent heard. Speak your command now."
+                        acknowledgementTone.startTone(ToneGenerator.TONE_PROP_ACK, 160)
                         scope.launch {
-                            delay(350)
+                            delay(250)
                             if (currentAlwaysListen && !currentControlsBusy) {
                                 isListening = true
                                 speechRecognizer.startListening(buildOfflineSpeechIntent())
                             }
                         }
                     }
-                } else {
-                    transcript?.let { prompt = it }
-                    speechStatus = "Transcription ready"
                 }
             }
-            override fun onPartialResults(partialResults: Bundle?) {
-                if (!currentAlwaysListen) partialResults?.bestSpeechText()?.let { prompt = it }
+
+            private fun restartWakeListener() {
+                if (!currentControlsBusy) scope.launch {
+                    delay(300)
+                    if (currentAlwaysListen && !currentControlsBusy) {
+                        speechStatus = "Waiting silently for Hey Agent"
+                        isListening = true
+                        speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
+                    }
+                }
             }
-            override fun onEvent(eventType: Int, params: Bundle?) = Unit
         })
-        onDispose { speechRecognizer.destroy() }
+        onDispose {
+            speechRecognizer.destroy()
+            acknowledgementTone.release()
+        }
     }
 
     val microphonePermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) {
             isListening = true
-            speechRecognizer.startListening(buildOfflineSpeechIntent())
+            speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = alwaysListen))
         } else {
             alwaysListen = false
             speechStatus = "Microphone permission is required for voice input"
@@ -466,8 +512,9 @@ private fun PocketAgentsScreen() {
                     delay(350)
                     if (alwaysListen && !isListening) {
                         isListening = true
-                        speechStatus = "Waiting for Hey Agentâ€¦"
-                        speechRecognizer.startListening(buildOfflineSpeechIntent())
+                        wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
+                        speechStatus = "Waiting silently for Hey Agent"
+                        speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
                     }
                 }
             }
@@ -788,12 +835,13 @@ private fun PocketAgentsScreen() {
         ) {
             Column {
                 Text("Hey Agent", style = MaterialTheme.typography.titleSmall)
-                Text("While this screen is open, listen for 'Hey Agent' and run the spoken request.")
+                Text("Say 'Hey Agent', wait for the acknowledgement sound, then speak your command.")
             }
             Switch(
                 checked = alwaysListen,
                 onCheckedChange = { enabled ->
                     alwaysListen = enabled
+                    wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
                     if (!enabled) {
                         queuedWakeCommand = null
                         if (isListening) speechRecognizer.cancel()
@@ -805,7 +853,7 @@ private fun PocketAgentsScreen() {
                     ) {
                         isListening = true
                         speechStatus = "Waiting for Hey Agent..."
-                        speechRecognizer.startListening(buildOfflineSpeechIntent())
+                        speechRecognizer.startListening(buildOfflineSpeechIntent(segmented = true))
                     } else {
                         speechStatus = "Allow microphone access to use Hey Agent"
                         microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
@@ -817,8 +865,12 @@ private fun PocketAgentsScreen() {
         Button(
             onClick = {
                 if (isListening) {
-                    speechRecognizer.stopListening()
-                    speechStatus = "Finishing transcription…"
+                    alwaysListen = false
+                    wakeListeningPhase = WakeListeningPhase.WAITING_FOR_WAKE
+                    queuedWakeCommand = null
+                    speechRecognizer.cancel()
+                    isListening = false
+                    speechStatus = "Listening stopped"
                 } else if (
                     ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
                     android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -1086,6 +1138,11 @@ private enum class AppPage(val label: String, val symbol: String) {
     RESULTS("Results", "R"),
 }
 
+private enum class WakeListeningPhase {
+    WAITING_FOR_WAKE,
+    WAITING_FOR_COMMAND,
+}
+
 @Composable
 private fun PocketNotesPage(
     title: String,
@@ -1211,11 +1268,18 @@ private fun acquireInferenceWakeLock(context: Context, label: String, timeoutMs:
     }
 }
 
-private fun buildOfflineSpeechIntent(): Intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+private fun buildOfflineSpeechIntent(segmented: Boolean = false): Intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
     putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
     putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
     putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
     putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+    if (segmented && Build.VERSION.SDK_INT >= 33) {
+        putExtra(
+            RecognizerIntent.EXTRA_SEGMENTED_SESSION,
+            RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS,
+        )
+        putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1_500L)
+    }
 }
 
 private fun Bundle.bestSpeechText(): String? =
