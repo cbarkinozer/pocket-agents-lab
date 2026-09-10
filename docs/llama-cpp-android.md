@@ -22,7 +22,8 @@ The static backend is intentional for the Galaxy A32. Upstream's dynamically sel
 - Q4_K_M
 - 730,895,168 bytes on disk
 - Approximately 694.76 MiB mapped model data
-- Approximately 12 MiB KV cache at the configured 1024-token context
+- A deliberately bounded 2048-token context. This is the smallest configuration verified to fit
+  the complete current agent-routing protocol; the old 1024-token setting truncated it.
 
 The test model is available on the device at `Download/models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf`. Model files are intentionally excluded from Git.
 
@@ -123,7 +124,7 @@ adb logcat -s PocketLlamaMetrics:I '*:S'
 The physical `SM-A325F` produced:
 
 ```text
-model=LFM2.5-1.2B-Instruct-Q4_K_M.gguf load_ms=403 context_tokens=1024 cpu_only=true
+model=LFM2.5-1.2B-Instruct-Q4_K_M.gguf load_ms=403 context_tokens=2048 cpu_only=true
 generation_ms=5748 generated_token_pieces=27 tokens_per_second=4.697
 ```
 

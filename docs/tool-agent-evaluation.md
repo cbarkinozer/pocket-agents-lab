@@ -56,12 +56,21 @@ The portable protocol keeps one logical schema across models but applies narrowl
 - Version 7 returns to v5's single five-route grammar and changes only the routing prompt. Ordered rules and contrastive examples distinguish current phone facts from general explanations, and single live categories from multi-category or overall health requests. It is evaluated separately against v5; the fixed prompt labels and frozen Qwen Q4 weights are unchanged.
 - The completed v7 run scored 26/50 with 50/50 strict schema validity. Direct Answer improved to 9/10 and Phone Health to 10/10, but Storage, Device, and Battery fell to 2/10, 2/10, and 3/10. This is evidence of prompt-induced class bias; v5 remains frozen and further routing work requires held-out prompts.
 - For user turns, the JNI formatter safely attempts the model's Jinja chat template with `enable_thinking=false`; this is required for Qwen3.5 because the official Android sample's legacy template path cannot pass that setting. System/history turns retain the stable legacy path, and caught Jinja incompatibilities fall back to it instead of crossing JNI and aborting Android. Routing/repair output remains capped at 64 tokens, and the prompt also forbids reasoning and `<think>` output.
-- A repair runs in a fresh conversation context and includes the original request plus at most 256 characters of rejected output. This prevents a reasoning trace from being duplicated into the 1024-token context.
+- A repair runs in a fresh conversation context and includes the original request plus at most 256 characters of rejected output. This prevents a reasoning trace from being duplicated into the bounded context.
 - Native generation stops at the context boundary. It never invokes the upstream sample's context-shift path, which was observed aborting in `llama_memory_hybrid::seq_add` for Qwen3.5-0.8B.
 
 These transformations and normalization flags remain visible in raw artifacts. Future native tool-protocol benchmarks should be reported separately from this portable protocol.
 
 Queue manifests are checkpointed before work and after every model. Per-model JSON/CSV files are initialized before case one and rewritten after every completed case, allowing a native crash to leave a clearly marked partial result (`complete: false`) instead of erasing all progress.
+
+The per-case timeout is 600 seconds for the storage-backed MoE feasibility configuration. The
+earlier 120-second limit could not distinguish a slow Ling Q3 result from a hang. Every artifact must
+record the timeout policy; latency results from different policies must not be compared silently.
+
+Before every case (not merely before each model), the harness waits for battery temperature to be
+at most 38.0 C and Android's public thermal status to be at most `THERMAL_STATUS_LIGHT`. Both gates
+must pass. The per-case rule was added after an invalidated Ling pilot reached thermal status 3
+(`SEVERE`) after 6/50 cases; that partial pilot is not an accuracy or latency result.
 
 The benchmark writes app-private files:
 
@@ -75,7 +84,7 @@ adb exec-out run-as com.pocketagentslab cat files/agent-test-result.json > agent
 adb exec-out run-as com.pocketagentslab cat files/agent-evaluation.csv > agent-evaluation.csv
 ```
 
-Recorded fields include expected and actual route, correctness, strict first-attempt schema validity, deterministic normalization, repair attempts, final schema acceptance, validator failure class, every raw model output, generation latency, approximate TTFT, generated JNI pieces, pieces/second, process PSS before/after, and battery temperature before/after. Raw attempts are stored in JSON; the flat metrics are also written to CSV. JNI pieces are not guaranteed to equal tokenizer tokens, so the CSV calls this value `exposed_pieces_per_second`; authoritative token/s requires a future JNI counter.
+Recorded fields include expected and actual route, correctness, strict first-attempt schema validity, deterministic normalization, repair attempts, final schema acceptance, validator failure class, every raw model output, generation latency, approximate TTFT, generated JNI pieces, pieces/second, process PSS/RSS/file-PSS/swap-PSS before and after, minor/major page-fault deltas, process read-byte deltas, and battery temperature before/after. Linux counters are read from `/proc/self/stat`, `/proc/self/io`, and `/proc/self/smaps_rollup`; unavailable fields are recorded as JSON null/blank CSV rather than invented as zero. Raw attempts are stored in JSON; the flat metrics are also written to CSV. JNI pieces are not guaranteed to equal tokenizer tokens, so the CSV calls this value `exposed_pieces_per_second`; authoritative token/s requires a future JNI counter.
 
 These counters must not be conflated:
 
@@ -100,10 +109,10 @@ There is no recursive reflection or unlimited retry. Repaired selections are exp
 
 ## Pinned runtime
 
-- llama.cpp commit: `a94d563ed801d1da1b8c2432946de07d0231bb3d`
+- llama.cpp base commit: `df03399b885831b2a1603b3abb0d8c156808e363`, plus the repository's Android context-safety commits recorded by the submodule pointer
 - ABI: `arm64-v8a`
 - CPU-only
-- context: 1024 tokens
+- context: 2048 tokens (1024 truncated 88 tokens from the complete routing protocol in the Ling feasibility run)
 - `GGML_SYSTEM_ARCH=ARM`
 - `GGML_CPU_KLEIDIAI=OFF`
 - `GGML_OPENMP=OFF`

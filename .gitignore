@@ -3,4 +3,5 @@
 local.properties
 **/build/
 **/.cxx/
+**/__pycache__/
 *.iml

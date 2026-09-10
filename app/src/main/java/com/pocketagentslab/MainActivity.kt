@@ -333,6 +333,9 @@ private fun PocketAgentsScreen() {
             modelPreferences.edit().putString("model_path", savedPath).putString("model_name", savedName).apply()
             loadedModelPath = savedPath
             selectedName = savedName ?: File(savedPath).name
+            val privateModel = SelectedModel(Uri.fromFile(preferredFile), selectedName)
+            selectedUri = privateModel.uri
+            selectedModels = listOf(privateModel)
             modelStatus = "Default model selected • loads automatically on first Agent run"
         }
     }
@@ -683,7 +686,7 @@ private fun PocketAgentsScreen() {
                             isModelLoaded = true
                             modelStatus = "Model loaded successfully in ${loadMs} ms"
                             metrics = "Load: ${loadMs} ms"
-                            Log.i(TAG_METRICS, "model=${modelFile.name} load_ms=$loadMs context_tokens=1024 cpu_only=true")
+                            Log.i(TAG_METRICS, "model=${modelFile.name} load_ms=$loadMs context_tokens=2048 cpu_only=true")
                         } catch (error: Throwable) {
                             modelStatus = "Load failed: ${error.message ?: error.javaClass.simpleName}"
                             Log.e(TAG, "Model load failed", error)
@@ -711,10 +714,10 @@ private fun PocketAgentsScreen() {
                     try {
                         queue.forEachIndexed { modelIndex, selected ->
                             currentCoroutineContext().ensureActive()
-                            awaitThermalCooldown(context) { temperature ->
+                            awaitThermalCooldown(context) { temperature, status ->
                                 agentTestStatus = "Model ${modelIndex + 1}/${queue.size} ${selected.name}: " +
-                                    "cooling at ${formatMetric(temperature)} C; waiting for <= " +
-                                    "$AGENT_EVAL_MAX_START_TEMPERATURE_C C"
+                                    "cooling at ${formatMetric(temperature)} C / thermal $status; waiting for <= " +
+                                    "$AGENT_EVAL_MAX_START_TEMPERATURE_C C and status <= $AGENT_EVAL_MAX_START_THERMAL_STATUS"
                             }
                             try {
                                 agentTestStatus = "Model ${modelIndex + 1}/${queue.size}: copying ${selected.name}"
@@ -867,7 +870,7 @@ private fun PocketAgentsScreen() {
                             isModelLoaded = true
                             modelStatus = "Model loaded successfully in ${loadMs} ms"
                             metrics = "Load: ${loadMs} ms"
-                            Log.i(TAG_METRICS, "model=${modelFile.name} load_ms=$loadMs context_tokens=1024 cpu_only=true")
+                            Log.i(TAG_METRICS, "model=${modelFile.name} load_ms=$loadMs context_tokens=2048 cpu_only=true")
                         } catch (error: Throwable) {
                             modelStatus = "Load failed: ${error.message ?: error.javaClass.simpleName}"
                             Log.e(TAG, "Model load failed", error)
@@ -1873,7 +1876,7 @@ private suspend fun loadModelFile(engine: InferenceEngine, modelFile: File): Lon
     val elapsed = SystemClock.elapsedRealtime() - started
     Log.i(
         TAG_METRICS,
-        "model=${modelFile.name} load_ms=$elapsed context_tokens=1024 cpu_only=true",
+        "model=${modelFile.name} load_ms=$elapsed context_tokens=2048 cpu_only=true",
     )
     return elapsed
 }
@@ -1891,14 +1894,22 @@ private fun recoverInferenceEngine(engine: InferenceEngine) {
 
 private suspend fun awaitThermalCooldown(
     context: Context,
-    onWaiting: (Double) -> Unit,
+    onWaiting: (Double, Int) -> Unit,
 ) {
     while (true) {
         currentCoroutineContext().ensureActive()
         val temperature = getBatteryInfo(context).getDouble("temperatureC")
-        if (temperature <= AGENT_EVAL_MAX_START_TEMPERATURE_C) return
-        onWaiting(temperature)
-        delay(AGENT_EVAL_COOLDOWN_POLL_MS)
+        val thermalStatus = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            context.getSystemService(PowerManager::class.java).currentThermalStatus
+        } else {
+            PowerManager.THERMAL_STATUS_NONE
+        }
+        if (temperature <= AGENT_EVAL_MAX_START_TEMPERATURE_C && thermalStatus <= AGENT_EVAL_MAX_START_THERMAL_STATUS) return
+        onWaiting(temperature, thermalStatus)
+        // Handler/coroutine timers may be deferred after the display enters Doze even while the
+        // benchmark owns a partial wake lock. Sleep on an IO worker so the fixed cooldown cadence
+        // remains active during unattended, screen-off runs.
+        withContext(Dispatchers.IO) { Thread.sleep(AGENT_EVAL_COOLDOWN_POLL_MS) }
     }
 }
 
@@ -1948,6 +1959,10 @@ private suspend fun runAgentTests(
         .put("device", getDeviceInfo(context))
         .put("startTemperatureC", initialTemperatureC)
         .put("maxStartTemperatureC", AGENT_EVAL_MAX_START_TEMPERATURE_C)
+        .put("maxStartThermalStatus", AGENT_EVAL_MAX_START_THERMAL_STATUS)
+        .put("cooldownBeforeEveryCase", true)
+        .put("caseTimeoutMs", AGENT_EVAL_CASE_TIMEOUT_MS)
+        .put("runtimeMemoryTelemetry", "proc_stat_faults+proc_io_read_bytes+smaps_rollup")
         .put("tests", AGENT_TEST_CASES.size)
         .put("details", details)
     updateEvaluationReport(report, 0, 0, 0, 0, 0, 0, 0, complete = false)
@@ -1955,6 +1970,22 @@ private suspend fun runAgentTests(
     val suiteStarted = SystemClock.elapsedRealtime()
     for (case in AGENT_TEST_CASES) {
         currentCoroutineContext().ensureActive()
+        awaitThermalCooldown(context) { temperature, status ->
+            onProgress(
+                AgentEvaluationProgress(
+                    completed = details.length(),
+                    total = AGENT_TEST_CASES.size,
+                    correct = correctRoutes,
+                    strictFirstPass = strictFirstPass,
+                    normalizedFirstPass = normalizedFirstPass,
+                    finalAccepted = finalAccepted,
+                    repairAttempts = repairAttempts,
+                    repaired = repairedSelections,
+                    elapsedMs = SystemClock.elapsedRealtime() - suiteStarted,
+                    currentCase = "${case.id} cooling (${formatMetric(temperature)} C / thermal $status)",
+                ),
+            )
+        }
         onProgress(
             AgentEvaluationProgress(
                 completed = details.length(),
@@ -1996,6 +2027,7 @@ private suspend fun runAgentTests(
         var repairAttempted = false
         var errorType: String? = null
         val pssBeforeKb = Debug.getPss()
+        val runtimeBefore = captureRuntimeMemorySnapshot()
         val temperatureBeforeC = getBatteryInfo(context).getDouble("temperatureC")
         try {
             val selection = withTimeout(AGENT_EVAL_CASE_TIMEOUT_MS) {
@@ -2021,6 +2053,7 @@ private suspend fun runAgentTests(
         }
         if (repairAttempted) repairAttempts++
         val pssAfterKb = Debug.getPss()
+        val runtimeAfter = captureRuntimeMemorySnapshot()
         val temperatureAfterC = getBatteryInfo(context).getDouble("temperatureC")
         val latencyMs = generations.sumOf(TimedGeneration::latencyMs)
         val pieces = generations.sumOf(TimedGeneration::pieces)
@@ -2073,6 +2106,15 @@ private suspend fun runAgentTests(
                 .put("exposedPiecesPerSecond", rate)
                 .put("pssBeforeKb", pssBeforeKb)
                 .put("pssAfterKb", pssAfterKb)
+                .put("rssBeforeKb", runtimeBefore.rssKb ?: JSONObject.NULL)
+                .put("rssAfterKb", runtimeAfter.rssKb ?: JSONObject.NULL)
+                .put("filePssBeforeKb", runtimeBefore.filePssKb ?: JSONObject.NULL)
+                .put("filePssAfterKb", runtimeAfter.filePssKb ?: JSONObject.NULL)
+                .put("swapPssBeforeKb", runtimeBefore.swapPssKb ?: JSONObject.NULL)
+                .put("swapPssAfterKb", runtimeAfter.swapPssKb ?: JSONObject.NULL)
+                .put("minorFaultsDelta", nullableDelta(runtimeAfter.minorFaults, runtimeBefore.minorFaults) ?: JSONObject.NULL)
+                .put("majorFaultsDelta", nullableDelta(runtimeAfter.majorFaults, runtimeBefore.majorFaults) ?: JSONObject.NULL)
+                .put("readBytesDelta", nullableDelta(runtimeAfter.readBytes, runtimeBefore.readBytes) ?: JSONObject.NULL)
                 .put("temperatureBeforeC", temperatureBeforeC)
                 .put("temperatureAfterC", temperatureAfterC),
         )
@@ -2086,6 +2128,11 @@ private suspend fun runAgentTests(
             correct, jsonValid && !repairAttempted && !schemaNormalized, schemaNormalized,
             repairAttempted, jsonValid, errorType.orEmpty(), latencyMs, ttftMs,
             pieces, formatMetric(rate), pssBeforeKb, pssAfterKb,
+            runtimeBefore.rssKb, runtimeAfter.rssKb, runtimeBefore.filePssKb, runtimeAfter.filePssKb,
+            runtimeBefore.swapPssKb, runtimeAfter.swapPssKb,
+            nullableDelta(runtimeAfter.minorFaults, runtimeBefore.minorFaults),
+            nullableDelta(runtimeAfter.majorFaults, runtimeBefore.majorFaults),
+            nullableDelta(runtimeAfter.readBytes, runtimeBefore.readBytes),
             formatMetric(temperatureBeforeC), formatMetric(temperatureAfterC),
         )
         onProgress(
@@ -2406,10 +2453,30 @@ private fun displayName(context: Context, uri: Uri): String {
 
 private fun copyModelToPrivateStorage(context: Context, uri: Uri, displayName: String): File {
     require(displayName.endsWith(".gguf", ignoreCase = true)) { "Select a .gguf file" }
+    if (uri.scheme == "file") {
+        return requireNotNull(uri.path?.let(::File)).also { source ->
+            require(source.isFile && source.length() > 0L) { "Saved model is unavailable" }
+            require(source.canonicalPath.startsWith(context.filesDir.canonicalPath + File.separator)) {
+                "Saved model is outside app storage"
+            }
+        }
+    }
     val modelsDirectory = File(context.filesDir, "models").apply { mkdirs() }
     val safeName = displayName.replace(Regex("[^A-Za-z0-9._-]"), "_")
     val destination = File(modelsDirectory, safeName)
     val temporary = File(modelsDirectory, "$safeName.copying")
+    val sourceLength = context.contentResolver.query(
+        uri,
+        arrayOf(OpenableColumns.SIZE),
+        null,
+        null,
+        null,
+    )?.use { cursor ->
+        if (cursor.moveToFirst() && !cursor.isNull(0)) cursor.getLong(0) else null
+    }
+    if (destination.isFile && sourceLength != null && sourceLength > 0L && destination.length() == sourceLength) {
+        return destination
+    }
     context.contentResolver.openInputStream(uri).use { input ->
         requireNotNull(input) { "Unable to open selected model" }
         FileOutputStream(temporary).use { output -> input.copyTo(output, 1024 * 1024) }
@@ -2423,10 +2490,11 @@ private fun copyModelToPrivateStorage(context: Context, uri: Uri, displayName: S
 private const val TAG = "PocketLlama"
 private const val TAG_METRICS = "PocketLlamaMetrics"
 private const val TAG_AGENT = "PocketAgent"
-private const val LLAMA_CPP_COMMIT = "a94d563ed801d1da1b8c2432946de07d0231bb3d"
-private const val LLAMA_BUILD_FLAGS = "arm64-v8a;GGML_SYSTEM_ARCH=ARM;GGML_CPU_KLEIDIAI=OFF;GGML_OPENMP=OFF;ctx=1024;cpu-only"
+private const val LLAMA_CPP_COMMIT = "2a15f3a72dc99d0d04aff8aa8f812335a13612ae"
+private const val LLAMA_BUILD_FLAGS = "arm64-v8a;GGML_SYSTEM_ARCH=ARM;GGML_CPU_KLEIDIAI=OFF;GGML_OPENMP=OFF;ctx=2048;cpu-only"
 private const val AGENT_EVAL_MAX_START_TEMPERATURE_C = 38.0
-private const val AGENT_EVAL_CASE_TIMEOUT_MS = 120_000L
+private const val AGENT_EVAL_MAX_START_THERMAL_STATUS = PowerManager.THERMAL_STATUS_LIGHT
+private const val AGENT_EVAL_CASE_TIMEOUT_MS = 600_000L
 private const val AGENT_EVAL_COOLDOWN_POLL_MS = 30_000L
-private const val AGENT_EVAL_CSV_HEADER = "id,task_category,prompt,expected_route,actual_route,correct,strict_schema_first_attempt,schema_normalized,repair_attempted,final_schema_accepted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,temperature_before_c,temperature_after_c"
+private const val AGENT_EVAL_CSV_HEADER = "id,task_category,prompt,expected_route,actual_route,correct,strict_schema_first_attempt,schema_normalized,repair_attempted,final_schema_accepted,error_type,latency_ms,ttft_ms,generated_pieces,exposed_pieces_per_second,pss_before_kb,pss_after_kb,rss_before_kb,rss_after_kb,file_pss_before_kb,file_pss_after_kb,swap_pss_before_kb,swap_pss_after_kb,minor_faults_delta,major_faults_delta,read_bytes_delta,temperature_before_c,temperature_after_c"
 private const val TAG_HEALTH = "PocketHealth"
