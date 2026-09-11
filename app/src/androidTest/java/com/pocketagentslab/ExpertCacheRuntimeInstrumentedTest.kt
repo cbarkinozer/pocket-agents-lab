@@ -163,6 +163,44 @@ class ExpertCacheRuntimeInstrumentedTest {
     }
 
     @Test
+    fun lingInferencePageWarmModeWhenExplicitlyRequested() {
+        assumeTrue(
+            InstrumentationRegistry.getArguments().getString("runPageWarm") == "true",
+        )
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val model = File(context.filesDir, "models/Ling-3.0-tiny-Q3_K_M.gguf")
+        assumeTrue(model.isFile)
+        val engine = AiChat.getInferenceEngine(context)
+        try {
+            runBlocking {
+                withTimeout(180_000) {
+                    engine.state.first {
+                        it is InferenceEngine.State.Initialized || it is InferenceEngine.State.Error
+                    }
+                }
+                engine.loadModel(model.absolutePath)
+                assertTrue(ExpertCacheRuntime.open(model.absolutePath, 64L * 1024 * 1024))
+                ExpertCacheRuntime.setPageWarm(true)
+                ExpertCacheRuntime.setTelemetry(true)
+                ExpertCacheRuntime.setPredictor(false)
+                engine.setSystemPrompt("You are a concise local test assistant.")
+                engine.sendUserPrompt("What is 2+2?", predictLength = 8).toList()
+            }
+            val telemetry = JSONObject(ExpertCacheRuntime.telemetryJson())
+            val stats = JSONObject(ExpertCacheRuntime.statsJson())
+            println("LING_PAGE_WARM=$telemetry stats=$stats")
+            assertTrue(telemetry.getLong("routeEvents") > 0)
+            assertTrue(stats.getBoolean("pageWarm"))
+            assertTrue(stats.getLong("bytesRead") > 0)
+            assertEquals(0, stats.getLong("residentBytes"))
+        } finally {
+            ExpertCacheRuntime.setTelemetry(false)
+            ExpertCacheRuntime.setPageWarm(false)
+            engine.cleanUp()
+        }
+    }
+
+    @Test
     fun lingVanillaVsPrefetchComparisonWhenExplicitlyRequested() {
         assumeTrue(
             InstrumentationRegistry.getArguments().getString("runComparison") == "true",
