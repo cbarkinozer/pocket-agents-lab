@@ -66,7 +66,10 @@ bool ExpertCache::page_warm() const {
 }
 
 size_t ExpertCache::KeyHash::operator()(const Key & key) const {
-    return (static_cast<size_t>(key.layer) << 32) ^ static_cast<size_t>(key.expert);
+    size_t hash = (static_cast<size_t>(key.layer) << 32) ^ static_cast<size_t>(key.expert);
+    hash ^= std::hash<uint64_t> {}(key.offset) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+    hash ^= std::hash<uint64_t> {}(key.length) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+    return hash;
 }
 
 bool ExpertCache::open(const std::string & path, uint64_t budget_bytes) {
@@ -203,7 +206,7 @@ bool ExpertCache::load(uint32_t layer, uint32_t expert, uint64_t offset, uint64_
         return true;
     }
 
-    const Key key { layer, expert };
+    const Key key { layer, expert, offset, length };
     const auto found = impl_->index.find(key);
     if (found != impl_->index.end()) {
         auto item = found->second;

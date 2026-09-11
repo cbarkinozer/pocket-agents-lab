@@ -51,9 +51,12 @@ private:
     struct Key {
         uint32_t layer;
         uint32_t expert;
+        uint64_t offset;
+        uint64_t length;
 
         bool operator==(const Key & other) const {
-            return layer == other.layer && expert == other.expert;
+            return layer == other.layer && expert == other.expert
+                    && offset == other.offset && length == other.length;
         }
     };
 

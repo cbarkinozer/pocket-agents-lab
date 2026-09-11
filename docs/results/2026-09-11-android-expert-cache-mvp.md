@@ -62,6 +62,11 @@ caller or benchmark to wait for the worker queue and active read to drain before
 starting inference. The fixture instrumentation test verifies this completion
 barrier.
 
+The cache key now includes the byte offset and length in addition to
+`(layer, expert)`. This is required because Ling stores gate, down, and up
+projection tensors as separate ranges for the same expert; they must occupy
+independent LRU entries rather than replacing one another.
+
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current
