@@ -68,6 +68,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
+import com.arm.aichat.ExpertCacheRuntime
 import androidx.lifecycle.LifecycleEventObserver
 import com.arm.aichat.AiChat
 import com.arm.aichat.ConversationReset
@@ -1861,6 +1862,8 @@ private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String
 }
 
 private suspend fun loadModelFile(engine: InferenceEngine, modelFile: File): Long {
+    // Reset any previous Ling storage-backed state before loading another model.
+    ExpertCacheRuntime.close()
     val readyState = engine.state.first {
         it is InferenceEngine.State.Initialized ||
             it is InferenceEngine.State.ModelReady ||
@@ -1873,6 +1876,13 @@ private suspend fun loadModelFile(engine: InferenceEngine, modelFile: File): Lon
     val started = SystemClock.elapsedRealtime()
     engine.loadModel(modelFile.absolutePath)
     engine.setSystemPrompt(AGENT_SYSTEM_PROMPT)
+    if (modelFile.name.contains("ling", ignoreCase = true)) {
+        val enabled = ExpertCacheRuntime.enableStorageBacked(
+            modelFile.absolutePath,
+            64L * 1024 * 1024,
+        )
+        Log.i(TAG_METRICS, "storage_backed_moe model=${modelFile.name} enabled=$enabled budget_mb=64")
+    }
     val elapsed = SystemClock.elapsedRealtime() - started
     Log.i(
         TAG_METRICS,

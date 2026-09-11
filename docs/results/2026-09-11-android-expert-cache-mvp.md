@@ -157,3 +157,6 @@ and performs a cold page reset when a model is already loaded. This keeps
 llama.cpp normal tensor pointers and is suitable for the app's experimental
 Android path without changing the upstream CPU kernel. The A32
 instrumentation test verified the configuration and stable telemetry schema.
+The app's shared model-loading path enables this mode automatically for model
+filenames containing `Ling`, and closes the cache before every model switch;
+Qwen/LFM and other models retain the normal path.
