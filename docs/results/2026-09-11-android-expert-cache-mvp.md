@@ -37,6 +37,12 @@ demand; `directPageDropRequests` records successful advice calls. A gated real
 Ling inference with page-warm plus page-evict completed on the A32 without a
 crash. This remains experimental and is not enabled by the normal app path.
 
+`ExpertCacheRuntime.releaseAllExpertPages()` now provides a controlled cold
+residency reset after model load by advising all loaded MoE tensor mappings with
+`MADV_DONTNEED`. A32 instrumentation passed this reset followed by Ling
+inference, so future A/B runs can start from a reproducible cold expert-page
+state instead of relying on whatever the OS happened to retain.
+
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current
