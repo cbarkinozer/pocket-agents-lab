@@ -203,6 +203,8 @@ string(APPEND AI_CHAT_SOURCE [=[
 #include "expert_index.h"
 #include <atomic>
 #include <cstring>
+#include <mutex>
+#include <unordered_map>
 #include "llama-context.h"
 #include "llama-model.h"
 #include "ggml-backend.h"
@@ -213,6 +215,10 @@ static std::atomic<bool> g_expert_telemetry_enabled { false };
 static std::atomic<uint64_t> g_expert_route_events { 0 };
 static std::atomic<uint64_t> g_expert_selected_count { 0 };
 static std::atomic<uint64_t> g_expert_prefetch_count { 0 };
+static std::atomic<bool> g_expert_predictor_enabled { false };
+static std::atomic<uint64_t> g_expert_predictor_requests { 0 };
+static std::mutex g_expert_predictor_mutex;
+static std::unordered_map<uint32_t, std::vector<uint32_t>> g_expert_last_selection;
 
 static bool pocket_prefetch_expert(uint32_t layer, uint32_t expert) {
     if (g_expert_cache == nullptr || expert >= g_expert_index.expert_count()) {
@@ -253,11 +259,26 @@ static bool pocket_expert_eval_callback(ggml_tensor * tensor, bool ask, void *) 
         try {
             const uint32_t layer = static_cast<uint32_t>(std::stoul(separator + 1));
             std::vector<bool> seen(g_expert_index.expert_count(), false);
+            std::vector<uint32_t> current;
             for (const int32_t expert : selected) {
                 if (expert >= 0 && static_cast<uint32_t>(expert) < seen.size()
                         && !seen[static_cast<size_t>(expert)]) {
                     seen[static_cast<size_t>(expert)] = true;
+                    current.push_back(static_cast<uint32_t>(expert));
                     pocket_prefetch_expert(layer, static_cast<uint32_t>(expert));
+                }
+            }
+            if (g_expert_predictor_enabled.load(std::memory_order_acquire)) {
+                std::vector<uint32_t> previous;
+                {
+                    std::lock_guard<std::mutex> lock(g_expert_predictor_mutex);
+                    previous = g_expert_last_selection[layer];
+                    g_expert_last_selection[layer] = current;
+                }
+                for (const uint32_t expert : previous) {
+                    if (pocket_prefetch_expert(layer, expert)) {
+                        g_expert_predictor_requests.fetch_add(1, std::memory_order_relaxed);
+                    }
                 }
             }
         } catch (...) {
@@ -397,13 +418,24 @@ Java_com_arm_aichat_ExpertCacheRuntime_setTelemetryNative(JNIEnv *, jclass, jboo
 }
 
 extern "C"
+JNIEXPORT void JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_setPredictorNative(JNIEnv *, jclass, jboolean enabled) {
+    g_expert_predictor_enabled.store(enabled == JNI_TRUE, std::memory_order_release);
+    if (enabled != JNI_TRUE) {
+        std::lock_guard<std::mutex> lock(g_expert_predictor_mutex);
+        g_expert_last_selection.clear();
+    }
+}
+
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_telemetryJsonNative(JNIEnv * env, jclass) {
     const std::string json = "{\"enabled\":"
             + std::string(g_expert_telemetry_enabled.load(std::memory_order_acquire) ? "true" : "false")
             + ",\"routeEvents\":" + std::to_string(g_expert_route_events.load(std::memory_order_relaxed))
             + ",\"selectedExperts\":" + std::to_string(g_expert_selected_count.load(std::memory_order_relaxed))
-            + ",\"prefetchRequests\":" + std::to_string(g_expert_prefetch_count.load(std::memory_order_relaxed)) + "}";
+            + ",\"prefetchRequests\":" + std::to_string(g_expert_prefetch_count.load(std::memory_order_relaxed))
+            + ",\"predictorRequests\":" + std::to_string(g_expert_predictor_requests.load(std::memory_order_relaxed)) + "}";
     return env->NewStringUTF(json.c_str());
 }
 

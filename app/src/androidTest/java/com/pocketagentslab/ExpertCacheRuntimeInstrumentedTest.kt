@@ -130,6 +130,7 @@ class ExpertCacheRuntimeInstrumentedTest {
                 engine.loadModel(model.absolutePath)
                 assertTrue(ExpertCacheRuntime.open(model.absolutePath, 64L * 1024 * 1024))
                 ExpertCacheRuntime.setTelemetry(true)
+                ExpertCacheRuntime.setPredictor(true)
                 engine.setSystemPrompt("You are a concise local test assistant.")
                 engine.sendUserPrompt("What is 2+2?", predictLength = 8).toList()
             }
@@ -140,8 +141,10 @@ class ExpertCacheRuntimeInstrumentedTest {
             assertTrue(telemetry.getLong("routeEvents") > 0)
             assertTrue(telemetry.getLong("selectedExperts") > 0)
             assertTrue(telemetry.getLong("prefetchRequests") > 0)
+            assertTrue(telemetry.getLong("predictorRequests") > 0)
             println("LING_CONNECTED_TELEMETRY=$telemetry")
         } finally {
+            ExpertCacheRuntime.setPredictor(false)
             ExpertCacheRuntime.setTelemetry(false)
             engine.cleanUp()
         }

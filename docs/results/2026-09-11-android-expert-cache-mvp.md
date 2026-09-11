@@ -66,6 +66,8 @@ prefetched layer 1 expert 0; the worker read its ranges from storage.
 
 The route-to-cache path is now connected behind the opt-in telemetry switch.
 The real Ling A32 integration produced `routeEvents=230`, `selectedExperts=81328`,
-and `prefetchRequests=5657`, with no generation crash and unchanged test output.
-The remaining work is a previous-token/transition predictor, followed by paired
+`prefetchRequests=11774`, and `predictorRequests=5729`, with no generation
+crash and unchanged test output. The first predictor reuses the previous
+expert set per layer; it is intentionally a baseline, not a learned prerouter.
+The remaining work is Top-8 recall/wasted-byte accounting followed by paired
 cache/prefetch versus vanilla mmap measurements.

@@ -24,6 +24,9 @@ object ExpertCacheRuntime {
     private external fun setTelemetryNative(enabled: Boolean)
 
     @JvmStatic
+    private external fun setPredictorNative(enabled: Boolean)
+
+    @JvmStatic
     private external fun telemetryJsonNative(): String
 
     @JvmStatic
@@ -50,6 +53,8 @@ object ExpertCacheRuntime {
     fun indexFileJson(path: String): String = indexFileNative(path)
 
     fun setTelemetry(enabled: Boolean) = setTelemetryNative(enabled)
+
+    fun setPredictor(enabled: Boolean) = setPredictorNative(enabled)
 
     fun telemetryJson(): String = telemetryJsonNative()
 
