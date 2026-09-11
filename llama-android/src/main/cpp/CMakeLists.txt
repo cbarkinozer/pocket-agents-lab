@@ -579,6 +579,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_closeNative(JNIEnv *, jclass) {
     g_expert_cache.reset();
+    g_expert_page_evict_enabled.store(false, std::memory_order_release);
 }
 ]=])
 string(PREPEND AI_CHAT_SOURCE [=[
