@@ -190,6 +190,7 @@ class ExpertCacheRuntimeInstrumentedTest {
             val stats = JSONObject(ExpertCacheRuntime.statsJson())
             println("LING_PAGE_WARM=$telemetry stats=$stats")
             assertTrue(telemetry.getLong("routeEvents") > 0)
+            assertTrue(telemetry.getLong("directPageWarmRequests") > 0)
             assertTrue(stats.getBoolean("pageWarm"))
             assertTrue(stats.getLong("bytesRead") > 0)
             assertEquals(0, stats.getLong("residentBytes"))

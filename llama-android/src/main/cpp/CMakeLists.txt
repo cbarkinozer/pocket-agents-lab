@@ -205,6 +205,8 @@ string(APPEND AI_CHAT_SOURCE [=[
 #include <cstring>
 #include <mutex>
 #include <unordered_map>
+#include <sys/mman.h>
+#include <unistd.h>
 #include "llama-context.h"
 #include "llama-model.h"
 #include "ggml-backend.h"
@@ -217,8 +219,53 @@ static std::atomic<uint64_t> g_expert_selected_count { 0 };
 static std::atomic<uint64_t> g_expert_prefetch_count { 0 };
 static std::atomic<bool> g_expert_predictor_enabled { false };
 static std::atomic<uint64_t> g_expert_predictor_requests { 0 };
+static std::atomic<uint64_t> g_expert_direct_warm_requests { 0 };
 static std::mutex g_expert_predictor_mutex;
 static std::unordered_map<uint32_t, std::vector<uint32_t>> g_expert_last_selection;
+
+// Warm the actual tensor mapping used by ggml. Unlike the duplicate pread
+// cache, this operates on llama.cpp's loaded tensor pointer and therefore
+// directly influences the kernel file-page residency without changing model
+// values or dispatch semantics. It is best-effort: non-mmap buffers simply
+// return an error from madvise and remain untouched.
+static bool pocket_warm_loaded_expert(uint32_t layer, uint32_t expert) {
+    if (g_model == nullptr || expert >= g_expert_index.expert_count()) {
+        return false;
+    }
+    auto * base = dynamic_cast<llama_model_base *>(g_model);
+    if (base == nullptr) {
+        return false;
+    }
+    const long raw_page = ::sysconf(_SC_PAGESIZE);
+    const uint64_t page = raw_page > 0 ? static_cast<uint64_t>(raw_page) : 4096;
+    bool warmed = false;
+    for (const auto & info : g_expert_index.tensors()) {
+        if (info.layer != layer) {
+            continue;
+        }
+        const std::string prefix = "blk." + std::to_string(layer) + ".ffn_" + info.projection + "_exps.weight";
+        for (const auto & named : base->tensors_by_name) {
+            if (named.first != prefix || named.second == nullptr || named.second->data == nullptr) {
+                continue;
+            }
+            const uint64_t relative = static_cast<uint64_t>(expert) * info.expert_bytes;
+            if (relative > ggml_nbytes(named.second) || info.expert_bytes > ggml_nbytes(named.second) - relative) {
+                continue;
+            }
+            auto * address = static_cast<uint8_t *>(named.second->data) + relative;
+            const uintptr_t raw = reinterpret_cast<uintptr_t>(address);
+            const uintptr_t aligned = raw - (raw % page);
+            const size_t span = static_cast<size_t>(info.expert_bytes + (raw - aligned));
+            if (::madvise(reinterpret_cast<void *>(aligned), span, MADV_WILLNEED) == 0) {
+                warmed = true;
+            }
+        }
+    }
+    if (warmed) {
+        g_expert_direct_warm_requests.fetch_add(1, std::memory_order_relaxed);
+    }
+    return warmed;
+}
 
 static bool pocket_prefetch_expert(uint32_t layer, uint32_t expert) {
     if (g_expert_cache == nullptr || expert >= g_expert_index.expert_count()) {
@@ -266,6 +313,9 @@ static bool pocket_expert_eval_callback(ggml_tensor * tensor, bool ask, void *) 
                     seen[static_cast<size_t>(expert)] = true;
                     current.push_back(static_cast<uint32_t>(expert));
                     pocket_prefetch_expert(layer, static_cast<uint32_t>(expert));
+                    if (g_expert_cache != nullptr && g_expert_cache->page_warm()) {
+                        pocket_warm_loaded_expert(layer, static_cast<uint32_t>(expert));
+                    }
                 }
             }
             if (g_expert_predictor_enabled.load(std::memory_order_acquire)) {
@@ -421,6 +471,7 @@ Java_com_arm_aichat_ExpertCacheRuntime_setTelemetryNative(JNIEnv *, jclass, jboo
         g_expert_selected_count.store(0, std::memory_order_relaxed);
         g_expert_prefetch_count.store(0, std::memory_order_relaxed);
         g_expert_predictor_requests.store(0, std::memory_order_relaxed);
+        g_expert_direct_warm_requests.store(0, std::memory_order_relaxed);
         {
             std::lock_guard<std::mutex> lock(g_expert_predictor_mutex);
             g_expert_last_selection.clear();
@@ -451,7 +502,8 @@ Java_com_arm_aichat_ExpertCacheRuntime_telemetryJsonNative(JNIEnv * env, jclass)
             + ",\"routeEvents\":" + std::to_string(g_expert_route_events.load(std::memory_order_relaxed))
             + ",\"selectedExperts\":" + std::to_string(g_expert_selected_count.load(std::memory_order_relaxed))
             + ",\"prefetchRequests\":" + std::to_string(g_expert_prefetch_count.load(std::memory_order_relaxed))
-            + ",\"predictorRequests\":" + std::to_string(g_expert_predictor_requests.load(std::memory_order_relaxed)) + "}";
+            + ",\"predictorRequests\":" + std::to_string(g_expert_predictor_requests.load(std::memory_order_relaxed))
+            + ",\"directPageWarmRequests\":" + std::to_string(g_expert_direct_warm_requests.load(std::memory_order_relaxed)) + "}";
     return env->NewStringUTF(json.c_str());
 }
 
