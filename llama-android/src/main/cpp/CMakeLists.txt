@@ -324,6 +324,39 @@ static uint64_t pocket_drop_all_loaded_expert_pages() {
     return dropped;
 }
 
+static std::string pocket_expert_residency_json() {
+    uint64_t resident = 0;
+    uint64_t mapped = 0;
+    uint64_t tensors = 0;
+    if (g_model == nullptr) return "{\"residentBytes\":0,\"mappedBytes\":0,\"residentRatio\":0,\"tensorCount\":0}";
+    auto * base = dynamic_cast<llama_model_base *>(g_model);
+    if (base == nullptr) return "{\"residentBytes\":0,\"mappedBytes\":0,\"residentRatio\":0,\"tensorCount\":0}";
+    const long raw_page = ::sysconf(_SC_PAGESIZE);
+    const size_t page = raw_page > 0 ? static_cast<size_t>(raw_page) : 4096;
+    for (const auto & named : base->tensors_by_name) {
+        const std::string & name = named.first;
+        if (name.find(".ffn_gate_exps.weight") == std::string::npos
+                && name.find(".ffn_down_exps.weight") == std::string::npos
+                && name.find(".ffn_up_exps.weight") == std::string::npos) continue;
+        if (named.second == nullptr || named.second->data == nullptr || ggml_nbytes(named.second) == 0) continue;
+        const uintptr_t raw = reinterpret_cast<uintptr_t>(named.second->data);
+        const uintptr_t aligned = raw - (raw % page);
+        const size_t span = static_cast<size_t>(ggml_nbytes(named.second) + (raw - aligned));
+        const size_t pages = (span + page - 1) / page;
+        std::vector<unsigned char> vec(pages);
+        if (::mincore(reinterpret_cast<void *>(aligned), pages * page, vec.data()) != 0) continue;
+        ++tensors;
+        mapped += static_cast<uint64_t>(ggml_nbytes(named.second));
+        for (unsigned char value : vec) if (value & 1) resident += page;
+    }
+    if (resident > mapped) resident = mapped;
+    const double ratio = mapped == 0 ? 0.0 : static_cast<double>(resident) / static_cast<double>(mapped);
+    return "{\"residentBytes\":" + std::to_string(resident)
+            + ",\"mappedBytes\":" + std::to_string(mapped)
+            + ",\"residentRatio\":" + std::to_string(ratio)
+            + ",\"tensorCount\":" + std::to_string(tensors) + "}";
+}
+
 static bool pocket_prefetch_expert(uint32_t layer, uint32_t expert) {
     if (g_expert_cache == nullptr || expert >= g_expert_index.expert_count()) {
         return false;
@@ -473,6 +506,13 @@ extern "C"
 JNIEXPORT jlong JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_releaseAllExpertPagesNative(JNIEnv *, jclass) {
     return static_cast<jlong>(pocket_drop_all_loaded_expert_pages());
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_expertResidencyJsonNative(JNIEnv * env, jclass) {
+    const std::string json = pocket_expert_residency_json();
+    return env->NewStringUTF(json.c_str());
 }
 
 extern "C"

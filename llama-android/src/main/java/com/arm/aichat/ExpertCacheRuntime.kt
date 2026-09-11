@@ -15,6 +15,9 @@ object ExpertCacheRuntime {
     private external fun releaseAllExpertPagesNative(): Long
 
     @JvmStatic
+    private external fun expertResidencyJsonNative(): String
+
+    @JvmStatic
     private external fun loadNative(layer: Int, expert: Int, offset: Long, length: Long): Boolean
 
     @JvmStatic
@@ -57,6 +60,9 @@ object ExpertCacheRuntime {
 
     /** Drop clean pages for every loaded MoE expert tensor; returns tensors advised. */
     fun releaseAllExpertPages(): Long = releaseAllExpertPagesNative()
+
+    /** Query kernel-resident bytes for loaded MoE expert tensors via mincore. */
+    fun expertResidencyJson(): String = expertResidencyJsonNative()
 
     fun load(layer: Int, expert: Int, offset: Long, length: Long): Boolean =
         loadNative(layer, expert, offset, length)

@@ -87,6 +87,14 @@ class ExpertCacheRuntimeInstrumentedTest {
     }
 
     @Test
+    fun expertResidencyIsSafeBeforeModelLoad() {
+        val residency = JSONObject(ExpertCacheRuntime.expertResidencyJson())
+        assertEquals(0, residency.getLong("residentBytes"))
+        assertEquals(0, residency.getLong("mappedBytes"))
+        assertEquals(0, residency.getInt("tensorCount"))
+    }
+
+    @Test
     fun telemetryToggleIsSafeBeforeModelLoad() {
         ExpertCacheRuntime.setTelemetry(true)
         assertTrue(JSONObject(ExpertCacheRuntime.telemetryJson()).getBoolean("enabled"))
