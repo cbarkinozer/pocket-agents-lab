@@ -182,6 +182,7 @@ class ExpertCacheRuntimeInstrumentedTest {
                 assertTrue(ExpertCacheRuntime.open(model.absolutePath, 64L * 1024 * 1024))
                 ExpertCacheRuntime.setPageWarm(true)
                 ExpertCacheRuntime.setPageEvict(true)
+                assertTrue(ExpertCacheRuntime.releaseAllExpertPages() > 0)
                 ExpertCacheRuntime.setTelemetry(true)
                 ExpertCacheRuntime.setPredictor(true)
                 engine.setSystemPrompt("You are a concise local test assistant.")

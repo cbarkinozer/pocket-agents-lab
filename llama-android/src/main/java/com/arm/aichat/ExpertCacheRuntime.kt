@@ -12,6 +12,9 @@ object ExpertCacheRuntime {
     private external fun setPageEvictNative(enabled: Boolean)
 
     @JvmStatic
+    private external fun releaseAllExpertPagesNative(): Long
+
+    @JvmStatic
     private external fun loadNative(layer: Int, expert: Int, offset: Long, length: Long): Boolean
 
     @JvmStatic
@@ -51,6 +54,9 @@ object ExpertCacheRuntime {
 
     /** Experimental: drop clean pages for experts absent from the previous route. */
     fun setPageEvict(enabled: Boolean) = setPageEvictNative(enabled)
+
+    /** Drop clean pages for every loaded MoE expert tensor; returns tensors advised. */
+    fun releaseAllExpertPages(): Long = releaseAllExpertPagesNative()
 
     fun load(layer: Int, expert: Int, offset: Long, length: Long): Boolean =
         loadNative(layer, expert, offset, length)

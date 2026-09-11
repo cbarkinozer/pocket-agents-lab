@@ -301,6 +301,27 @@ static bool pocket_drop_loaded_expert(uint32_t layer, uint32_t expert) {
     return dropped;
 }
 
+static uint64_t pocket_drop_all_loaded_expert_pages() {
+    if (g_model == nullptr) return 0;
+    auto * base = dynamic_cast<llama_model_base *>(g_model);
+    if (base == nullptr) return 0;
+    uint64_t dropped = 0;
+    const long raw_page = ::sysconf(_SC_PAGESIZE);
+    const uint64_t page = raw_page > 0 ? static_cast<uint64_t>(raw_page) : 4096;
+    for (const auto & named : base->tensors_by_name) {
+        const std::string & name = named.first;
+        if (name.find(".ffn_gate_exps.weight") == std::string::npos
+                && name.find(".ffn_down_exps.weight") == std::string::npos
+                && name.find(".ffn_up_exps.weight") == std::string::npos) continue;
+        if (named.second == nullptr || named.second->data == nullptr) continue;
+        const uintptr_t raw = reinterpret_cast<uintptr_t>(named.second->data);
+        const uintptr_t aligned = raw - (raw % page);
+        const size_t span = static_cast<size_t>(ggml_nbytes(named.second) + (raw - aligned));
+        if (::madvise(reinterpret_cast<void *>(aligned), span, MADV_DONTNEED) == 0) ++dropped;
+    }
+    return dropped;
+}
+
 static bool pocket_prefetch_expert(uint32_t layer, uint32_t expert) {
     if (g_expert_cache == nullptr || expert >= g_expert_index.expert_count()) {
         return false;
@@ -428,6 +449,12 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_setPageEvictNative(JNIEnv *, jclass, jboolean enabled) {
     g_expert_page_evict_enabled.store(enabled == JNI_TRUE, std::memory_order_release);
+}
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_releaseAllExpertPagesNative(JNIEnv *, jclass) {
+    return static_cast<jlong>(pocket_drop_all_loaded_expert_pages());
 }
 
 extern "C"
