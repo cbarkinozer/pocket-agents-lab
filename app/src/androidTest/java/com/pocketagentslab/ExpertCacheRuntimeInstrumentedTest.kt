@@ -92,6 +92,8 @@ class ExpertCacheRuntimeInstrumentedTest {
         assertEquals(0, residency.getLong("residentBytes"))
         assertEquals(0, residency.getLong("mappedBytes"))
         assertEquals(0, residency.getInt("tensorCount"))
+        assertEquals(0, residency.getLong("selectedResidentBytes"))
+        assertEquals(0, residency.getLong("selectedMappedBytes"))
     }
 
     @Test

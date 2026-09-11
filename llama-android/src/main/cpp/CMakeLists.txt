@@ -328,6 +328,17 @@ static std::string pocket_expert_residency_json() {
     uint64_t resident = 0;
     uint64_t mapped = 0;
     uint64_t tensors = 0;
+    uint64_t selected_resident = 0;
+    uint64_t selected_bytes = 0;
+    std::unordered_set<uint64_t> selected_keys;
+    {
+        std::lock_guard<std::mutex> lock(g_expert_predictor_mutex);
+        for (const auto & entry : g_expert_last_selection) {
+            for (uint32_t expert : entry.second) {
+                selected_keys.insert((static_cast<uint64_t>(entry.first) << 32) | expert);
+            }
+        }
+    }
     if (g_model == nullptr) return "{\"residentBytes\":0,\"mappedBytes\":0,\"residentRatio\":0,\"tensorCount\":0}";
     auto * base = dynamic_cast<llama_model_base *>(g_model);
     if (base == nullptr) return "{\"residentBytes\":0,\"mappedBytes\":0,\"residentRatio\":0,\"tensorCount\":0}";
@@ -348,12 +359,31 @@ static std::string pocket_expert_residency_json() {
         ++tensors;
         mapped += static_cast<uint64_t>(ggml_nbytes(named.second));
         for (unsigned char value : vec) if (value & 1) resident += page;
+        const size_t expert_count = g_expert_index.expert_count();
+        if (expert_count > 0 && ggml_nbytes(named.second) % expert_count == 0) {
+            const uint64_t expert_bytes = ggml_nbytes(named.second) / expert_count;
+            const uint32_t layer = static_cast<uint32_t>(std::strtoul(name.c_str() + 4, nullptr, 10));
+            for (uint32_t expert = 0; expert < expert_count; ++expert) {
+                if (selected_keys.find((static_cast<uint64_t>(layer) << 32) | expert) == selected_keys.end()) continue;
+                auto * slice = static_cast<uint8_t *>(named.second->data) + expert * expert_bytes;
+                const uintptr_t slice_raw = reinterpret_cast<uintptr_t>(slice);
+                const uintptr_t slice_aligned = slice_raw - (slice_raw % page);
+                const size_t slice_span = static_cast<size_t>(expert_bytes + (slice_raw - slice_aligned));
+                std::vector<unsigned char> slice_vec((slice_span + page - 1) / page);
+                if (::mincore(reinterpret_cast<void *>(slice_aligned), slice_vec.size() * page, slice_vec.data()) != 0) continue;
+                selected_bytes += expert_bytes;
+                for (unsigned char value : slice_vec) if (value & 1) selected_resident += page;
+            }
+        }
     }
     if (resident > mapped) resident = mapped;
+    if (selected_resident > selected_bytes) selected_resident = selected_bytes;
     const double ratio = mapped == 0 ? 0.0 : static_cast<double>(resident) / static_cast<double>(mapped);
     return "{\"residentBytes\":" + std::to_string(resident)
             + ",\"mappedBytes\":" + std::to_string(mapped)
             + ",\"residentRatio\":" + std::to_string(ratio)
+            + ",\"selectedResidentBytes\":" + std::to_string(selected_resident)
+            + ",\"selectedMappedBytes\":" + std::to_string(selected_bytes)
             + ",\"tensorCount\":" + std::to_string(tensors) + "}";
 }
 
