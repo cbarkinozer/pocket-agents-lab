@@ -1,18 +1,24 @@
 package com.pocketagentslab
 
-import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.arm.aichat.AiChat
+import com.arm.aichat.InferenceEngine
 import com.arm.aichat.ExpertCacheRuntime
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import java.lang.Thread.sleep
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 @RunWith(AndroidJUnit4::class)
 class ExpertCacheRuntimeInstrumentedTest {
@@ -66,5 +72,46 @@ class ExpertCacheRuntimeInstrumentedTest {
     @Test
     fun expertIndexIsSafeBeforeModelLoad() {
         assertEquals("{}", ExpertCacheRuntime.expertIndexJson())
+    }
+
+    @Test
+    fun telemetryToggleIsSafeBeforeModelLoad() {
+        ExpertCacheRuntime.setTelemetry(true)
+        assertTrue(JSONObject(ExpertCacheRuntime.telemetryJson()).getBoolean("enabled"))
+        ExpertCacheRuntime.setTelemetry(false)
+        assertTrue(!JSONObject(ExpertCacheRuntime.telemetryJson()).getBoolean("enabled"))
+    }
+
+    @Test
+    fun lingInferenceProducesExpertTelemetryWhenExplicitlyRequested() {
+        assumeTrue(
+            InstrumentationRegistry.getArguments().getString("runLing") == "true",
+        )
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val model = File(context.filesDir, "models/Ling-3.0-tiny-Q3_K_M.gguf")
+        assumeTrue(model.isFile)
+        val engine = AiChat.getInferenceEngine(context)
+        try {
+            runBlocking {
+                withTimeout(180_000) {
+                    engine.state.first {
+                        it is InferenceEngine.State.Initialized || it is InferenceEngine.State.Error
+                    }
+                }
+                engine.loadModel(model.absolutePath)
+                ExpertCacheRuntime.setTelemetry(true)
+                engine.setSystemPrompt("You are a concise local test assistant.")
+                engine.sendUserPrompt("What is 2+2?", predictLength = 8).toList()
+            }
+            val telemetry = JSONObject(ExpertCacheRuntime.telemetryJson())
+            println("LING_EXPERT_TELEMETRY=$telemetry")
+            println("LING_EXPERT_INDEX=${ExpertCacheRuntime.expertIndexJson().take(240)}...")
+            assertTrue(telemetry.getBoolean("enabled"))
+            assertTrue(telemetry.getLong("routeEvents") > 0)
+            assertTrue(telemetry.getLong("selectedExperts") > 0)
+        } finally {
+            ExpertCacheRuntime.setTelemetry(false)
+            engine.cleanUp()
+        }
     }
 }

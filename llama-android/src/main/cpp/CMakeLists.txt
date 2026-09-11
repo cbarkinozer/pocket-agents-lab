@@ -200,10 +200,50 @@ Java_com_arm_aichat_ConversationReset_resetNative(JNIEnv *, jclass) {
 string(APPEND AI_CHAT_SOURCE [=[
 
 #include "expert_cache.h"
+#include <atomic>
+#include <cstring>
+#include "llama-context.h"
 #include "llama-model.h"
-#include "llama-model-loader.h"
+#include "ggml-backend.h"
 
 static std::unique_ptr<ExpertCache> g_expert_cache;
+static std::atomic<bool> g_expert_telemetry_enabled { false };
+static std::atomic<uint64_t> g_expert_route_events { 0 };
+static std::atomic<uint64_t> g_expert_selected_count { 0 };
+
+static bool pocket_expert_eval_callback(ggml_tensor * tensor, bool ask, void *) {
+    const char * name = ggml_get_name(tensor);
+    if (name == nullptr || std::strstr(name, "ffn_moe_topk") == nullptr) {
+        return false;
+    }
+    if (ask) {
+        return true;
+    }
+    const size_t bytes = ggml_nbytes(tensor);
+    if (bytes == 0 || bytes % sizeof(int32_t) != 0 || tensor->buffer == nullptr) {
+        return true;
+    }
+    std::vector<int32_t> selected(bytes / sizeof(int32_t));
+    ggml_backend_tensor_get(tensor, selected.data(), 0, bytes);
+    g_expert_route_events.fetch_add(1, std::memory_order_relaxed);
+    g_expert_selected_count.fetch_add(selected.size(), std::memory_order_relaxed);
+    return true;
+}
+
+static void pocket_install_expert_callback() {
+    if (g_context == nullptr) {
+        return;
+    }
+    auto & params = const_cast<llama_cparams &>(g_context->get_cparams());
+    params.cb_eval = pocket_expert_eval_callback;
+    params.cb_eval_user_data = nullptr;
+}
+
+static void pocket_install_expert_callback_if_enabled() {
+    if (g_expert_telemetry_enabled.load(std::memory_order_acquire)) {
+        pocket_install_expert_callback();
+    }
+}
 
 extern "C"
 JNIEXPORT jboolean JNICALL
@@ -261,45 +301,37 @@ Java_com_arm_aichat_ExpertCacheRuntime_expertIndexNative(JNIEnv * env, jclass) {
         return env->NewStringUTF("{}");
     }
     auto * base = dynamic_cast<llama_model_base *>(g_model);
-    if (base == nullptr || base->ml == nullptr || base->hparams.n_expert == 0) {
+    if (base == nullptr || base->hparams.n_expert == 0) {
         return env->NewStringUTF("{}");
     }
 
     const uint64_t expert_count = base->hparams.n_expert;
     std::string json = "{\"architecture\":\"" + base->arch_name()
-            + "\",\"expertCount\":" + std::to_string(expert_count) + ",\"tensors\":[";
-    bool first = true;
-    for (const auto & [name, weight] : base->ml->weights_map) {
-        const auto gate = name.find(".ffn_gate_exps.weight");
-        const auto down = name.find(".ffn_down_exps.weight");
-        const auto up = name.find(".ffn_up_exps.weight");
-        const auto marker = gate != std::string::npos ? gate
-                : down != std::string::npos ? down : up;
-        if (marker == std::string::npos || weight.tensor == nullptr) {
-            continue;
-        }
-        const auto block = name.find("blk.");
-        const auto dot = block == std::string::npos ? std::string::npos : name.find('.', block + 4);
-        if (block == std::string::npos || dot == std::string::npos) {
-            continue;
-        }
-        const uint64_t total_bytes = ggml_nbytes(weight.tensor);
-        if (total_bytes == 0 || total_bytes % expert_count != 0) {
-            continue;
-        }
-        if (!first) {
-            json += ",";
-        }
-        first = false;
-        const char * projection = gate != std::string::npos ? "gate"
-                : down != std::string::npos ? "down" : "up";
-        json += "{\"layer\":" + name.substr(block + 4, dot - (block + 4))
-                + ",\"projection\":\"" + projection
-                + "\",\"offset\":" + std::to_string(weight.offs)
-                + ",\"tensorBytes\":" + std::to_string(total_bytes)
-                + ",\"expertBytes\":" + std::to_string(total_bytes / expert_count) + "}";
+            + "\",\"expertCount\":" + std::to_string(expert_count)
+            + ",\"tensors\":[],\"status\":\"metadata_only\"}";
+    return env->NewStringUTF(json.c_str());
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_setTelemetryNative(JNIEnv *, jclass, jboolean enabled) {
+    g_expert_telemetry_enabled.store(enabled == JNI_TRUE, std::memory_order_release);
+    if (enabled == JNI_TRUE) {
+        pocket_install_expert_callback();
+    } else if (g_context != nullptr) {
+        auto & params = const_cast<llama_cparams &>(g_context->get_cparams());
+        params.cb_eval = nullptr;
+        params.cb_eval_user_data = nullptr;
     }
-    json += "]}";
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_telemetryJsonNative(JNIEnv * env, jclass) {
+    const std::string json = "{\"enabled\":"
+            + std::string(g_expert_telemetry_enabled.load(std::memory_order_acquire) ? "true" : "false")
+            + ",\"routeEvents\":" + std::to_string(g_expert_route_events.load(std::memory_order_relaxed))
+            + ",\"selectedExperts\":" + std::to_string(g_expert_selected_count.load(std::memory_order_relaxed)) + "}";
     return env->NewStringUTF(json.c_str());
 }
 
@@ -330,6 +362,16 @@ Java_com_arm_aichat_ExpertCacheRuntime_closeNative(JNIEnv *, jclass) {
     g_expert_cache.reset();
 }
 ]=])
+string(PREPEND AI_CHAT_SOURCE [=[
+static void pocket_install_expert_callback();
+static void pocket_install_expert_callback_if_enabled();
+]=])
+string(REPLACE
+    "g_context = context;"
+    "g_context = context;\n    pocket_install_expert_callback_if_enabled();"
+    AI_CHAT_SOURCE
+    "${AI_CHAT_SOURCE}"
+)
 set(GENERATED_BINDING "${CMAKE_CURRENT_BINARY_DIR}/ai_chat_pocket.cpp")
 file(WRITE "${GENERATED_BINDING}" "${AI_CHAT_SOURCE}")
 

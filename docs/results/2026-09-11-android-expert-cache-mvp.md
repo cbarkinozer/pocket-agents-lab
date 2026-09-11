@@ -13,14 +13,16 @@ The Android native library now contains a small `ExpertCache` implementation:
 - evicts least-recently-used entries;
 - accepts best-effort asynchronous prefetch requests on a worker thread;
 - exposes the loaded llama.cpp tensor metadata as a compact expert index;
+- has an opt-in llama scheduler callback for `ffn_moe_topk` telemetry;
 - reports hits, misses, evictions, bytes read, and resident bytes;
 - clears and closes safely on model lifecycle boundaries.
 
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
-next step: connecting the cache to the BailingMoe3 expert dispatch. When a
-model is loaded, `expertIndexJson()` obtains the merged expert tensor offsets
-from llama.cpp's loader metadata rather than reparsing the multi-gigabyte GGUF.
+next step: connecting the cache to the BailingMoe3 expert dispatch. The current
+`expertIndexJson()` safely reports loaded architecture metadata only; the
+llama.cpp loader's tensor-weight map is temporary and must not be read after
+model loading. A persistent GGUF index parser is still required for offsets.
 
 ## Current limitation
 
@@ -49,10 +51,15 @@ passed. It verified a 16-byte budget, two 8-byte resident entries, one cache
 hit, at least one LRU eviction, and 24 bytes read from a temporary fixture.
 The second test verified that an asynchronous prefetch request reads its range
 and is subsequently served as a cache hit.
+The telemetry toggle and pre-model-load lifecycle path also passed on-device.
+The explicit Ling integration test was rerun after the fix and produced
+`routeEvents=230` and `selectedExperts=81328` with no crash. The safe index
+response reported `architecture=bailingmoe3`, `expertCount=128`, and
+`status=metadata_only`.
 
 ## Next implementation step
 
-Add an opt-in BailingMoe3 dispatch hook that records selected experts and probes
-the cache without changing tensor values. Once telemetry-only parity is shown,
-route expert weight reads through the bounded cache and compare it with vanilla
-mmap.
+The next device run should enable telemetry during a real Ling generation and
+confirm non-zero `routeEvents`/`selectedExperts` while the generated text is
+unchanged. Then route expert weight reads through the bounded cache and compare
+it with vanilla mmap.

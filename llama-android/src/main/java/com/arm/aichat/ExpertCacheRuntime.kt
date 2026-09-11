@@ -15,6 +15,12 @@ object ExpertCacheRuntime {
     private external fun expertIndexNative(): String
 
     @JvmStatic
+    private external fun setTelemetryNative(enabled: Boolean)
+
+    @JvmStatic
+    private external fun telemetryJsonNative(): String
+
+    @JvmStatic
     private external fun statsNative(): String
 
     @JvmStatic
@@ -32,6 +38,10 @@ object ExpertCacheRuntime {
         prefetchNative(layer, expert, offset, length)
 
     fun expertIndexJson(): String = expertIndexNative()
+
+    fun setTelemetry(enabled: Boolean) = setTelemetryNative(enabled)
+
+    fun telemetryJson(): String = telemetryJsonNative()
 
     fun statsJson(): String = statsNative()
 
