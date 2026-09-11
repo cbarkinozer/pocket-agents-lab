@@ -205,6 +205,7 @@ string(APPEND AI_CHAT_SOURCE [=[
 #include <cstring>
 #include <mutex>
 #include <unordered_map>
+#include <unordered_set>
 #include <sys/mman.h>
 #include <unistd.h>
 #include "llama-context.h"
@@ -224,6 +225,7 @@ static std::atomic<uint64_t> g_expert_direct_drop_requests { 0 };
 static std::atomic<bool> g_expert_page_evict_enabled { false };
 static std::mutex g_expert_predictor_mutex;
 static std::unordered_map<uint32_t, std::vector<uint32_t>> g_expert_last_selection;
+static std::unordered_set<uint32_t> g_expert_cold_layers;
 
 // Warm the actual tensor mapping used by ggml. Unlike the duplicate pread
 // cache, this operates on llama.cpp's loaded tensor pointer and therefore
@@ -360,6 +362,18 @@ static bool pocket_expert_eval_callback(ggml_tensor * tensor, bool ask, void *) 
     if (separator != nullptr && separator[1] != '\0') {
         try {
             const uint32_t layer = static_cast<uint32_t>(std::stoul(separator + 1));
+            if (g_expert_page_evict_enabled.load(std::memory_order_acquire)) {
+                bool first_layer_route = false;
+                {
+                    std::lock_guard<std::mutex> lock(g_expert_predictor_mutex);
+                    first_layer_route = g_expert_cold_layers.insert(layer).second;
+                }
+                if (first_layer_route) {
+                    // Establish a deterministic cold residency baseline before
+                    // warming this layer's selected expert slices below.
+                    pocket_drop_all_loaded_expert_pages();
+                }
+            }
             std::vector<bool> seen(g_expert_index.expert_count(), false);
             std::vector<uint32_t> current;
             for (const int32_t expert : selected) {
@@ -551,6 +565,7 @@ Java_com_arm_aichat_ExpertCacheRuntime_setTelemetryNative(JNIEnv *, jclass, jboo
         {
             std::lock_guard<std::mutex> lock(g_expert_predictor_mutex);
             g_expert_last_selection.clear();
+            g_expert_cold_layers.clear();
         }
         pocket_install_expert_callback();
     } else if (g_context != nullptr) {
