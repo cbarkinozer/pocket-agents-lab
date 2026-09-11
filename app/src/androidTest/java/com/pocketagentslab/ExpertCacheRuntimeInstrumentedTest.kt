@@ -149,4 +149,57 @@ class ExpertCacheRuntimeInstrumentedTest {
             engine.cleanUp()
         }
     }
+
+    @Test
+    fun lingVanillaVsPrefetchComparisonWhenExplicitlyRequested() {
+        assumeTrue(
+            InstrumentationRegistry.getArguments().getString("runComparison") == "true",
+        )
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val model = File(context.filesDir, "models/Ling-3.0-tiny-Q3_K_M.gguf")
+        assumeTrue(model.isFile)
+        val engine = AiChat.getInferenceEngine(context)
+
+        suspend fun runPrompt(): Pair<String, Long> {
+            engine.setSystemPrompt("You are a concise local test assistant.")
+            val start = System.nanoTime()
+            val output = engine.sendUserPrompt("What is 2+2?", predictLength = 8).toList().joinToString("")
+            return output to ((System.nanoTime() - start) / 1_000_000)
+        }
+
+        try {
+            runBlocking {
+                withTimeout(180_000) {
+                    engine.state.first {
+                        it is InferenceEngine.State.Initialized || it is InferenceEngine.State.Error
+                    }
+                }
+                engine.loadModel(model.absolutePath)
+                ExpertCacheRuntime.setTelemetry(false)
+                ExpertCacheRuntime.setPredictor(false)
+                val (vanillaOutput, vanillaMs) = runPrompt()
+                engine.cleanUp()
+                engine.loadModel(model.absolutePath)
+                assertTrue(ExpertCacheRuntime.open(model.absolutePath, 64L * 1024 * 1024))
+                ExpertCacheRuntime.setTelemetry(true)
+                ExpertCacheRuntime.setPredictor(true)
+                val (prefetchOutput, prefetchMs) = runPrompt()
+                val telemetry = JSONObject(ExpertCacheRuntime.telemetryJson())
+                println(
+                    "LING_VANILLA_VS_PREFETCH=" + JSONObject()
+                        .put("vanillaMs", vanillaMs)
+                        .put("prefetchMs", prefetchMs)
+                        .put("vanillaOutput", vanillaOutput)
+                        .put("prefetchOutput", prefetchOutput)
+                        .put("telemetry", telemetry),
+                )
+                assertTrue(vanillaOutput.isNotBlank())
+                assertTrue(prefetchOutput.isNotBlank())
+            }
+        } finally {
+            ExpertCacheRuntime.setPredictor(false)
+            ExpertCacheRuntime.setTelemetry(false)
+            engine.cleanUp()
+        }
+    }
 }

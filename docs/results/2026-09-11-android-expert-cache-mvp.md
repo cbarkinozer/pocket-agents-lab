@@ -69,5 +69,10 @@ The real Ling A32 integration produced `routeEvents=230`, `selectedExperts=81328
 `prefetchRequests=11774`, and `predictorRequests=5729`, with no generation
 crash and unchanged test output. The first predictor reuses the previous
 expert set per layer; it is intentionally a baseline, not a learned prerouter.
-The remaining work is Top-8 recall/wasted-byte accounting followed by paired
-cache/prefetch versus vanilla mmap measurements.
+The first same-prompt A/B test measured 4,432 ms for vanilla mmap and 11,749 ms
+for route/cache/predictor. The generated text was identical. The current cache
+is observational: it reads selected ranges into a bounded buffer while ggml
+still uses its normal mmap tensor pointers, so the extra I/O cost is expected.
+This is evidence of capability, not a performance win. The next implementation
+must connect cached/page-warmed ranges to actual ggml tensor access before
+repeating cold/warm and budget comparisons.
