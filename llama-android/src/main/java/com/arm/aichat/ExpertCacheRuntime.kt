@@ -6,6 +6,9 @@ object ExpertCacheRuntime {
     private external fun openNative(path: String, budgetBytes: Long): Boolean
 
     @JvmStatic
+    private external fun setPageWarmNative(enabled: Boolean)
+
+    @JvmStatic
     private external fun loadNative(layer: Int, expert: Int, offset: Long, length: Long): Boolean
 
     @JvmStatic
@@ -39,6 +42,9 @@ object ExpertCacheRuntime {
     private external fun closeNative()
 
     fun open(path: String, budgetBytes: Long): Boolean = openNative(path, budgetBytes)
+
+    /** Warm the kernel page cache without retaining a duplicate expert buffer. */
+    fun setPageWarm(enabled: Boolean) = setPageWarmNative(enabled)
 
     fun load(layer: Int, expert: Int, offset: Long, length: Long): Boolean =
         loadNative(layer, expert, offset, length)

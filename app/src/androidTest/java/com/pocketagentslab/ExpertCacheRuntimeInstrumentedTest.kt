@@ -70,6 +70,18 @@ class ExpertCacheRuntimeInstrumentedTest {
     }
 
     @Test
+    fun pageWarmModeReadsWithoutRetainingDuplicateBuffers() {
+        ExpertCacheRuntime.setPageWarm(true)
+        assertTrue(ExpertCacheRuntime.load(layer = 4, expert = 1, offset = 1, length = 15))
+        val stats = JSONObject(ExpertCacheRuntime.statsJson())
+        assertTrue(stats.getBoolean("pageWarm"))
+        assertTrue(stats.getLong("bytesRead") >= 15)
+        assertEquals(0, stats.getLong("residentBytes"))
+        assertEquals(0, stats.getLong("residentEntries"))
+        ExpertCacheRuntime.setPageWarm(false)
+    }
+
+    @Test
     fun expertIndexIsSafeBeforeModelLoad() {
         assertEquals("{}", ExpertCacheRuntime.expertIndexJson())
     }

@@ -329,6 +329,14 @@ Java_com_arm_aichat_ExpertCacheRuntime_openNative(JNIEnv * env, jclass, jstring 
 }
 
 extern "C"
+JNIEXPORT void JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_setPageWarmNative(JNIEnv *, jclass, jboolean enabled) {
+    if (g_expert_cache != nullptr) {
+        g_expert_cache->set_page_warm(enabled == JNI_TRUE);
+    }
+}
+
+extern "C"
 JNIEXPORT jboolean JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_loadNative(
         JNIEnv *, jclass, jint layer, jint expert, jlong offset, jlong length) {
@@ -456,7 +464,8 @@ Java_com_arm_aichat_ExpertCacheRuntime_statsNative(JNIEnv * env, jclass) {
             + ",\"evictions\":" + std::to_string(stats.evictions)
             + ",\"bytesRead\":" + std::to_string(stats.bytes_read)
             + ",\"residentBytes\":" + std::to_string(stats.resident_bytes)
-            + ",\"residentEntries\":" + std::to_string(stats.resident_entries) + "}";
+            + ",\"residentEntries\":" + std::to_string(stats.resident_entries)
+            + ",\"pageWarm\":" + std::string(g_expert_cache != nullptr && g_expert_cache->page_warm() ? "true" : "false") + "}";
     return env->NewStringUTF(json.c_str());
 }
 

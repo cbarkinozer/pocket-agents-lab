@@ -17,6 +17,12 @@ The Android native library now contains a small `ExpertCache` implementation:
 - reports hits, misses, evictions, bytes read, and resident bytes;
 - clears and closes safely on model lifecycle boundaries.
 
+It also has an opt-in `pageWarm` mode. In this mode a worker maps each
+requested range, issues `madvise(MADV_WILLNEED)`, touches one byte per page, and
+unmaps it. This warms the kernel page cache without retaining a second copy of
+the expert bytes. The mode is exposed as `ExpertCacheRuntime.setPageWarm(true)`
+and reports `pageWarm=true` in the stats JSON.
+
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current
@@ -75,4 +81,5 @@ is observational: it reads selected ranges into a bounded buffer while ggml
 still uses its normal mmap tensor pointers, so the extra I/O cost is expected.
 This is evidence of capability, not a performance win. The next implementation
 must connect cached/page-warmed ranges to actual ggml tensor access before
-repeating cold/warm and budget comparisons.
+repeating cold/warm and budget comparisons. Page warming is therefore a safer
+intermediate experiment, not an Edge0-equivalent expert residency mechanism.

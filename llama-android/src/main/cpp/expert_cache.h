@@ -26,6 +26,11 @@ public:
     ExpertCache & operator=(const ExpertCache &) = delete;
 
     bool open(const std::string & path, uint64_t budget_bytes);
+    // When enabled, prefetch/load warms the OS file page cache with mmap+madvise
+    // instead of retaining a duplicate byte buffer. This is an optional,
+    // observational mode; llama.cpp tensor pointers are unchanged.
+    void set_page_warm(bool enabled);
+    bool page_warm() const;
     void close();
     void clear();
 
