@@ -136,3 +136,14 @@ This is evidence of capability, not a performance win. The next implementation
 must connect cached/page-warmed ranges to actual ggml tensor access before
 repeating cold/warm and budget comparisons. Page warming is therefore a safer
 intermediate experiment, not an Edge0-equivalent expert residency mechanism.
+
+## Latest A32 repeat
+
+On 2026-09-11 the same comparison was repeated after the range-key and
+lifecycle fixes. Vanilla mmap took 4,831 ms; route/cache/predictor took
+11,577 ms. Both outputs had the same prefix and the run completed without a
+crash. The route path reported 230 route events, 81,328 selected experts,
+12,738 prefetch requests, and 6,159 predictor requests. This confirms the
+telemetry path is repeatable, but also confirms that duplicate copy-prefetch
+is not yet a speed or memory optimization. The page-warm path remains the
+correct Android feasibility mode until the ggml dispatch contract is changed.
