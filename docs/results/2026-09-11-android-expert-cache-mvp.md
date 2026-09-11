@@ -11,6 +11,7 @@ The Android native library now contains a small `ExpertCache` implementation:
 - stores ranges under a `(layer, expert)` key;
 - enforces a fixed byte budget;
 - evicts least-recently-used entries;
+- accepts best-effort asynchronous prefetch requests on a worker thread;
 - reports hits, misses, evictions, bytes read, and resident bytes;
 - clears and closes safely on model lifecycle boundaries.
 
@@ -43,6 +44,8 @@ runtime claim is made until a device run exercises `ExpertCacheRuntime`.
 The device instrumentation test was then run on the authorized Galaxy A32 and
 passed. It verified a 16-byte budget, two 8-byte resident entries, one cache
 hit, at least one LRU eviction, and 24 bytes read from a temporary fixture.
+The second test verified that an asynchronous prefetch request reads its range
+and is subsequently served as a cache hit.
 
 ## Next implementation step
 

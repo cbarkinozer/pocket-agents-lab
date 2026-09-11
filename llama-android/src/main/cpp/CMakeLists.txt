@@ -239,6 +239,20 @@ Java_com_arm_aichat_ExpertCacheRuntime_loadNative(
 }
 
 extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_prefetchNative(
+        JNIEnv *, jclass, jint layer, jint expert, jlong offset, jlong length) {
+    if (g_expert_cache == nullptr || layer < 0 || expert < 0 || offset < 0 || length <= 0) {
+        return JNI_FALSE;
+    }
+    return g_expert_cache->prefetch(
+            static_cast<uint32_t>(layer),
+            static_cast<uint32_t>(expert),
+            static_cast<uint64_t>(offset),
+            static_cast<uint64_t>(length)) ? JNI_TRUE : JNI_FALSE;
+}
+
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_statsNative(JNIEnv * env, jclass) {
     const auto stats = g_expert_cache == nullptr ? ExpertCache::Stats {} : g_expert_cache->stats();

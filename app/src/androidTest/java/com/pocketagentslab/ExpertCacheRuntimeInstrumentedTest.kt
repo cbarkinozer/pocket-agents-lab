@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class ExpertCacheRuntimeInstrumentedTest {
@@ -46,5 +47,19 @@ class ExpertCacheRuntimeInstrumentedTest {
         assertEquals(24, stats.getLong("bytesRead"))
         assertEquals(16, stats.getLong("residentBytes"))
         assertEquals(2, stats.getLong("residentEntries"))
+    }
+
+    @Test
+    fun prefetchReadsInBackground() {
+        assertTrue(ExpertCacheRuntime.prefetch(layer = 2, expert = 3, offset = 0, length = 8))
+        repeat(20) {
+            if (JSONObject(ExpertCacheRuntime.statsJson()).getLong("bytesRead") >= 8) {
+                return
+            }
+            sleep(10)
+        }
+        val stats = JSONObject(ExpertCacheRuntime.statsJson())
+        assertTrue(stats.getLong("bytesRead") >= 8)
+        assertTrue(ExpertCacheRuntime.load(layer = 2, expert = 3, offset = 0, length = 8))
     }
 }

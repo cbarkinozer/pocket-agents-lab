@@ -1919,7 +1919,7 @@ The final user should not need to understand GGUF, JNI, quantization, context co
     `tools/gguf_expert_offsets.py` implements the first sub-step: it reads a GGUF's header only (mmap, no full-file load) via the vendored `gguf-py` and computes each expert's absolute byte offset/length within its layer's merged `ffn_{gate,down,up}_exps` tensor, verified against a synthetic MoE GGUF.
     A real (non-synthetic) expert-selection trace was captured on a Windows host from the actual Android system prompt and analyzed with a new `tools/expert_cache_simulator.py`: a bounded per-layer LRU cache hit rate of 26/51/76% at 8/16/32 cached experts (of 128), all well above the random baseline, confirming genuine reusable locality in Ling's routing and justifying the bounded-cache stage. See `docs/results/2026-09-11-ling-q3-windows-feasibility.md`. The native cache foundation is now implemented and device-tested, but the llama.cpp graph dispatch, predictor, and async prefetch are still not integrated on Android.
 43. [ ] Add an opt-in BailingMoe3 dispatch hook; first prove telemetry-only parity, then route expert weight reads through the cache without changing model semantics.
-44. [ ] Add an async expert prefetch worker and a simple previous-token/transition predictor after the synchronous cache path is verified.
+44. [ ] Connect the cache's async prefetch primitive to BailingMoe3 routing and add a simple previous-token/transition predictor.
 45. [ ] Compare cache budgets and cache/prefetch variants against vanilla mmap on the A32.
 
 The immediate priority is research measurement, not product polish or semantic search. Interactive

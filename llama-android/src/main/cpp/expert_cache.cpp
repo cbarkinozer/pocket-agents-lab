@@ -2,10 +2,13 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <condition_variable>
 #include <fcntl.h>
+#include <deque>
 #include <list>
 #include <mutex>
 #include <sys/stat.h>
+#include <thread>
 #include <unistd.h>
 #include <unordered_map>
 
@@ -18,6 +21,16 @@ struct ExpertCache::Impl {
     std::string path;
     std::list<Item> lru;
     std::unordered_map<Key, std::list<Item>::iterator, KeyHash> index;
+    struct Request {
+        uint32_t layer;
+        uint32_t expert;
+        uint64_t offset;
+        uint64_t length;
+    };
+    std::deque<Request> requests;
+    std::condition_variable request_cv;
+    std::thread worker;
+    bool stopping = false;
     mutable std::mutex mutex;
 };
 
@@ -34,14 +47,8 @@ size_t ExpertCache::KeyHash::operator()(const Key & key) const {
 }
 
 bool ExpertCache::open(const std::string & path, uint64_t budget_bytes) {
+    close();
     std::lock_guard<std::mutex> lock(impl_->mutex);
-    if (impl_->fd >= 0) {
-        ::close(impl_->fd);
-        impl_->fd = -1;
-    }
-    impl_->lru.clear();
-    impl_->index.clear();
-    impl_->resident_bytes = 0;
     impl_->stats = {};
     impl_->path = path;
     impl_->budget_bytes = budget_bytes;
@@ -59,10 +66,37 @@ bool ExpertCache::open(const std::string & path, uint64_t budget_bytes) {
     }
     impl_->file_size = static_cast<uint64_t>(st.st_size);
     impl_->fd = fd;
+    impl_->stopping = false;
+    impl_->worker = std::thread([this]() {
+        while (true) {
+            Impl::Request request {};
+            {
+                std::unique_lock<std::mutex> lock(impl_->mutex);
+                impl_->request_cv.wait(lock, [this]() {
+                    return impl_->stopping || !impl_->requests.empty();
+                });
+                if (impl_->stopping && impl_->requests.empty()) {
+                    return;
+                }
+                request = impl_->requests.front();
+                impl_->requests.pop_front();
+            }
+            load(request.layer, request.expert, request.offset, request.length);
+        }
+    });
     return true;
 }
 
 void ExpertCache::close() {
+    {
+        std::lock_guard<std::mutex> lock(impl_->mutex);
+        impl_->stopping = true;
+        impl_->requests.clear();
+    }
+    impl_->request_cv.notify_all();
+    if (impl_->worker.joinable()) {
+        impl_->worker.join();
+    }
     std::lock_guard<std::mutex> lock(impl_->mutex);
     if (impl_->fd >= 0) {
         ::close(impl_->fd);
@@ -77,11 +111,25 @@ void ExpertCache::close() {
 
 void ExpertCache::clear() {
     std::lock_guard<std::mutex> lock(impl_->mutex);
+    impl_->requests.clear();
     impl_->lru.clear();
     impl_->index.clear();
     impl_->resident_bytes = 0;
     impl_->stats.resident_bytes = 0;
     impl_->stats.resident_entries = 0;
+}
+
+bool ExpertCache::prefetch(uint32_t layer, uint32_t expert, uint64_t offset, uint64_t length) {
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    if (impl_->fd < 0 || length == 0 || offset > impl_->file_size || length > impl_->file_size - offset) {
+        return false;
+    }
+    if (impl_->requests.size() >= 64) {
+        return false;
+    }
+    impl_->requests.push_back(Impl::Request { layer, expert, offset, length });
+    impl_->request_cv.notify_one();
+    return true;
 }
 
 bool ExpertCache::load(uint32_t layer, uint32_t expert, uint64_t offset, uint64_t length) {
