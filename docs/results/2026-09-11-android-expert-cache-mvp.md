@@ -43,6 +43,11 @@ residency reset after model load by advising all loaded MoE tensor mappings with
 inference, so future A/B runs can start from a reproducible cold expert-page
 state instead of relying on whatever the OS happened to retain.
 
+When page-warm mode is enabled, routed inference no longer queues the
+duplicate `pread` cache path; it only advises the actual loaded tensor mapping.
+This keeps the Edge0-like residency experiment separate from the observational
+copy-cache experiment and avoids measuring redundant I/O.
+
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current
