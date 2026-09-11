@@ -23,6 +23,13 @@ unmaps it. This warms the kernel page cache without retaining a second copy of
 the expert bytes. The mode is exposed as `ExpertCacheRuntime.setPageWarm(true)`
 and reports `pageWarm=true` in the stats JSON.
 
+During routed Ling inference, the callback now additionally issues
+`MADV_WILLNEED` against the selected slices of the already-loaded ggml tensor
+mapping (`directPageWarmRequests`). This is the first path that targets the
+actual llama.cpp tensor address rather than only a duplicate `pread` buffer.
+It still does not replace ggml dispatch or evict unselected experts, so it is
+an incremental storage-residency experiment rather than full Edge0 streaming.
+
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current
