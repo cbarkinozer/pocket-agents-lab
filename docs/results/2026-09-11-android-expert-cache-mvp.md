@@ -30,6 +30,13 @@ actual llama.cpp tensor address rather than only a duplicate `pread` buffer.
 It still does not replace ggml dispatch or evict unselected experts, so it is
 an incremental storage-residency experiment rather than full Edge0 streaming.
 
+An additional opt-in `ExpertCacheRuntime.setPageEvict(true)` mode now drops
+clean pages for experts present in the previous route but absent from the new
+route. It preserves the file mapping and lets Android fault the bytes back on
+demand; `directPageDropRequests` records successful advice calls. A gated real
+Ling inference with page-warm plus page-evict completed on the A32 without a
+crash. This remains experimental and is not enabled by the normal app path.
+
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current

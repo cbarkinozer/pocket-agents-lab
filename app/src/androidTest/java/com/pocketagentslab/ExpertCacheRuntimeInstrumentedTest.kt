@@ -181,8 +181,9 @@ class ExpertCacheRuntimeInstrumentedTest {
                 engine.loadModel(model.absolutePath)
                 assertTrue(ExpertCacheRuntime.open(model.absolutePath, 64L * 1024 * 1024))
                 ExpertCacheRuntime.setPageWarm(true)
+                ExpertCacheRuntime.setPageEvict(true)
                 ExpertCacheRuntime.setTelemetry(true)
-                ExpertCacheRuntime.setPredictor(false)
+                ExpertCacheRuntime.setPredictor(true)
                 engine.setSystemPrompt("You are a concise local test assistant.")
                 engine.sendUserPrompt("What is 2+2?", predictLength = 8).toList()
             }
@@ -191,11 +192,13 @@ class ExpertCacheRuntimeInstrumentedTest {
             println("LING_PAGE_WARM=$telemetry stats=$stats")
             assertTrue(telemetry.getLong("routeEvents") > 0)
             assertTrue(telemetry.getLong("directPageWarmRequests") > 0)
+            assertTrue(telemetry.getLong("directPageDropRequests") > 0)
             assertTrue(stats.getBoolean("pageWarm"))
             assertTrue(stats.getLong("bytesRead") > 0)
             assertEquals(0, stats.getLong("residentBytes"))
         } finally {
             ExpertCacheRuntime.setTelemetry(false)
+            ExpertCacheRuntime.setPageEvict(false)
             ExpertCacheRuntime.setPageWarm(false)
             engine.cleanUp()
         }
