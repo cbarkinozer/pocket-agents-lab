@@ -197,6 +197,74 @@ Java_com_arm_aichat_ConversationReset_resetNative(JNIEnv *, jclass) {
     reset_short_term_states();
 }
 ]=])
+string(APPEND AI_CHAT_SOURCE [=[
+
+#include "expert_cache.h"
+
+static std::unique_ptr<ExpertCache> g_expert_cache;
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_openNative(JNIEnv * env, jclass, jstring path, jlong budget_bytes) {
+    if (path == nullptr || budget_bytes <= 0) {
+        return JNI_FALSE;
+    }
+    const char * chars = env->GetStringUTFChars(path, nullptr);
+    if (chars == nullptr) {
+        return JNI_FALSE;
+    }
+    auto cache = std::make_unique<ExpertCache>();
+    const bool opened = cache->open(chars, static_cast<uint64_t>(budget_bytes));
+    env->ReleaseStringUTFChars(path, chars);
+    if (opened) {
+        g_expert_cache = std::move(cache);
+    } else {
+        g_expert_cache.reset();
+    }
+    return opened ? JNI_TRUE : JNI_FALSE;
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_loadNative(
+        JNIEnv *, jclass, jint layer, jint expert, jlong offset, jlong length) {
+    if (g_expert_cache == nullptr || layer < 0 || expert < 0 || offset < 0 || length <= 0) {
+        return JNI_FALSE;
+    }
+    return g_expert_cache->load(
+            static_cast<uint32_t>(layer),
+            static_cast<uint32_t>(expert),
+            static_cast<uint64_t>(offset),
+            static_cast<uint64_t>(length)) ? JNI_TRUE : JNI_FALSE;
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_statsNative(JNIEnv * env, jclass) {
+    const auto stats = g_expert_cache == nullptr ? ExpertCache::Stats {} : g_expert_cache->stats();
+    const std::string json = "{\"hits\":" + std::to_string(stats.hits)
+            + ",\"misses\":" + std::to_string(stats.misses)
+            + ",\"evictions\":" + std::to_string(stats.evictions)
+            + ",\"bytesRead\":" + std::to_string(stats.bytes_read)
+            + ",\"residentBytes\":" + std::to_string(stats.resident_bytes)
+            + ",\"residentEntries\":" + std::to_string(stats.resident_entries) + "}";
+    return env->NewStringUTF(json.c_str());
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_clearNative(JNIEnv *, jclass) {
+    if (g_expert_cache != nullptr) {
+        g_expert_cache->clear();
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_closeNative(JNIEnv *, jclass) {
+    g_expert_cache.reset();
+}
+]=])
 set(GENERATED_BINDING "${CMAKE_CURRENT_BINARY_DIR}/ai_chat_pocket.cpp")
 file(WRITE "${GENERATED_BINDING}" "${AI_CHAT_SOURCE}")
 
@@ -205,8 +273,9 @@ set(GGML_CPU_KLEIDIAI OFF)
 set(GGML_OPENMP OFF)
 add_subdirectory("${LLAMA_SRC}" build-llama)
 
-add_library(ai-chat SHARED "${GENERATED_BINDING}")
+add_library(ai-chat SHARED "${GENERATED_BINDING}" expert_cache.cpp)
 target_include_directories(ai-chat PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}"
     "${OFFICIAL_BINDING}"
     "${LLAMA_SRC}"
     "${LLAMA_SRC}/common"
