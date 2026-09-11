@@ -48,6 +48,10 @@ duplicate `pread` cache path; it only advises the actual loaded tensor mapping.
 This keeps the Edge0-like residency experiment separate from the observational
 copy-cache experiment and avoids measuring redundant I/O.
 
+With page eviction enabled, the first route observed for each layer performs a
+one-time cold sweep of all expert tensor pages before warming the selected set.
+The A32 gated Ling test passed with this cold-start behavior enabled.
+
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current
