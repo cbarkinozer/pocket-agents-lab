@@ -22,7 +22,8 @@ called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current
 `expertIndexJson()` safely reports loaded architecture metadata only; the
 llama.cpp loader's tensor-weight map is temporary and must not be read after
-model loading. A persistent GGUF index parser is still required for offsets.
+model loading. A separate persistent GGUF header/tensor-info parser now
+supplies offsets through `indexFileJson()` and `prefetchExpert()`.
 
 ## Current limitation
 
@@ -56,10 +57,15 @@ The explicit Ling integration test was rerun after the fix and produced
 `routeEvents=230` and `selectedExperts=81328` with no crash. The safe index
 response reported `architecture=bailingmoe3`, `expertCount=128`, and
 `status=metadata_only`.
+The persistent parser was tested against the real 3.52 GiB Ling file without
+loading weights: it reported `bailingmoe3`, 128 experts, and 69 merged expert
+tensors. A separate device test opened the model with a 64 MiB cache budget and
+prefetched layer 1 expert 0; the worker read its ranges from storage.
 
 ## Next implementation step
 
-The next device run should enable telemetry during a real Ling generation and
-confirm non-zero `routeEvents`/`selectedExperts` while the generated text is
-unchanged. Then route expert weight reads through the bounded cache and compare
-it with vanilla mmap.
+The route-to-cache path is now connected behind the opt-in telemetry switch.
+The real Ling A32 integration produced `routeEvents=230`, `selectedExperts=81328`,
+and `prefetchRequests=5657`, with no generation crash and unchanged test output.
+The remaining work is a previous-token/transition predictor, followed by paired
+cache/prefetch versus vanilla mmap measurements.

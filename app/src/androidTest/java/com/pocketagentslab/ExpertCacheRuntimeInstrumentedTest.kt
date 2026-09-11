@@ -83,6 +83,35 @@ class ExpertCacheRuntimeInstrumentedTest {
     }
 
     @Test
+    fun parsesLingGgufExpertOffsetsWithoutLoadingWeights() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val model = File(context.filesDir, "models/Ling-3.0-tiny-Q3_K_M.gguf")
+        assumeTrue(model.isFile)
+        val index = JSONObject(ExpertCacheRuntime.indexFileJson(model.absolutePath))
+        println("LING_GGUF_INDEX architecture=${index.getString("architecture")} experts=${index.getInt("expertCount")} tensors=${index.getInt("tensorCount")}")
+        assertEquals("bailingmoe3", index.getString("architecture"))
+        assertEquals(128, index.getInt("expertCount"))
+        assertTrue(index.getInt("tensorCount") >= 60)
+        assertTrue(index.getJSONArray("tensors").getJSONObject(0).getLong("expertBytes") > 0)
+    }
+
+    @Test
+    fun prefetchesLingExpertRangesFromStorage() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val model = File(context.filesDir, "models/Ling-3.0-tiny-Q3_K_M.gguf")
+        assumeTrue(model.isFile)
+        assertTrue(ExpertCacheRuntime.open(model.absolutePath, 64L * 1024 * 1024))
+        assertTrue(ExpertCacheRuntime.prefetchExpert(layer = 1, expert = 0))
+        repeat(50) {
+            if (JSONObject(ExpertCacheRuntime.statsJson()).getLong("bytesRead") > 0) {
+                return
+            }
+            sleep(20)
+        }
+        assertTrue(JSONObject(ExpertCacheRuntime.statsJson()).getLong("bytesRead") > 0)
+    }
+
+    @Test
     fun lingInferenceProducesExpertTelemetryWhenExplicitlyRequested() {
         assumeTrue(
             InstrumentationRegistry.getArguments().getString("runLing") == "true",
@@ -99,6 +128,7 @@ class ExpertCacheRuntimeInstrumentedTest {
                     }
                 }
                 engine.loadModel(model.absolutePath)
+                assertTrue(ExpertCacheRuntime.open(model.absolutePath, 64L * 1024 * 1024))
                 ExpertCacheRuntime.setTelemetry(true)
                 engine.setSystemPrompt("You are a concise local test assistant.")
                 engine.sendUserPrompt("What is 2+2?", predictLength = 8).toList()
@@ -109,6 +139,8 @@ class ExpertCacheRuntimeInstrumentedTest {
             assertTrue(telemetry.getBoolean("enabled"))
             assertTrue(telemetry.getLong("routeEvents") > 0)
             assertTrue(telemetry.getLong("selectedExperts") > 0)
+            assertTrue(telemetry.getLong("prefetchRequests") > 0)
+            println("LING_CONNECTED_TELEMETRY=$telemetry")
         } finally {
             ExpertCacheRuntime.setTelemetry(false)
             engine.cleanUp()

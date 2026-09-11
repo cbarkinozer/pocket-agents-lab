@@ -12,7 +12,13 @@ object ExpertCacheRuntime {
     private external fun prefetchNative(layer: Int, expert: Int, offset: Long, length: Long): Boolean
 
     @JvmStatic
+    private external fun prefetchExpertNative(layer: Int, expert: Int): Boolean
+
+    @JvmStatic
     private external fun expertIndexNative(): String
+
+    @JvmStatic
+    private external fun indexFileNative(path: String): String
 
     @JvmStatic
     private external fun setTelemetryNative(enabled: Boolean)
@@ -37,7 +43,11 @@ object ExpertCacheRuntime {
     fun prefetch(layer: Int, expert: Int, offset: Long, length: Long): Boolean =
         prefetchNative(layer, expert, offset, length)
 
+    fun prefetchExpert(layer: Int, expert: Int): Boolean = prefetchExpertNative(layer, expert)
+
     fun expertIndexJson(): String = expertIndexNative()
+
+    fun indexFileJson(path: String): String = indexFileNative(path)
 
     fun setTelemetry(enabled: Boolean) = setTelemetryNative(enabled)
 

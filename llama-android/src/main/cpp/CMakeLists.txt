@@ -200,6 +200,7 @@ Java_com_arm_aichat_ConversationReset_resetNative(JNIEnv *, jclass) {
 string(APPEND AI_CHAT_SOURCE [=[
 
 #include "expert_cache.h"
+#include "expert_index.h"
 #include <atomic>
 #include <cstring>
 #include "llama-context.h"
@@ -207,9 +208,29 @@ string(APPEND AI_CHAT_SOURCE [=[
 #include "ggml-backend.h"
 
 static std::unique_ptr<ExpertCache> g_expert_cache;
+static ExpertIndex g_expert_index;
 static std::atomic<bool> g_expert_telemetry_enabled { false };
 static std::atomic<uint64_t> g_expert_route_events { 0 };
 static std::atomic<uint64_t> g_expert_selected_count { 0 };
+static std::atomic<uint64_t> g_expert_prefetch_count { 0 };
+
+static bool pocket_prefetch_expert(uint32_t layer, uint32_t expert) {
+    if (g_expert_cache == nullptr || expert >= g_expert_index.expert_count()) {
+        return false;
+    }
+    bool queued = false;
+    for (const auto & tensor : g_expert_index.tensors()) {
+        if (tensor.layer != layer) {
+            continue;
+        }
+        const uint64_t offset = tensor.offset + static_cast<uint64_t>(expert) * tensor.expert_bytes;
+        queued = g_expert_cache->prefetch(tensor.layer, expert, offset, tensor.expert_bytes) || queued;
+    }
+    if (queued) {
+        g_expert_prefetch_count.fetch_add(1, std::memory_order_relaxed);
+    }
+    return queued;
+}
 
 static bool pocket_expert_eval_callback(ggml_tensor * tensor, bool ask, void *) {
     const char * name = ggml_get_name(tensor);
@@ -227,6 +248,22 @@ static bool pocket_expert_eval_callback(ggml_tensor * tensor, bool ask, void *) 
     ggml_backend_tensor_get(tensor, selected.data(), 0, bytes);
     g_expert_route_events.fetch_add(1, std::memory_order_relaxed);
     g_expert_selected_count.fetch_add(selected.size(), std::memory_order_relaxed);
+    const char * separator = std::strrchr(name, '-');
+    if (separator != nullptr && separator[1] != '\0') {
+        try {
+            const uint32_t layer = static_cast<uint32_t>(std::stoul(separator + 1));
+            std::vector<bool> seen(g_expert_index.expert_count(), false);
+            for (const int32_t expert : selected) {
+                if (expert >= 0 && static_cast<uint32_t>(expert) < seen.size()
+                        && !seen[static_cast<size_t>(expert)]) {
+                    seen[static_cast<size_t>(expert)] = true;
+                    pocket_prefetch_expert(layer, static_cast<uint32_t>(expert));
+                }
+            }
+        } catch (...) {
+            // Telemetry must never abort inference on an unexpected tensor name.
+        }
+    }
     return true;
 }
 
@@ -257,11 +294,15 @@ Java_com_arm_aichat_ExpertCacheRuntime_openNative(JNIEnv * env, jclass, jstring 
     }
     auto cache = std::make_unique<ExpertCache>();
     const bool opened = cache->open(chars, static_cast<uint64_t>(budget_bytes));
+    const bool indexed = g_expert_index.open(chars);
     env->ReleaseStringUTFChars(path, chars);
     if (opened) {
         g_expert_cache = std::move(cache);
     } else {
         g_expert_cache.reset();
+    }
+    if (!indexed) {
+        g_expert_index = ExpertIndex();
     }
     return opened ? JNI_TRUE : JNI_FALSE;
 }
@@ -295,6 +336,17 @@ Java_com_arm_aichat_ExpertCacheRuntime_prefetchNative(
 }
 
 extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_prefetchExpertNative(JNIEnv *, jclass, jint layer, jint expert) {
+    if (g_expert_cache == nullptr || layer < 0 || expert < 0 ||
+            static_cast<uint32_t>(expert) >= g_expert_index.expert_count()) {
+        return JNI_FALSE;
+    }
+    return pocket_prefetch_expert(static_cast<uint32_t>(layer), static_cast<uint32_t>(expert))
+            ? JNI_TRUE : JNI_FALSE;
+}
+
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_expertIndexNative(JNIEnv * env, jclass) {
     if (g_model == nullptr) {
@@ -309,6 +361,25 @@ Java_com_arm_aichat_ExpertCacheRuntime_expertIndexNative(JNIEnv * env, jclass) {
     std::string json = "{\"architecture\":\"" + base->arch_name()
             + "\",\"expertCount\":" + std::to_string(expert_count)
             + ",\"tensors\":[],\"status\":\"metadata_only\"}";
+    return env->NewStringUTF(json.c_str());
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_indexFileNative(JNIEnv * env, jclass, jstring path) {
+    if (path == nullptr) {
+        return env->NewStringUTF("{}");
+    }
+    const char * chars = env->GetStringUTFChars(path, nullptr);
+    if (chars == nullptr) {
+        return env->NewStringUTF("{}");
+    }
+    const bool parsed = g_expert_index.open(chars);
+    env->ReleaseStringUTFChars(path, chars);
+    if (!parsed) {
+        return env->NewStringUTF("{}");
+    }
+    const std::string json = g_expert_index.summary_json();
     return env->NewStringUTF(json.c_str());
 }
 
@@ -331,7 +402,8 @@ Java_com_arm_aichat_ExpertCacheRuntime_telemetryJsonNative(JNIEnv * env, jclass)
     const std::string json = "{\"enabled\":"
             + std::string(g_expert_telemetry_enabled.load(std::memory_order_acquire) ? "true" : "false")
             + ",\"routeEvents\":" + std::to_string(g_expert_route_events.load(std::memory_order_relaxed))
-            + ",\"selectedExperts\":" + std::to_string(g_expert_selected_count.load(std::memory_order_relaxed)) + "}";
+            + ",\"selectedExperts\":" + std::to_string(g_expert_selected_count.load(std::memory_order_relaxed))
+            + ",\"prefetchRequests\":" + std::to_string(g_expert_prefetch_count.load(std::memory_order_relaxed)) + "}";
     return env->NewStringUTF(json.c_str());
 }
 
@@ -380,7 +452,7 @@ set(GGML_CPU_KLEIDIAI OFF)
 set(GGML_OPENMP OFF)
 add_subdirectory("${LLAMA_SRC}" build-llama)
 
-add_library(ai-chat SHARED "${GENERATED_BINDING}" expert_cache.cpp)
+add_library(ai-chat SHARED "${GENERATED_BINDING}" expert_cache.cpp expert_index.cpp)
 target_include_directories(ai-chat PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}"
     "${OFFICIAL_BINDING}"
