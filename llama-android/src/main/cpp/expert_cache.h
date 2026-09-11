@@ -33,6 +33,10 @@ public:
     // without reading the file again; a miss reads exactly [offset, length).
     bool load(uint32_t layer, uint32_t expert, uint64_t offset, uint64_t length);
 
+    // Enqueues a best-effort background load. The request may still be pending
+    // when this method returns; callers must use load() for a synchronous need.
+    bool prefetch(uint32_t layer, uint32_t expert, uint64_t offset, uint64_t length);
+
     Stats stats() const;
     bool is_open() const;
 
