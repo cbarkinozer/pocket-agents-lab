@@ -95,27 +95,15 @@ Physical RAM or manufacturer -> {{"action":"tool","name":"get_device_info","args
 Room for another model -> {{"action":"tool","name":"get_storage_info","args":{{}}}}
 Check everything -> {{"action":"workflow","name":"phone_health_check","args":{{}}}}
 Why is my phone slow / optimize it -> {{"action":"workflow","name":"phone_optimization_report","args":{{}}}}
-Explicit request to open Storage Settings -> {{"action":"propose","name":"open_storage_settings","args":{{}}}}
-Explicit request to open Battery Settings -> {{"action":"propose","name":"open_battery_settings","args":{{}}}}
-Explicit request to open Camera -> {{"action":"propose","name":"open_camera","args":{{}}}}
-Explicit request to open Wallpaper Settings -> {{"action":"propose","name":"open_wallpaper_settings","args":{{}}}}
-Explicit request to open/manage/review the apps screen -> {{"action":"propose","name":"review_background_apps","args":{{}}}}
-Explicit request to open an installed app -> {{"action":"propose","name":"launch_app","args":{{}}}}
-Find/play a named song on Spotify -> {{"action":"propose","name":"search_spotify","args":{{}}}}
-Find/open a named video on YouTube -> {{"action":"propose","name":"search_youtube","args":{{}}}}
-Prepare a Telegram message -> {{"action":"propose","name":"draft_telegram_message","args":{{}}}}
-Pause/resume active media -> {{"action":"propose","name":"media_play_pause","args":{{}}}}
-Next active media item -> {{"action":"propose","name":"media_next","args":{{}}}}
-Previous active media item -> {{"action":"propose","name":"media_previous","args":{{}}}}
-Open media/notification access settings -> {{"action":"propose","name":"open_media_access","args":{{}}}}
-Set/count down a duration -> {{"action":"propose","name":"set_timer","args":{{}}}}
-Wake/remind at a clock time -> {{"action":"propose","name":"set_alarm","args":{{}}}}
-Add/schedule an event or appointment -> {{"action":"propose","name":"create_calendar_event","args":{{}}}}
-Advice such as how to change wallpaper is an answer, not an action. Unsupported requests are answers or clarifications, never the nearest unrelated tool. A proposal never executes without confirmation.
 Request: {user_prompt}
 JSON:"""
 
-AGENT_ROUTE_GRAMMAR = r"""root ::= answer | device | battery | storage | media-info | files | notes | save-note | health | optimize | open-storage | open-battery | open-camera | open-wallpaper | review-background | launch-app | spotify-search | youtube-search | telegram-draft | media-toggle | media-next | media-previous | open-media-access | set-timer | set-alarm | calendar-event
+# runAgentTests constructs AgentBackend without allowDeviceActions, which
+# defaults to false -> GRAMMAR_ROUTE_PREFIX -> RoutingGrammar.ROUTE (mode 1),
+# i.e. POCKET_ROUTING_GRAMMAR (9 routes, no propose actions). An earlier
+# version of this script used POCKET_AGENT_ROUTING_GRAMMAR (mode 4), which is
+# only used by the interactive product UI, not by the evaluation harness.
+AGENT_ROUTE_GRAMMAR = r"""root ::= answer | device | battery | storage | media-info | files | notes | save-note | health
 answer ::= "{\"action\":\"answer\",\"text\":\"\"}"
 device ::= "{\"action\":\"tool\",\"name\":\"get_device_info\",\"args\":{}}"
 battery ::= "{\"action\":\"tool\",\"name\":\"get_battery_info\",\"args\":{}}"
@@ -125,23 +113,6 @@ files ::= "{\"action\":\"tool\",\"name\":\"search_local_files\",\"args\":{}}"
 notes ::= "{\"action\":\"tool\",\"name\":\"search_notes\",\"args\":{}}"
 save-note ::= "{\"action\":\"tool\",\"name\":\"save_note\",\"args\":{}}"
 health ::= "{\"action\":\"workflow\",\"name\":\"phone_health_check\",\"args\":{}}"
-optimize ::= "{\"action\":\"workflow\",\"name\":\"phone_optimization_report\",\"args\":{}}"
-open-storage ::= "{\"action\":\"propose\",\"name\":\"open_storage_settings\",\"args\":{}}"
-open-battery ::= "{\"action\":\"propose\",\"name\":\"open_battery_settings\",\"args\":{}}"
-open-camera ::= "{\"action\":\"propose\",\"name\":\"open_camera\",\"args\":{}}"
-open-wallpaper ::= "{\"action\":\"propose\",\"name\":\"open_wallpaper_settings\",\"args\":{}}"
-review-background ::= "{\"action\":\"propose\",\"name\":\"review_background_apps\",\"args\":{}}"
-launch-app ::= "{\"action\":\"propose\",\"name\":\"launch_app\",\"args\":{}}"
-spotify-search ::= "{\"action\":\"propose\",\"name\":\"search_spotify\",\"args\":{}}"
-youtube-search ::= "{\"action\":\"propose\",\"name\":\"search_youtube\",\"args\":{}}"
-telegram-draft ::= "{\"action\":\"propose\",\"name\":\"draft_telegram_message\",\"args\":{}}"
-media-toggle ::= "{\"action\":\"propose\",\"name\":\"media_play_pause\",\"args\":{}}"
-media-next ::= "{\"action\":\"propose\",\"name\":\"media_next\",\"args\":{}}"
-media-previous ::= "{\"action\":\"propose\",\"name\":\"media_previous\",\"args\":{}}"
-open-media-access ::= "{\"action\":\"propose\",\"name\":\"open_media_access\",\"args\":{}}"
-set-timer ::= "{\"action\":\"propose\",\"name\":\"set_timer\",\"args\":{}}"
-set-alarm ::= "{\"action\":\"propose\",\"name\":\"set_alarm\",\"args\":{}}"
-calendar-event ::= "{\"action\":\"propose\",\"name\":\"create_calendar_event\",\"args\":{}}"
 """
 
 DEFAULT_SAMPLER_TEMP = 0.3
