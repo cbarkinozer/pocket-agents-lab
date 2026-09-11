@@ -575,6 +575,13 @@ Java_com_arm_aichat_ExpertCacheRuntime_prefetchNative(
 
 extern "C"
 JNIEXPORT jboolean JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_awaitPrefetchNative(JNIEnv *, jclass, jint timeout_ms) {
+    if (g_expert_cache == nullptr || timeout_ms < 0) return JNI_FALSE;
+    return g_expert_cache->wait_idle(static_cast<uint32_t>(timeout_ms)) ? JNI_TRUE : JNI_FALSE;
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_prefetchExpertNative(JNIEnv *, jclass, jint layer, jint expert) {
     if (g_expert_cache == nullptr || layer < 0 || expert < 0 ||
             static_cast<uint32_t>(expert) >= g_expert_index.expert_count()) {

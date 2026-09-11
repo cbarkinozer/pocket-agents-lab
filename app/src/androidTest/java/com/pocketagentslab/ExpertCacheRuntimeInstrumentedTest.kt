@@ -58,6 +58,7 @@ class ExpertCacheRuntimeInstrumentedTest {
     @Test
     fun prefetchReadsInBackground() {
         assertTrue(ExpertCacheRuntime.prefetch(layer = 2, expert = 3, offset = 0, length = 8))
+        assertTrue(ExpertCacheRuntime.awaitPrefetch(2_000))
         repeat(20) {
             if (JSONObject(ExpertCacheRuntime.statsJson()).getLong("bytesRead") >= 8) {
                 return

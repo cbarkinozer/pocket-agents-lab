@@ -57,6 +57,11 @@ mapping with Android/Linux `mincore()` and reports resident bytes, mapped bytes,
 resident ratio, and tensor count. This provides a direct kernel residency signal
 for future active-memory comparisons.
 
+The asynchronous cache also exposes `awaitPrefetch(timeoutMs)`, allowing a
+caller or benchmark to wait for the worker queue and active read to drain before
+starting inference. The fixture instrumentation test verifies this completion
+barrier.
+
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
 next step: connecting the cache to the BailingMoe3 expert dispatch. The current

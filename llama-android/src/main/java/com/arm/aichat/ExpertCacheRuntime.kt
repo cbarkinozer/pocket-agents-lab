@@ -24,6 +24,9 @@ object ExpertCacheRuntime {
     private external fun prefetchNative(layer: Int, expert: Int, offset: Long, length: Long): Boolean
 
     @JvmStatic
+    private external fun awaitPrefetchNative(timeoutMs: Int): Boolean
+
+    @JvmStatic
     private external fun prefetchExpertNative(layer: Int, expert: Int): Boolean
 
     @JvmStatic
@@ -69,6 +72,9 @@ object ExpertCacheRuntime {
 
     fun prefetch(layer: Int, expert: Int, offset: Long, length: Long): Boolean =
         prefetchNative(layer, expert, offset, length)
+
+    /** Wait until asynchronous expert prefetch work has drained. */
+    fun awaitPrefetch(timeoutMs: Int = 5_000): Boolean = awaitPrefetchNative(timeoutMs)
 
     fun prefetchExpert(layer: Int, expert: Int): Boolean = prefetchExpertNative(layer, expert)
 

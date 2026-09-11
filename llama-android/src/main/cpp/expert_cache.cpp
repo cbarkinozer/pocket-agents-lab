@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <condition_variable>
+#include <chrono>
 #include <fcntl.h>
 #include <deque>
 #include <list>
@@ -30,8 +31,10 @@ struct ExpertCache::Impl {
     };
     std::deque<Request> requests;
     std::condition_variable request_cv;
+    std::condition_variable idle_cv;
     std::thread worker;
     bool stopping = false;
+    uint32_t active_requests = 0;
     bool page_warm = false;
     mutable std::mutex mutex;
 };
@@ -100,8 +103,14 @@ bool ExpertCache::open(const std::string & path, uint64_t budget_bytes) {
                 }
                 request = impl_->requests.front();
                 impl_->requests.pop_front();
+                impl_->active_requests++;
             }
             load(request.layer, request.expert, request.offset, request.length);
+            {
+                std::lock_guard<std::mutex> lock(impl_->mutex);
+                if (impl_->active_requests > 0) impl_->active_requests--;
+            }
+            impl_->idle_cv.notify_all();
         }
     });
     return true;
@@ -127,6 +136,13 @@ void ExpertCache::close() {
     impl_->resident_bytes = 0;
     impl_->path.clear();
     impl_->file_size = 0;
+}
+
+bool ExpertCache::wait_idle(uint32_t timeout_ms) {
+    std::unique_lock<std::mutex> lock(impl_->mutex);
+    return impl_->idle_cv.wait_for(lock, std::chrono::milliseconds(timeout_ms), [this]() {
+        return impl_->requests.empty() && impl_->active_requests == 0;
+    });
 }
 
 void ExpertCache::clear() {
