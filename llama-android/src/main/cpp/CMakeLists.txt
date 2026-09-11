@@ -200,6 +200,8 @@ Java_com_arm_aichat_ConversationReset_resetNative(JNIEnv *, jclass) {
 string(APPEND AI_CHAT_SOURCE [=[
 
 #include "expert_cache.h"
+#include "llama-model.h"
+#include "llama-model-loader.h"
 
 static std::unique_ptr<ExpertCache> g_expert_cache;
 
@@ -254,6 +256,55 @@ Java_com_arm_aichat_ExpertCacheRuntime_prefetchNative(
 
 extern "C"
 JNIEXPORT jstring JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_expertIndexNative(JNIEnv * env, jclass) {
+    if (g_model == nullptr) {
+        return env->NewStringUTF("{}");
+    }
+    auto * base = dynamic_cast<llama_model_base *>(g_model);
+    if (base == nullptr || base->ml == nullptr || base->hparams.n_expert == 0) {
+        return env->NewStringUTF("{}");
+    }
+
+    const uint64_t expert_count = base->hparams.n_expert;
+    std::string json = "{\"architecture\":\"" + base->arch_name()
+            + "\",\"expertCount\":" + std::to_string(expert_count) + ",\"tensors\":[";
+    bool first = true;
+    for (const auto & [name, weight] : base->ml->weights_map) {
+        const auto gate = name.find(".ffn_gate_exps.weight");
+        const auto down = name.find(".ffn_down_exps.weight");
+        const auto up = name.find(".ffn_up_exps.weight");
+        const auto marker = gate != std::string::npos ? gate
+                : down != std::string::npos ? down : up;
+        if (marker == std::string::npos || weight.tensor == nullptr) {
+            continue;
+        }
+        const auto block = name.find("blk.");
+        const auto dot = block == std::string::npos ? std::string::npos : name.find('.', block + 4);
+        if (block == std::string::npos || dot == std::string::npos) {
+            continue;
+        }
+        const uint64_t total_bytes = ggml_nbytes(weight.tensor);
+        if (total_bytes == 0 || total_bytes % expert_count != 0) {
+            continue;
+        }
+        if (!first) {
+            json += ",";
+        }
+        first = false;
+        const char * projection = gate != std::string::npos ? "gate"
+                : down != std::string::npos ? "down" : "up";
+        json += "{\"layer\":" + name.substr(block + 4, dot - (block + 4))
+                + ",\"projection\":\"" + projection
+                + "\",\"offset\":" + std::to_string(weight.offs)
+                + ",\"tensorBytes\":" + std::to_string(total_bytes)
+                + ",\"expertBytes\":" + std::to_string(total_bytes / expert_count) + "}";
+    }
+    json += "]}";
+    return env->NewStringUTF(json.c_str());
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_statsNative(JNIEnv * env, jclass) {
     const auto stats = g_expert_cache == nullptr ? ExpertCache::Stats {} : g_expert_cache->stats();
     const std::string json = "{\"hits\":" + std::to_string(stats.hits)
@@ -292,6 +343,7 @@ target_include_directories(ai-chat PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}"
     "${OFFICIAL_BINDING}"
     "${LLAMA_SRC}"
+    "${LLAMA_SRC}/src"
     "${LLAMA_SRC}/common"
     "${LLAMA_SRC}/include"
     "${LLAMA_SRC}/ggml/include"

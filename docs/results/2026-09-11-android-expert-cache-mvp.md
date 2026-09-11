@@ -12,12 +12,15 @@ The Android native library now contains a small `ExpertCache` implementation:
 - enforces a fixed byte budget;
 - evicts least-recently-used entries;
 - accepts best-effort asynchronous prefetch requests on a worker thread;
+- exposes the loaded llama.cpp tensor metadata as a compact expert index;
 - reports hits, misses, evictions, bytes read, and resident bytes;
 - clears and closes safely on model lifecycle boundaries.
 
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
-next step: connecting the cache to the BailingMoe3 expert dispatch.
+next step: connecting the cache to the BailingMoe3 expert dispatch. When a
+model is loaded, `expertIndexJson()` obtains the merged expert tensor offsets
+from llama.cpp's loader metadata rather than reparsing the multi-gigabyte GGUF.
 
 ## Current limitation
 

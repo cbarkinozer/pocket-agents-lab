@@ -12,6 +12,9 @@ object ExpertCacheRuntime {
     private external fun prefetchNative(layer: Int, expert: Int, offset: Long, length: Long): Boolean
 
     @JvmStatic
+    private external fun expertIndexNative(): String
+
+    @JvmStatic
     private external fun statsNative(): String
 
     @JvmStatic
@@ -27,6 +30,8 @@ object ExpertCacheRuntime {
 
     fun prefetch(layer: Int, expert: Int, offset: Long, length: Long): Boolean =
         prefetchNative(layer, expert, offset, length)
+
+    fun expertIndexJson(): String = expertIndexNative()
 
     fun statsJson(): String = statsNative()
 

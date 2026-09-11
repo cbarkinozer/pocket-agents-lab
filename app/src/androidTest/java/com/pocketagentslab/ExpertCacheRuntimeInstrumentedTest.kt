@@ -62,4 +62,9 @@ class ExpertCacheRuntimeInstrumentedTest {
         assertTrue(stats.getLong("bytesRead") >= 8)
         assertTrue(ExpertCacheRuntime.load(layer = 2, expert = 3, offset = 0, length = 8))
     }
+
+    @Test
+    fun expertIndexIsSafeBeforeModelLoad() {
+        assertEquals("{}", ExpertCacheRuntime.expertIndexJson())
+    }
 }
