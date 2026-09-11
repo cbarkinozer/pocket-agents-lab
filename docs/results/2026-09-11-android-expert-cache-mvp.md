@@ -67,6 +67,9 @@ The persistent parser was tested against the real 3.52 GiB Ling file without
 loading weights: it reported `bailingmoe3`, 128 experts, and 69 merged expert
 tensors. A separate device test opened the model with a 64 MiB cache budget and
 prefetched layer 1 expert 0; the worker read its ranges from storage.
+The gated page-warm inference test also completed successfully on the A32
+(25.7 s instrumentation duration, no crash): selected Ling ranges were mapped,
+page-warmed, and released with zero duplicate resident cache bytes.
 
 ## Next implementation step
 
