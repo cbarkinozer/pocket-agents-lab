@@ -294,4 +294,54 @@ class ExpertCacheRuntimeInstrumentedTest {
             engine.cleanUp()
         }
     }
+
+    @Test
+    fun lingStorageBackedVsQwenReferenceWhenExplicitlyRequested() {
+        assumeTrue(
+            InstrumentationRegistry.getArguments().getString("runStorageComparison") == "true",
+        )
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val ling = File(context.filesDir, "models/Ling-3.0-tiny-Q3_K_M.gguf")
+        val qwen = File(context.filesDir, "models/Qwen3.5-0.8B-Q4_K_M.gguf")
+        assumeTrue(ling.isFile && qwen.isFile)
+        val engine = AiChat.getInferenceEngine(context)
+
+        suspend fun runPrompt(): Pair<String, Long> {
+            engine.setSystemPrompt("You are a concise local test assistant.")
+            val start = System.nanoTime()
+            val output = engine.sendUserPrompt("What is 2+2?", predictLength = 8).toList().joinToString("")
+            return output to ((System.nanoTime() - start) / 1_000_000)
+        }
+
+        try {
+            runBlocking {
+                withTimeout(180_000) {
+                    engine.state.first { it is InferenceEngine.State.Initialized || it is InferenceEngine.State.Error }
+                }
+                engine.loadModel(ling.absolutePath)
+                assertTrue(ExpertCacheRuntime.enableStorageBacked(ling.absolutePath, 64L * 1024 * 1024))
+                val (lingOutput, lingMs) = runPrompt()
+                val lingTelemetry = JSONObject(ExpertCacheRuntime.telemetryJson())
+                val lingStats = JSONObject(ExpertCacheRuntime.statsJson())
+                engine.cleanUp()
+                ExpertCacheRuntime.close()
+                engine.loadModel(qwen.absolutePath)
+                val (qwenOutput, qwenMs) = runPrompt()
+                println(
+                    "LING_STORAGE_VS_QWEN=" + JSONObject()
+                        .put("lingMs", lingMs)
+                        .put("qwenMs", qwenMs)
+                        .put("lingOutput", lingOutput)
+                        .put("qwenOutput", qwenOutput)
+                        .put("lingTelemetry", lingTelemetry)
+                        .put("lingStats", lingStats),
+                )
+                assertTrue(lingOutput.isNotBlank())
+                assertTrue(qwenOutput.isNotBlank())
+            }
+        } finally {
+            ExpertCacheRuntime.close()
+            engine.cleanUp()
+        }
+    }
 }
