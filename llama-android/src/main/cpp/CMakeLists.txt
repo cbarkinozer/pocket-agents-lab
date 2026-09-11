@@ -367,8 +367,11 @@ static bool pocket_expert_eval_callback(ggml_tensor * tensor, bool ask, void *) 
                         && !seen[static_cast<size_t>(expert)]) {
                     seen[static_cast<size_t>(expert)] = true;
                     current.push_back(static_cast<uint32_t>(expert));
-                    pocket_prefetch_expert(layer, static_cast<uint32_t>(expert));
-                    if (g_expert_cache != nullptr && g_expert_cache->page_warm()) {
+                    const bool page_warm = g_expert_cache != nullptr && g_expert_cache->page_warm();
+                    if (!page_warm) {
+                        pocket_prefetch_expert(layer, static_cast<uint32_t>(expert));
+                    }
+                    if (page_warm) {
                         pocket_warm_loaded_expert(layer, static_cast<uint32_t>(expert));
                     }
                 }
@@ -385,7 +388,8 @@ static bool pocket_expert_eval_callback(ggml_tensor * tensor, bool ask, void *) 
                             && std::find(current.begin(), current.end(), expert) == current.end()) {
                         pocket_drop_loaded_expert(layer, expert);
                     }
-                    if (pocket_prefetch_expert(layer, expert)) {
+                    if (!(g_expert_cache != nullptr && g_expert_cache->page_warm())
+                            && pocket_prefetch_expert(layer, expert)) {
                         g_expert_predictor_requests.fetch_add(1, std::memory_order_relaxed);
                     }
                 }

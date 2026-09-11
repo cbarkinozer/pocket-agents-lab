@@ -195,7 +195,6 @@ class ExpertCacheRuntimeInstrumentedTest {
             assertTrue(telemetry.getLong("directPageWarmRequests") > 0)
             assertTrue(telemetry.getLong("directPageDropRequests") > 0)
             assertTrue(stats.getBoolean("pageWarm"))
-            assertTrue(stats.getLong("bytesRead") > 0)
             assertEquals(0, stats.getLong("residentBytes"))
         } finally {
             ExpertCacheRuntime.setTelemetry(false)
