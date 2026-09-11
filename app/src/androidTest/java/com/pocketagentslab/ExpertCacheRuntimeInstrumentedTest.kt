@@ -71,6 +71,19 @@ class ExpertCacheRuntimeInstrumentedTest {
     }
 
     @Test
+    fun keepsSeparateProjectionRangesForOneExpert() {
+        // Ling stores gate/down/up projection slices under the same
+        // (layer, expert) pair. The byte range is part of the identity; a
+        // later projection must not overwrite an earlier one.
+        assertTrue(ExpertCacheRuntime.load(layer = 3, expert = 7, offset = 0, length = 8))
+        assertTrue(ExpertCacheRuntime.load(layer = 3, expert = 7, offset = 8, length = 8))
+        val stats = JSONObject(ExpertCacheRuntime.statsJson())
+        assertEquals(16, stats.getLong("bytesRead"))
+        assertEquals(2, stats.getLong("residentEntries"))
+        assertEquals(16, stats.getLong("residentBytes"))
+    }
+
+    @Test
     fun pageWarmModeReadsWithoutRetainingDuplicateBuffers() {
         ExpertCacheRuntime.setPageWarm(true)
         assertTrue(ExpertCacheRuntime.load(layer = 4, expert = 1, offset = 1, length = 15))

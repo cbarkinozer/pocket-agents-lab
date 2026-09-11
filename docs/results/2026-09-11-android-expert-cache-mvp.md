@@ -66,6 +66,11 @@ The cache key now includes the byte offset and length in addition to
 `(layer, expert)`. This is required because Ling stores gate, down, and up
 projection tensors as separate ranges for the same expert; they must occupy
 independent LRU entries rather than replacing one another.
+The Android fixture now locks this behavior in with a regression test that
+loads two ranges for one `(layer, expert)` pair and expects two resident
+entries.
+The pre-model lifecycle response also always includes the selected-residency
+fields, so callers can parse one stable schema before and after model load.
 
 The Kotlin API is `com.arm.aichat.ExpertCacheRuntime`. It is intentionally not
 called by the current inference path yet. The JNI API is a foundation for the
@@ -112,8 +117,9 @@ loading weights: it reported `bailingmoe3`, 128 experts, and 69 merged expert
 tensors. A separate device test opened the model with a 64 MiB cache budget and
 prefetched layer 1 expert 0; the worker read its ranges from storage.
 The gated page-warm inference test also completed successfully on the A32
-(25.7 s instrumentation duration, no crash): selected Ling ranges were mapped,
-page-warmed, and released with zero duplicate resident cache bytes.
+(28.2 s instrumentation duration, no crash) after the range-key fix:
+selected Ling ranges were mapped, page-warmed, and released with zero
+duplicate resident cache bytes.
 
 ## Next implementation step
 

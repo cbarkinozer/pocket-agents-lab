@@ -339,9 +339,9 @@ static std::string pocket_expert_residency_json() {
             }
         }
     }
-    if (g_model == nullptr) return "{\"residentBytes\":0,\"mappedBytes\":0,\"residentRatio\":0,\"tensorCount\":0}";
+    if (g_model == nullptr) return "{\"residentBytes\":0,\"mappedBytes\":0,\"residentRatio\":0,\"selectedResidentBytes\":0,\"selectedMappedBytes\":0,\"tensorCount\":0}";
     auto * base = dynamic_cast<llama_model_base *>(g_model);
-    if (base == nullptr) return "{\"residentBytes\":0,\"mappedBytes\":0,\"residentRatio\":0,\"tensorCount\":0}";
+    if (base == nullptr) return "{\"residentBytes\":0,\"mappedBytes\":0,\"residentRatio\":0,\"selectedResidentBytes\":0,\"selectedMappedBytes\":0,\"tensorCount\":0}";
     const long raw_page = ::sysconf(_SC_PAGESIZE);
     const size_t page = raw_page > 0 ? static_cast<size_t>(raw_page) : 4096;
     for (const auto & named : base->tensors_by_name) {
