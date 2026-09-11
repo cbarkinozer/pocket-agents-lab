@@ -148,6 +148,20 @@ class ExpertCacheRuntimeInstrumentedTest {
     }
 
     @Test
+    fun storageBackedConvenienceModeConfiguresSafeAndroidPath() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val model = File(context.filesDir, "models/Ling-3.0-tiny-Q3_K_M.gguf")
+        assumeTrue(model.isFile)
+        assertTrue(ExpertCacheRuntime.enableStorageBacked(model.absolutePath, 64L * 1024 * 1024))
+        assertTrue(JSONObject(ExpertCacheRuntime.statsJson()).getBoolean("pageWarm"))
+        assertTrue(JSONObject(ExpertCacheRuntime.telemetryJson()).getBoolean("enabled"))
+        ExpertCacheRuntime.setPredictor(false)
+        ExpertCacheRuntime.setTelemetry(false)
+        ExpertCacheRuntime.setPageEvict(false)
+        ExpertCacheRuntime.setPageWarm(false)
+    }
+
+    @Test
     fun lingInferenceProducesExpertTelemetryWhenExplicitlyRequested() {
         assumeTrue(
             InstrumentationRegistry.getArguments().getString("runLing") == "true",

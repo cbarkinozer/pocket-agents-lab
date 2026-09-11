@@ -1,9 +1,12 @@
 package com.arm.aichat
 
-/** Experimental storage-backed expert cache controls. Not wired into graph dispatch yet. */
+/** Experimental Android storage-backed MoE controls. Uses llama.cpp mmap pages. */
 object ExpertCacheRuntime {
     @JvmStatic
     private external fun openNative(path: String, budgetBytes: Long): Boolean
+
+    @JvmStatic
+    private external fun enableStorageBackedNative(path: String, budgetBytes: Long): Boolean
 
     @JvmStatic
     private external fun setPageWarmNative(enabled: Boolean)
@@ -54,6 +57,13 @@ object ExpertCacheRuntime {
     private external fun closeNative()
 
     fun open(path: String, budgetBytes: Long): Boolean = openNative(path, budgetBytes)
+
+    /**
+     * Enables the safe Android approximation of Edge0: mmap-backed tensor pages,
+     * selected-page warming, previous-route eviction, predictor and telemetry.
+     */
+    fun enableStorageBacked(path: String, budgetBytes: Long): Boolean =
+        enableStorageBackedNative(path, budgetBytes)
 
     /** Warm the kernel page cache without retaining a duplicate expert buffer. */
     fun setPageWarm(enabled: Boolean) = setPageWarmNative(enabled)

@@ -147,3 +147,13 @@ crash. The route path reported 230 route events, 81,328 selected experts,
 telemetry path is repeatable, but also confirms that duplicate copy-prefetch
 is not yet a speed or memory optimization. The page-warm path remains the
 correct Android feasibility mode until the ggml dispatch contract is changed.
+
+## Safe Android mode API
+
+`ExpertCacheRuntime.enableStorageBacked(path, budgetBytes)` now configures the
+non-fork Android path in one call. It opens the GGUF offset index, enables
+page-warm, previous-route page eviction, the simple predictor, and telemetry,
+and performs a cold page reset when a model is already loaded. This keeps
+llama.cpp normal tensor pointers and is suitable for the app's experimental
+Android path without changing the upstream CPU kernel. The A32
+instrumentation test verified the configuration and stable telemetry schema.

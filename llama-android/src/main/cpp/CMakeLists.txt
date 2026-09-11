@@ -519,6 +519,37 @@ Java_com_arm_aichat_ExpertCacheRuntime_openNative(JNIEnv * env, jclass, jstring 
 }
 
 extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_arm_aichat_ExpertCacheRuntime_enableStorageBackedNative(
+        JNIEnv * env, jclass, jstring path, jlong budget_bytes) {
+    if (path == nullptr || budget_bytes <= 0) return JNI_FALSE;
+    const char * chars = env->GetStringUTFChars(path, nullptr);
+    if (chars == nullptr) return JNI_FALSE;
+    auto cache = std::make_unique<ExpertCache>();
+    const bool opened = cache->open(chars, static_cast<uint64_t>(budget_bytes));
+    const bool indexed = g_expert_index.open(chars);
+    env->ReleaseStringUTFChars(path, chars);
+    if (!opened || !indexed) {
+        return JNI_FALSE;
+    }
+    g_expert_cache = std::move(cache);
+    g_expert_cache->set_page_warm(true);
+    g_expert_page_evict_enabled.store(true, std::memory_order_release);
+    g_expert_predictor_enabled.store(true, std::memory_order_release);
+    g_expert_telemetry_enabled.store(true, std::memory_order_release);
+    {
+        std::lock_guard<std::mutex> lock(g_expert_predictor_mutex);
+        g_expert_last_selection.clear();
+        g_expert_cold_layers.clear();
+    }
+    if (g_model != nullptr) {
+        pocket_drop_all_loaded_expert_pages();
+        pocket_install_expert_callback();
+    }
+    return JNI_TRUE;
+}
+
+extern "C"
 JNIEXPORT void JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_setPageWarmNative(JNIEnv *, jclass, jboolean enabled) {
     if (g_expert_cache != nullptr) {
