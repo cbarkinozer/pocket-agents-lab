@@ -409,6 +409,14 @@ JNIEXPORT void JNICALL
 Java_com_arm_aichat_ExpertCacheRuntime_setTelemetryNative(JNIEnv *, jclass, jboolean enabled) {
     g_expert_telemetry_enabled.store(enabled == JNI_TRUE, std::memory_order_release);
     if (enabled == JNI_TRUE) {
+        g_expert_route_events.store(0, std::memory_order_relaxed);
+        g_expert_selected_count.store(0, std::memory_order_relaxed);
+        g_expert_prefetch_count.store(0, std::memory_order_relaxed);
+        g_expert_predictor_requests.store(0, std::memory_order_relaxed);
+        {
+            std::lock_guard<std::mutex> lock(g_expert_predictor_mutex);
+            g_expert_last_selection.clear();
+        }
         pocket_install_expert_callback();
     } else if (g_context != nullptr) {
         auto & params = const_cast<llama_cparams &>(g_context->get_cparams());
