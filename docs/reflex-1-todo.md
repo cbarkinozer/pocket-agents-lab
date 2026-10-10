@@ -1,8 +1,9 @@
 # reflex-1 next steps
 
-Last updated: 2026-10-11. Benchmarks complete (reflex-1: 24/50 raw, 28/50 guard;
-Qwen HTTP thinking-off: 10/50 raw, 10/50 guard). Thinking-on and raw-mode runs
-in progress. Return here before any retraining or Kotlin integration work.
+Last updated: 2026-10-11. Three-way Qwen benchmark pipeline running autonomously
+via wait-then-run.py → run-thinking-on.py. thinking-off: ~10/50 in progress
+(~2h remaining). thinking-on-v2 and raw queued. reflex-1 phone routing before-
+retrain eval will run automatically after all three. Return here when complete.
 
 ## 1 — Establish the real Qwen baseline FIRST (blockers — do before retraining)
 
@@ -32,48 +33,21 @@ Three treatments being run via `run-thinking-on.py`:
 - [ ] Do NOT claim reflex-1 (48% raw) beats the baseline until raw-results.json
       is known. If raw = 82%, reflex-1 at 48% is still well below baseline.
 
-## 2 — Audit the training data domain gap (before building new training data)
+## 2 — Audit the training data domain gap ✅ DONE
 
-Current facts (confirmed from DATASET_CARD.md and REPORT.md):
-- Training dataset: `LocalLLaMA/typed-decisions`
-- Workflows: agent_trace_observability, customer_service, invoice_processing,
-  security_incidents — all generic business workflows.
-- Phone-specific labels (get_battery_info, get_device_info, get_storage_info,
-  phone_health_check, etc.) appear ZERO times in the 1,120 training records.
+Confirmed: `LocalLLaMA/typed-decisions` has zero phone-specific labels. All
+1,120 records are generic business workflows (observability, customer service,
+invoice, security). The phone_health_check bias is a generalization artifact.
+There is no phone training data to audit. This section is closed.
 
-The decision head was never trained on phone routing. Its phone_health_check
-preference on battery/device prompts is a generalization artifact, not a label
-distribution bug in the phone training data. There is no phone training data to audit.
+## 3 — Build phone-specific training data from scratch ✅ DONE
 
-- [ ] Do NOT audit the training data for battery/health_check label overlap —
-      that claim was incorrect. The training data has no phone labels at all.
-
-- [ ] Understand instead: which typed-decisions labels the head IS routing to
-      phone_health_check from (agent_trace_observability? security_incidents?).
-      This tells you which examples to suppress or downweight in the new set.
-
-## 3 — Build phone-specific training data from scratch
-
-Because the typed-decisions dataset is entirely generic, the new training set is
-a new dataset, not an extension.
-
-- [ ] Create held-out eval split BEFORE building training data.
-      The 50-case development suite is NOT held-out — do not use it to measure
-      improvement after retraining. Build a separate ≥50-case phone routing eval
-      with the same 9-route taxonomy, sourced independently.
-
-- [ ] Build training dataset (phone routing domain):
-        - 9 routes: answer, tool/get_battery_info, tool/get_device_info,
-          tool/get_storage_info, tool/get_media_info, tool/search_local_files,
-          tool/search_notes, tool/save_note, workflow/phone_health_check
-        - ~100 examples per route minimum (900 minimum total)
-        - phone_health_check: multi-category queries (battery AND device AND storage
-          in same prompt) — NOT single-category battery or device queries
-        - answer: general-knowledge with zero phone context (strongest negatives)
-        - Sources: HuggingFace intent classification datasets (CLINC150, BANKING77
-          subsets that map to phone routing) + synthetic generation
-
-- [ ] Keep the 50-case development suite out of training under any circumstance.
+Dataset built: `data/phone_routing/` — 900 train / 90 calibration / 90 test (held-out).
+9 routes × 100/10/10, perfectly balanced. Dev cases excluded. SHA frozen.
+Builder: tools/build_phone_routing_dataset.py
+Extensions: tools/phone_routing_extra_queries.py
+Training script: tools/train_phone_routing.py (unsloth FastDecisionModel)
+Before-retrain eval: benchmarks/phone-routing-eval/run-reflex1-before-retrain.py
 
 ## 4 — Training and eval targets
 
