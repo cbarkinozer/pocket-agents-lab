@@ -84,7 +84,9 @@ def main():
     parser.add_argument("--adb", required=True)
     parser.add_argument("--serial")
     parser.add_argument("--url", default="http://127.0.0.1:8091")
-    parser.add_argument("--mode", choices=["decision", "chat"], default="decision")
+    parser.add_argument("--mode", choices=["decision", "chat", "raw"], default="decision",
+                        help="'decision'=Clef /v1/systemone, 'chat'=/v1/chat/completions, "
+                             "'raw'=/v1/completions (no chat template, closer to JNI)")
     parser.add_argument("--label", required=True)
     parser.add_argument("--model-sha256", required=True)
     parser.add_argument("--runtime-revision", required=True)
@@ -97,6 +99,9 @@ def main():
     thinking_enabled = args.enable_thinking if args.mode == "chat" else None
     report = {"suite": "tool-routing-3-tools-v5", "treatment": args.mode,
               "label": args.label, "enableThinking": thinking_enabled,
+              "rawModeNote": ("Uses /v1/completions without chat template, replicating "
+                              "JNI [[POCKET_GRAMMAR_ROUTE]] raw-completion path"
+                              ) if args.mode == "raw" else None,
               "modelSha256": args.model_sha256,
               "runtimeRevision": args.runtime_revision, "inferenceDevice": "Android",
               "transport": "ADB forwarded localhost HTTP", "finalAnswersTested": False,
@@ -123,7 +128,23 @@ def main():
                "before": before, "cooldownSeconds": time.monotonic() - cooldown}
         start = time.monotonic()
         try:
-            if args.mode == "decision":
+            if args.mode == "raw":
+                # Raw text completion — no chat template applied.
+                # Replicates the Android JNI path that prefixes [[POCKET_GRAMMAR_ROUTE]].
+                prompt_text = ROUTING_PROMPT_TEMPLATE.format(
+                    user_prompt=case.prompt, clarification=CLARIFICATION_MESSAGE)
+                response = request(args, "/v1/completions", {
+                    "prompt": prompt_text,
+                    "temperature": 0.3, "seed": 3407, "max_tokens": 64,
+                    "grammar": AGENT_ROUTE_GRAMMAR,
+                    "cache_prompt": False})
+                raw_text = response["choices"][0]["text"].strip()
+                decision = json.loads(raw_text)
+                chosen = decision.get("name") if decision["action"] != "answer" else "answer"
+                if chosen not in CRITERIA:
+                    raise ValueError("Unexpected raw route")
+                route = "answer" if chosen == "answer" else decision["action"] + ":" + chosen
+            elif args.mode == "decision":
                 response = request(args, "/v1/systemone", {
                     "model": "reflex-1", "state": case.prompt, "questions": QUESTIONS})
                 result = response["answers"]["route"]
