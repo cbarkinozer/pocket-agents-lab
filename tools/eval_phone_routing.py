@@ -119,7 +119,7 @@ def main():
         try:
             before = telemetry(fa)
             response = bench_request(fa, "/v1/systemone", {
-                "model": args.model_label,
+                "model": "reflex-1",
                 "state": state,
                 "questions": QUESTIONS_SCHEMA,
             })
