@@ -8,29 +8,29 @@ Historical JNI baseline (2026-09-11): 41/50 (82%), mean 53 s, PSS 780,270 KiB �
 protocol (JNI, not HTTP), different runtime; listed for context only.
 
 **reflex-1-Q4_K_M (decision):** complete — 50/50 cases.
-**Qwen3.5-0.8B-Q4_K_M (chat):** not yet available.
+**Qwen3.5-0.8B-Q4_K_M (chat):** complete — 50/50 cases.
 
 ## Overall Accuracy
 
-| Model           | Mode     | Raw correct | Raw % | Guard correct | Guard % | Complete |
-| --------------- | -------- | ----------- | ----- | ------------- | ------- | -------- |
-| reflex-1-Q4_K_M | decision | 24/50       | 48.0% | 28/50         | 56.0%   | Yes      |
-
-> Qwen baseline not yet complete; table will be updated when available.
+| Model               | Mode     | Raw correct | Raw % | Guard correct | Guard % | Complete |
+| ------------------- | -------- | ----------- | ----- | ------------- | ------- | -------- |
+| reflex-1-Q4_K_M     | decision | 24/50       | 48.0% | 28/50         | 56.0%   | Yes      |
+| Qwen3.5-0.8B-Q4_K_M | chat     | 10/50       | 20.0% | 10/50         | 20.0%   | Yes      |
 
 ## Per-Category Accuracy
 
 | Category | n  | reflex raw | reflex guard | qwen raw | qwen guard |
 | -------- | -- | ---------- | ------------ | -------- | ---------- |
-| storage  | 10 | 8/10       | 7/10         | —        | —          |
-| device   | 10 | 6/10       | 5/10         | —        | —          |
-| battery  | 10 | 0/10       | 0/10         | —        | —          |
-| answer   | 10 | 0/10       | 10/10        | —        | —          |
-| health   | 10 | 10/10      | 6/10         | —        | —          |
+| storage  | 10 | 8/10       | 7/10         | 0/10     | 0/10       |
+| device   | 10 | 6/10       | 5/10         | 0/10     | 0/10       |
+| battery  | 10 | 0/10       | 0/10         | 0/10     | 0/10       |
+| answer   | 10 | 0/10       | 10/10        | 10/10    | 10/10      |
+| health   | 10 | 10/10      | 6/10         | 0/10     | 0/10       |
 
 ## Relevance Guard Effect
 
 **reflex-1:** 10 rescues (raw wrong → guard correct), 6 regressions (raw correct → guard wrong).
+**Qwen:** 0 rescues, 0 regressions.
 
 Guard logic: keyword-substring match transliterated from AgentBackend.kt `isDecisionRelevant`.
 Routes without a keyword entry pass through unchanged (phone_health_check uses: 'health',
@@ -48,24 +48,27 @@ prompts lack those exact keywords despite being valid health queries.
 Decision mode prompt ≈ 400 tokens; chat mode prompt ≈ 1,127 tokens before chat formatting.
 Latency difference reflects both the smaller head computation and the shorter input.
 
-| Model           | Mode     | Mean (s) | Median (s) | Min (s) | Max (s) |
-| --------------- | -------- | -------- | ---------- | ------- | ------- |
-| reflex-1-Q4_K_M | decision | 24.9     | 25.3       | 21.5    | 27.8    |
+| Model               | Mode     | Mean (s) | Median (s) | Min (s) | Max (s) |
+| ------------------- | -------- | -------- | ---------- | ------- | ------- |
+| reflex-1-Q4_K_M     | decision | 24.9     | 25.3       | 21.5    | 27.8    |
+| Qwen3.5-0.8B-Q4_K_M | chat     | 64.8     | 65.4       | 59.7    | 70.4    |
 
 ## Memory (PSS)
 
-| Model           | First-case PSS (KiB) | Run-mean PSS (KiB) | Peak PSS (KiB) |
-| --------------- | -------------------- | ------------------ | -------------- |
-| reflex-1-Q4_K_M | 641,079              | 1,062,228          | 1,066,252      |
+| Model               | First-case PSS (KiB) | Run-mean PSS (KiB) | Peak PSS (KiB) |
+| ------------------- | -------------------- | ------------------ | -------------- |
+| reflex-1-Q4_K_M     | 641,079              | 1,062,228          | 1,066,252      |
+| Qwen3.5-0.8B-Q4_K_M | 711,081              | 841,594            | 842,002        |
 
 First-case PSS = server PSS before first inference (warm file-cache server load).
 Run-mean/peak = PSS after each completed inference.
 
 ## Thermal and Cooldown
 
-| Model           | Temp range (C) | MODERATE+ events | Cooldown waits | Total cooldown (s) |
-| --------------- | -------------- | ---------------- | -------------- | ------------------ |
-| reflex-1-Q4_K_M | 31.4–35.4      | 10               | 9              | 446                |
+| Model               | Temp range (C) | MODERATE+ events | Cooldown waits | Total cooldown (s) |
+| ------------------- | -------------- | ---------------- | -------------- | ------------------ |
+| reflex-1-Q4_K_M     | 31.4–35.4      | 10               | 9              | 446                |
+| Qwen3.5-0.8B-Q4_K_M | 35.2–35.6      | 48               | 49             | 2664               |
 
 Battery temperature gate ≤38 C before each case; LIGHT (1) thermal gate also required.
 Initial device snapshot showed AP 51.5 C, SKIN 39.7 C — AP temperature not gated.

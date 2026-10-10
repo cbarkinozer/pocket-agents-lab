@@ -65,7 +65,7 @@
     "health-10"
   ],
   "harnessSha256": "63b9938c3e347289cbcd4357f3597c18edfe46f5a847df591ae27937f85cca65",
-  "complete": false,
+  "complete": true,
   "cases": [
     {
       "id": "storage-01",
@@ -1895,6 +1895,1132 @@
         "pssKb": 841734,
         "usbPowered": true
       }
+    },
+    {
+      "id": "answer-02",
+      "prompt": "What is 2+2?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.4,
+        "thermalStatus": 1,
+        "pssKb": 841734,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2617306249999274,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791661925,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1143,
+          "total_tokens": 1152,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-RZymNsUvkRfkCtSjOqWZc6MADKJygu1A",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1143,
+          "prompt_ms": 66411.553,
+          "prompt_per_token_ms": 58.10284601924759,
+          "prompt_per_second": 17.210860887412164,
+          "predicted_n": 9,
+          "predicted_ms": 1086.638,
+          "predicted_per_token_ms": 135.82975,
+          "predicted_per_second": 7.362157406606433
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 67546.41170800006,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841714,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-03",
+      "prompt": "Write a five-word greeting.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.6,
+        "thermalStatus": 1,
+        "pssKb": 841714,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 72.58460129100013,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791662063,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1142,
+          "total_tokens": 1151,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-E2y4IweR08n5mEnOA1hjeXOzk4W3VtJ2",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1142,
+          "prompt_ms": 64245.603,
+          "prompt_per_token_ms": 56.25709544658494,
+          "prompt_per_second": 17.77553554910209,
+          "predicted_n": 9,
+          "predicted_ms": 944.724,
+          "predicted_per_token_ms": 118.0905,
+          "predicted_per_second": 8.468081683115916
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 65249.61483300012,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 2,
+        "pssKb": 841698,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-04",
+      "prompt": "What is the capital of France?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.6,
+        "thermalStatus": 1,
+        "pssKb": 841698,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 62.10624854200023,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791662191,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1143,
+          "total_tokens": 1152,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-vdmxlPhNBSPmZrxvBtF8Msu8k3ebirpF",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1143,
+          "prompt_ms": 64535.206,
+          "prompt_per_token_ms": 56.46124759405074,
+          "prompt_per_second": 17.711262903538266,
+          "predicted_n": 9,
+          "predicted_ms": 938.78,
+          "predicted_per_token_ms": 117.3475,
+          "predicted_per_second": 8.521698374486036
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 65544.82099999995,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 2,
+        "pssKb": 841723,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-05",
+      "prompt": "Explain what an ABI is in one sentence.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.6,
+        "thermalStatus": 1,
+        "pssKb": 841722,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.83212412499961,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791662310,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1145,
+          "total_tokens": 1154,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-EWqAeHtLqAq5d1mBOdSYCx8H0G38R4rM",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1145,
+          "prompt_ms": 64987.993,
+          "prompt_per_token_ms": 56.75807248908297,
+          "prompt_per_second": 17.618639184625998,
+          "predicted_n": 9,
+          "predicted_ms": 1201.668,
+          "predicted_per_token_ms": 150.2085,
+          "predicted_per_second": 6.6574128627873925
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 66264.79808300064,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 2,
+        "pssKb": 841922,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-06",
+      "prompt": "Give me a short riddle.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841922,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.794462582999586,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791662427,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1143,
+          "total_tokens": 1152,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-PTWxYX0Fimbgk2i7MHaWy3AQbbBpJ2Q4",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1143,
+          "prompt_ms": 63886.808,
+          "prompt_per_token_ms": 55.89397025371828,
+          "prompt_per_second": 17.891017500827402,
+          "predicted_n": 9,
+          "predicted_ms": 978.013,
+          "predicted_per_token_ms": 122.251625,
+          "predicted_per_second": 8.179850370087104
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 64939.12741599979,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 2,
+        "pssKb": 841966,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-07",
+      "prompt": "Say hello without checking my device.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841967,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.81613054199988,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791662545,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1143,
+          "total_tokens": 1152,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-mZ2BEFVo00KmuKj7QskN5iYttiq5Mdjm",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1143,
+          "prompt_ms": 65331.312,
+          "prompt_per_token_ms": 57.15775328083989,
+          "prompt_per_second": 17.495439246650978,
+          "predicted_n": 9,
+          "predicted_ms": 945.421,
+          "predicted_per_token_ms": 118.177625,
+          "predicted_per_second": 8.461838694084435
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 66356.94454199984,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841950,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-08",
+      "prompt": "What does CPU stand for?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841950,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 62.16729116700026,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791662671,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1142,
+          "total_tokens": 1151,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-BwTlocMcKEkfBaRgdQ3nShmyVtvZpBj9",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1142,
+          "prompt_ms": 61478.019,
+          "prompt_per_token_ms": 53.8336418563923,
+          "prompt_per_second": 18.57574493413654,
+          "predicted_n": 9,
+          "predicted_ms": 1083.939,
+          "predicted_per_token_ms": 135.492375,
+          "predicted_per_second": 7.380489123465434
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 62638.92762500018,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841950,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-09",
+      "prompt": "Name a primary color.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841950,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.84921779199976,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791662788,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1141,
+          "total_tokens": 1150,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-CWyYBHwhzq6ozJRG38ZttnVogRD5oTqT",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1141,
+          "prompt_ms": 63772.099,
+          "prompt_per_token_ms": 55.8914101665206,
+          "prompt_per_second": 17.891836992851687,
+          "predicted_n": 9,
+          "predicted_ms": 942.985,
+          "predicted_per_token_ms": 117.873125,
+          "predicted_per_second": 8.48369804397737
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 64791.71945899998,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841970,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-10",
+      "prompt": "Complete this sequence: 2, 4, 6, 8, ?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841970,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 41.496468167000785,
+      "rawRoute": "answer",
+      "rawCorrect": true,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791662895,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1153,
+          "total_tokens": 1162,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-voezpDU3YYKQeOzHBLYItollwtdQj8DX",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1153,
+          "prompt_ms": 64906.977,
+          "prompt_per_token_ms": 56.293995663486555,
+          "prompt_per_second": 17.763883842564415,
+          "predicted_n": 9,
+          "predicted_ms": 1008.32,
+          "predicted_per_token_ms": 126.04,
+          "predicted_per_second": 7.9339892097746745
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 65991.44983299993,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841974,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-01",
+      "prompt": "Run a phone health check.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841974,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 62.18086825000046,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663024,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1142,
+          "total_tokens": 1151,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-yOmpQZhlRaYAUdy5Km4wUAs10Te68tiI",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1142,
+          "prompt_ms": 64715.672,
+          "prompt_per_token_ms": 56.66871453590193,
+          "prompt_per_second": 17.646421101831407,
+          "predicted_n": 9,
+          "predicted_ms": 952.073,
+          "predicted_per_token_ms": 119.009125,
+          "predicted_per_second": 8.402717018547948
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 65739.10249999972,
+      "after": {
+        "temperatureC": 35.3,
+        "thermalStatus": 2,
+        "pssKb": 841995,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-02",
+      "prompt": "Check whether my phone is healthy.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841996,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.7783303340002,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663136,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1143,
+          "total_tokens": 1152,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-1gqjqPnxRV0QccH1Sx2vF3npkIDtfVTW",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1143,
+          "prompt_ms": 58923.816,
+          "prompt_per_token_ms": 51.55189501312336,
+          "prompt_per_second": 19.397929013966102,
+          "predicted_n": 9,
+          "predicted_ms": 969.589,
+          "predicted_per_token_ms": 121.198625,
+          "predicted_per_second": 8.250918688227692
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 59966.00200000012,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841971,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-03",
+      "prompt": "Inspect my phone and suggest health improvements.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841971,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.805490707999525,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663253,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1145,
+          "total_tokens": 1154,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-l0GekMUcZx5TxPV3yZwGqi7OQGvlXRPX",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1145,
+          "prompt_ms": 64512.351,
+          "prompt_per_token_ms": 56.34266462882096,
+          "prompt_per_second": 17.74853934558981,
+          "predicted_n": 9,
+          "predicted_ms": 1008.034,
+          "predicted_per_token_ms": 126.00425,
+          "predicted_per_second": 7.936240245864723
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 65591.60020800028,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 842000,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-04",
+      "prompt": "Are storage and battery temperature okay?",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 842000,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.847483000000466,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663367,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1143,
+          "total_tokens": 1152,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-YifH8PQT7uiOUM8Vg9yAHx2O5P3uyCAf",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1143,
+          "prompt_ms": 60785.074,
+          "prompt_per_token_ms": 53.180292213473315,
+          "prompt_per_second": 18.80395835332865,
+          "predicted_n": 9,
+          "predicted_ms": 956.873,
+          "predicted_per_token_ms": 119.609125,
+          "predicted_per_second": 8.360566135735882
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 61817.99758299985,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841983,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-05",
+      "prompt": "Give this handset a complete health assessment.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841982,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.84342766700047,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663485,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1144,
+          "total_tokens": 1153,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-u9TJoLkEFWpibviFUBln2HOOP9TqfE0s",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1144,
+          "prompt_ms": 64649.57,
+          "prompt_per_token_ms": 56.51186188811189,
+          "prompt_per_second": 17.69539998487229,
+          "predicted_n": 9,
+          "predicted_ms": 941.817,
+          "predicted_per_token_ms": 117.727125,
+          "predicted_per_second": 8.494219152977701
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 65619.53420900044,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841978,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-06",
+      "prompt": "Check both free space and battery heat together.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841978,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.97119258299972,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663603,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1145,
+          "total_tokens": 1154,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-HCziUo88NvSHtTTyhvaXxj9ALRONO0kg",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1145,
+          "prompt_ms": 64193.225,
+          "prompt_per_token_ms": 56.0639519650655,
+          "prompt_per_second": 17.836773273191994,
+          "predicted_n": 9,
+          "predicted_ms": 962.986,
+          "predicted_per_token_ms": 120.37325,
+          "predicted_per_second": 8.30749356688467
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 65229.34945900033,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841978,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-07",
+      "prompt": "Diagnose the phone's overall condition.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841978,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.86482554200029,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663715,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1143,
+          "total_tokens": 1152,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-67lg31SkwalLPbLzq5sW5yEbQI8tSnSo",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1143,
+          "prompt_ms": 58574.11,
+          "prompt_per_token_ms": 51.24594050743657,
+          "prompt_per_second": 19.513740797768843,
+          "predicted_n": 9,
+          "predicted_ms": 1020.669,
+          "predicted_per_token_ms": 127.583625,
+          "predicted_per_second": 7.837996451347107
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 59674.22350000015,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841974,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-08",
+      "prompt": "Do a device wellness check and recommend actions.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841974,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.85687033399972,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663832,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1145,
+          "total_tokens": 1154,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-xocYt4A7THQTBU6BzmQiaGUdTeRehsmw",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1145,
+          "prompt_ms": 64250.016,
+          "prompt_per_token_ms": 56.11355109170306,
+          "prompt_per_second": 17.82100723523555,
+          "predicted_n": 9,
+          "predicted_ms": 940.296,
+          "predicted_per_token_ms": 117.537,
+          "predicted_per_second": 8.507959195827697
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 65267.76395900015,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841987,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-09",
+      "prompt": "Is this phone ready for a sustained AI workload?",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 841986,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.83567329199923,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791663945,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1146,
+          "total_tokens": 1155,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-ScOCrGFT6M0taXXtNTJlZ1rDnSZmh9L1",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1146,
+          "prompt_ms": 59851.392,
+          "prompt_per_token_ms": 52.22634554973822,
+          "prompt_per_second": 19.147424340606815,
+          "predicted_n": 9,
+          "predicted_ms": 950.954,
+          "predicted_per_token_ms": 118.86925,
+          "predicted_per_second": 8.412604605480391
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 60868.416750000506,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 842002,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-10",
+      "prompt": "Review device, battery, and storage health.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "pssKb": 842002,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.77572245900046,
+      "rawRoute": "answer",
+      "rawCorrect": false,
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"action\":\"answer\",\"text\":\"\"}"
+            }
+          }
+        ],
+        "created": 1791664063,
+        "model": "/sdcard/Download/models/Qwen3.5-0.8B-Q4_K_M.gguf",
+        "system_fingerprint": "b11443-f0c41e016",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 9,
+          "prompt_tokens": 1145,
+          "total_tokens": 1154,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-ligGngZqIgGFUql5XD4TnALdyhmANxz7",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 1145,
+          "prompt_ms": 64704.852,
+          "prompt_per_token_ms": 56.51078777292577,
+          "prompt_per_second": 17.695736325924987,
+          "predicted_n": 9,
+          "predicted_ms": 941.939,
+          "predicted_per_token_ms": 117.742375,
+          "predicted_per_second": 8.493118981165447
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 65721.97525000047,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 841994,
+        "usbPowered": true
+      }
     }
-  ]
+  ],
+  "correct": 10,
+  "rawCorrect": 10,
+  "total": 50,
+  "meanLatencyMs": 64813.35700824007,
+  "medianLatencyMs": 65375.48293750001
 }
