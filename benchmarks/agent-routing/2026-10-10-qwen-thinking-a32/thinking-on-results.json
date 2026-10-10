@@ -1,0 +1,1177 @@
+{
+  "suite": "tool-routing-3-tools-v5",
+  "treatment": "chat",
+  "label": "Qwen3.5-0.8B-Q4_K_M-thinking-on",
+  "enableThinking": true,
+  "modelSha256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+  "runtimeRevision": "f0c41e016-b11443",
+  "inferenceDevice": "Android",
+  "transport": "ADB forwarded localhost HTTP",
+  "finalAnswersTested": false,
+  "questions": null,
+  "maxTemperatureC": 38,
+  "maxThermalStatus": 1,
+  "caseTimeoutSeconds": 300,
+  "context": 2048,
+  "caseOrder": [
+    "storage-01",
+    "storage-02",
+    "storage-03",
+    "storage-04",
+    "storage-05",
+    "storage-06",
+    "storage-07",
+    "storage-08",
+    "storage-09",
+    "storage-10",
+    "device-01",
+    "device-02",
+    "device-03",
+    "device-04",
+    "device-05",
+    "device-06",
+    "device-07",
+    "device-08",
+    "device-09",
+    "device-10",
+    "battery-01",
+    "battery-02",
+    "battery-03",
+    "battery-04",
+    "battery-05",
+    "battery-06",
+    "battery-07",
+    "battery-08",
+    "battery-09",
+    "battery-10",
+    "answer-01",
+    "answer-02",
+    "answer-03",
+    "answer-04",
+    "answer-05",
+    "answer-06",
+    "answer-07",
+    "answer-08",
+    "answer-09",
+    "answer-10",
+    "health-01",
+    "health-02",
+    "health-03",
+    "health-04",
+    "health-05",
+    "health-06",
+    "health-07",
+    "health-08",
+    "health-09",
+    "health-10"
+  ],
+  "harnessSha256": "2dadf81f982fdeeb01f0b95ea833fc37d5101fa3a3e3042ee796cc6913183345",
+  "complete": true,
+  "cases": [
+    {
+      "id": "storage-01",
+      "prompt": "How much storage do I have?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.7,
+        "thermalStatus": 0,
+        "pssKb": 711007,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.256131833,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "latencyMs": 62937.805250000005,
+      "after": {
+        "temperatureC": 31.6,
+        "thermalStatus": 0,
+        "pssKb": 839195,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-02",
+      "prompt": "How much free space is left on this phone?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.6,
+        "thermalStatus": 0,
+        "pssKb": 839195,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.22128391700000094,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "latencyMs": 69425.70754200002,
+      "after": {
+        "temperatureC": 31.7,
+        "thermalStatus": 0,
+        "pssKb": 839635,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-03",
+      "prompt": "Am I running out of disk space?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.7,
+        "thermalStatus": 0,
+        "pssKb": 839635,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2486071250000066,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "latencyMs": 67625.93470800002,
+      "after": {
+        "temperatureC": 31.9,
+        "thermalStatus": 0,
+        "pssKb": 840079,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-04",
+      "prompt": "Show my internal storage usage.",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.9,
+        "thermalStatus": 0,
+        "pssKb": 840079,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2187108749999993,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "latencyMs": 61681.624667,
+      "after": {
+        "temperatureC": 32.1,
+        "thermalStatus": 1,
+        "pssKb": 840447,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-05",
+      "prompt": "How many gigabytes can I still save?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 32.1,
+        "thermalStatus": 1,
+        "pssKb": 840447,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.22434033299998646,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "latencyMs": 64513.78408300002,
+      "after": {
+        "temperatureC": 32.4,
+        "thermalStatus": 1,
+        "pssKb": 840835,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-06",
+      "prompt": "Is there room for another large model?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 32.4,
+        "thermalStatus": 1,
+        "pssKb": 840835,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.21646574999999757,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "latencyMs": 65845.16520799996,
+      "after": {
+        "temperatureC": 32.8,
+        "thermalStatus": 1,
+        "pssKb": 841204,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-07",
+      "prompt": "Check available space, not battery level.",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 32.8,
+        "thermalStatus": 1,
+        "pssKb": 841202,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.22144925000003468,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "latencyMs": 61472.20179200002,
+      "after": {
+        "temperatureC": 33.1,
+        "thermalStatus": 1,
+        "pssKb": 841552,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-08",
+      "prompt": "What fraction of the phone storage is free?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 33.1,
+        "thermalStatus": 1,
+        "pssKb": 841552,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.22344120899998643,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "latencyMs": 66961.37666700002,
+      "after": {
+        "temperatureC": 33.5,
+        "thermalStatus": 1,
+        "pssKb": 841871,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-09",
+      "prompt": "Tell me the used and total storage.",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 33.5,
+        "thermalStatus": 1,
+        "pssKb": 841871,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.23484458300004007,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 29605.82558300007,
+      "after": {
+        "temperatureC": 33.6,
+        "thermalStatus": 2,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-10",
+      "prompt": "Could a 2 GB file fit on this device right now?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 41.29571558299995,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 13.62983300009546,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-01",
+      "prompt": "What Android version is this?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.15628804200002833,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 9.172291000027144,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-02",
+      "prompt": "What CPU ABI does this device use?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1507098339999402,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 9.609541999907378,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-03",
+      "prompt": "Which phone model am I using?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1699281249999558,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.307333999980074,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-04",
+      "prompt": "Who manufactured this handset?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.14348991599990768,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.876416999963112,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-05",
+      "prompt": "Is this device arm64-v8a?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.15341975000001185,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.288125000078253,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-06",
+      "prompt": "Report the model, Android release, and architecture.",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16289129100005084,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.430292000000009,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-07",
+      "prompt": "How much physical RAM does this phone expose?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16102062499999192,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.067042000036054,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-08",
+      "prompt": "Identify the current device without discussing storage.",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.15611300000000483,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.97675000005438,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-09",
+      "prompt": "Which Android SDK and OS version are running?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1575612919999685,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.86445900000399,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-10",
+      "prompt": "Give me this phone's hardware identity.",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.17007750000004762,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.004041999991387,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-01",
+      "prompt": "Is my battery hot?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1626376670000127,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.076624999986961,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-02",
+      "prompt": "What is my battery percentage?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1621714579999889,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 6.622042000003603,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-03",
+      "prompt": "Is the phone charging right now?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.15930549999995947,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 7.769167000105881,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-04",
+      "prompt": "Tell me the current battery temperature.",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1672044580000147,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 9.19770799998787,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-05",
+      "prompt": "How much charge remains?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2190373329999602,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.325916000032521,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-06",
+      "prompt": "Check battery heat, not free storage.",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.15865612500010684,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.451666999960253,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-07",
+      "prompt": "Should I let the battery cool down?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1802583329999834,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 12.157333000004655,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-08",
+      "prompt": "Read the live charging state.",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.18380424999998013,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.454166000045007,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-09",
+      "prompt": "Is my current battery temperature above 40 C?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16265583400002015,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.892499999930806,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-10",
+      "prompt": "Give me charge level and temperature.",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1635707090000551,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.776125000006687,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-01",
+      "prompt": "Tell me a joke.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1749083329999621,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.005416999978479,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-02",
+      "prompt": "What is 2+2?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1582002499999362,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.3332089999858,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-03",
+      "prompt": "Write a five-word greeting.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.17601695799999106,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.631499999907646,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-04",
+      "prompt": "What is the capital of France?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16577537499995287,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.130000000093787,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-05",
+      "prompt": "Explain what an ABI is in one sentence.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1564986250000402,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 5.6979159999173135,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-06",
+      "prompt": "Give me a short riddle.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16201300000000174,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.777542000028006,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-07",
+      "prompt": "Say hello without checking my device.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16332133299999896,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 5.422457999998187,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-08",
+      "prompt": "What does CPU stand for?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.27292770799999744,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 8.988416999955007,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-09",
+      "prompt": "Name a primary color.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.20597841699998298,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 12.13299999994888,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-10",
+      "prompt": "Complete this sequence: 2, 4, 6, 8, ?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16884879099995942,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 9.96587500003443,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-01",
+      "prompt": "Run a phone health check.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16690975000005892,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.226707999981045,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-02",
+      "prompt": "Check whether my phone is healthy.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.15961191600001712,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 6.034917000079076,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-03",
+      "prompt": "Inspect my phone and suggest health improvements.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.160742292000009,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.085624999964239,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-04",
+      "prompt": "Are storage and battery temperature okay?",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16077574999997069,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.835165999992569,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-05",
+      "prompt": "Give this handset a complete health assessment.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16194670799995947,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.898750000023938,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-06",
+      "prompt": "Check both free space and battery heat together.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.17332004200000029,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 5.669041000032848,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-07",
+      "prompt": "Diagnose the phone's overall condition.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16319841600000018,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 11.427625000010266,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-08",
+      "prompt": "Do a device wellness check and recommend actions.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.16982354200001737,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.832875000005515,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-09",
+      "prompt": "Is this phone ready for a sustained AI workload?",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.15885175000005347,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.229625000079068,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-10",
+      "prompt": "Review device, battery, and storage health.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.15621483299992178,
+      "correct": false,
+      "rawCorrect": false,
+      "error": "Remote end closed connection without response",
+      "latencyMs": 10.708249999993313,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": null,
+        "usbPowered": true
+      }
+    }
+  ],
+  "correct": 0,
+  "rawCorrect": 0,
+  "total": 50,
+  "meanLatencyMs": 11009.788175840007,
+  "medianLatencyMs": 11.071833500011508
+}

@@ -1,0 +1,76 @@
+storage-01 Expecting value: line 1 column 1 (char 0) 62938 {'temperatureC': 31.6, 'thermalStatus': 0, 'pssKb': 839195, 'usbPowered': True}
+storage-02 Expecting value: line 1 column 1 (char 0) 69426 {'temperatureC': 31.7, 'thermalStatus': 0, 'pssKb': 839635, 'usbPowered': True}
+storage-03 Expecting value: line 1 column 1 (char 0) 67626 {'temperatureC': 31.9, 'thermalStatus': 0, 'pssKb': 840079, 'usbPowered': True}
+storage-04 Expecting value: line 1 column 1 (char 0) 61682 {'temperatureC': 32.1, 'thermalStatus': 1, 'pssKb': 840447, 'usbPowered': True}
+storage-05 Expecting value: line 1 column 1 (char 0) 64514 {'temperatureC': 32.4, 'thermalStatus': 1, 'pssKb': 840835, 'usbPowered': True}
+storage-06 Expecting value: line 1 column 1 (char 0) 65845 {'temperatureC': 32.8, 'thermalStatus': 1, 'pssKb': 841204, 'usbPowered': True}
+storage-07 Expecting value: line 1 column 1 (char 0) 61472 {'temperatureC': 33.1, 'thermalStatus': 1, 'pssKb': 841552, 'usbPowered': True}
+storage-08 Expecting value: line 1 column 1 (char 0) 66961 {'temperatureC': 33.5, 'thermalStatus': 1, 'pssKb': 841871, 'usbPowered': True}
+storage-09 Remote end closed connection without response 29606 {'temperatureC': 33.6, 'thermalStatus': 2, 'pssKb': None, 'usbPowered': True}
+Cooling: {'temperatureC': 33.6, 'thermalStatus': 2, 'pssKb': None, 'usbPowered': True}
+Cooling: {'temperatureC': 33.7, 'thermalStatus': 2, 'pssKb': None, 'usbPowered': True}
+Cooling: {'temperatureC': 33.8, 'thermalStatus': 2, 'pssKb': None, 'usbPowered': True}
+Cooling: {'temperatureC': 33.8, 'thermalStatus': 2, 'pssKb': None, 'usbPowered': True}
+storage-10 Remote end closed connection without response 14 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-01 Remote end closed connection without response 9 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-02 Remote end closed connection without response 10 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-03 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-04 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-05 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-06 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-07 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-08 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-09 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+device-10 Remote end closed connection without response 10 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-01 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-02 Remote end closed connection without response 7 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-03 Remote end closed connection without response 8 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-04 Remote end closed connection without response 9 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-05 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-06 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-07 Remote end closed connection without response 12 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-08 Remote end closed connection without response 10 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-09 Remote end closed connection without response 12 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+battery-10 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-01 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-02 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-03 Remote end closed connection without response 12 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-04 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-05 Remote end closed connection without response 6 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-06 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-07 Remote end closed connection without response 5 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-08 Remote end closed connection without response 9 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-09 Remote end closed connection without response 12 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+answer-10 Remote end closed connection without response 10 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-01 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-02 Remote end closed connection without response 6 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-03 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-04 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-05 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-06 Remote end closed connection without response 6 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-07 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-08 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-09 Remote end closed connection without response 10 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+health-10 Remote end closed connection without response 11 {'temperatureC': 33.9, 'thermalStatus': 1, 'pssKb': None, 'usbPowered': True}
+{
+  "suite": "tool-routing-3-tools-v5",
+  "treatment": "chat",
+  "label": "Qwen3.5-0.8B-Q4_K_M-thinking-on",
+  "enableThinking": true,
+  "modelSha256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+  "runtimeRevision": "f0c41e016-b11443",
+  "inferenceDevice": "Android",
+  "transport": "ADB forwarded localhost HTTP",
+  "finalAnswersTested": false,
+  "maxTemperatureC": 38,
+  "maxThermalStatus": 1,
+  "caseTimeoutSeconds": 300,
+  "context": 2048,
+  "harnessSha256": "2dadf81f982fdeeb01f0b95ea833fc37d5101fa3a3e3042ee796cc6913183345",
+  "complete": true,
+  "correct": 0,
+  "rawCorrect": 0,
+  "total": 50,
+  "meanLatencyMs": 11009.788175840007,
+  "medianLatencyMs": 11.071833500011508
+}

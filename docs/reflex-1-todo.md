@@ -1,27 +1,36 @@
 # reflex-1 next steps
 
-Last updated: 2026-10-10. Benchmarks complete (reflex-1: 24/50 raw, 28/50 guard;
-Qwen HTTP: 10/50 raw, 10/50 guard). Return here before any retraining or Kotlin
-integration work.
+Last updated: 2026-10-11. Benchmarks complete (reflex-1: 24/50 raw, 28/50 guard;
+Qwen HTTP thinking-off: 10/50 raw, 10/50 guard). Thinking-on and raw-mode runs
+in progress. Return here before any retraining or Kotlin integration work.
 
 ## 1 — Establish the real Qwen baseline FIRST (blockers — do before retraining)
 
-The September JNI run (82% / 53 s) used a different protocol: JNI, not HTTP;
-llama.cpp commit 2a15f3a72 vs b11443; different prompt construction.
-The October HTTP run produced 10/50 (20%) with `enable_thinking: false`.
-The gap is unexplained. Two runs needed before comparing anything to reflex-1:
+**Key architectural finding (2026-10-11):** The September JNI baseline used raw
+text completion (no Qwen chat template):
+```kotlin
+// AgentBackend.kt line 108
+generator.generate(GRAMMAR_ROUTE_PREFIX + buildRoutingPrompt(userPrompt), ...)
+```
+HTTP runs use `/v1/chat/completions` which applies the Qwen chat template
+(`<|im_start|>system/user/assistant`). This bypass of the chat template is the
+most likely explanation for 82% vs 20%, not thinking configuration.
 
-- [ ] Run Qwen HTTP with thinking ENABLED (`enable_thinking: true` in chat_template_kwargs).
-      This is the fair "true baseline" — it matches how the model was evaluated on
-      typed-decisions (65.7%), BANKING77 (44.59%), CLINC150 (47.11%).
+Three treatments being run via `run-thinking-on.py`:
+- `thinking-off-results.json`: chat, thinking=False, grammar (the 20% run)
+- `thinking-on-v2-results.json`: chat, thinking=True, no grammar, 1024 tokens
+- `raw-results.json`: /v1/completions (NO chat template), grammar — replicates JNI
 
-- [ ] Run Qwen HTTP with thinking DISABLED (current setting, `enable_thinking: false`).
-      Compare accuracy and latency between the two. If thinking-enabled matches ~82%,
-      the 20% run was an artifact of disabling reasoning, not representative. If
-      thinking-enabled is also ~20%, the JNI result needs a different explanation
-      (prompt format difference, llama.cpp version, or grammar constraint effect).
+- [ ] Check `raw-results.json` once `run-thinking-on.py` completes.
+      If raw ≈ 82%: chat template is the root cause. The comparison baseline for
+      reflex-1 is raw mode, not chat. Thinking on/off is secondary.
+      If raw ≈ 20%: the llama.cpp version difference (2a15f3a72 vs f0c41e016) or
+      grammar behavior change may be the cause. Investigate further.
 
-- [ ] Do NOT claim reflex-1 (48% raw) beats the baseline until the real baseline is known.
+- [ ] Compare thinking-on vs thinking-off (both chat mode) to isolate that variable.
+
+- [ ] Do NOT claim reflex-1 (48% raw) beats the baseline until raw-results.json
+      is known. If raw = 82%, reflex-1 at 48% is still well below baseline.
 
 ## 2 — Audit the training data domain gap (before building new training data)
 

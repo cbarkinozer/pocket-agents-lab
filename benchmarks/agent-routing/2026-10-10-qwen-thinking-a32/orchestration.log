@@ -1,0 +1,16 @@
+Model SHA verified: bd258782e35f7f45…
+Starting Qwen server → thinking-on-server.log
+Server ready pid=26336
+
+============================================================
+Running thinking-on benchmark → thinking-on-results.json
+============================================================
+
+Server stopped
+Starting Qwen server → thinking-off-server.log
+Server ready pid=27380
+
+============================================================
+Running thinking-off benchmark → thinking-off-results.json
+============================================================
+
