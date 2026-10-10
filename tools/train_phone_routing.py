@@ -35,8 +35,8 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--data-dir",    type=Path, required=True, help="Path to phone_routing JSONL dir")
     p.add_argument("--output-dir",  type=Path, required=True, help="Where to write the trained adapter")
-    p.add_argument("--base-model",  type=str,  default="Qwen/Qwen3.5-0.8B",
-                   help="HuggingFace model ID for the backbone")
+    p.add_argument("--base-model",  type=str,  default="unsloth/Qwen3.5-0.8B",
+                   help="HuggingFace model ID for the backbone (unsloth namespace preferred)")
     p.add_argument("--max-steps",   type=int,  default=60)
     p.add_argument("--seed",        type=int,  default=3407)
     p.add_argument("--smoke",       action="store_true", help="Run only 2 steps on 32 examples")
@@ -53,8 +53,7 @@ def main():
 
     # ── imports (heavy, GPU-required) ────────────────────────────────────────
     try:
-        from unsloth import FastDecisionModel
-        from unsloth import DecisionTrainer
+        from unsloth import FastDecisionModel, DecisionTrainer, is_bfloat16_supported
     except ImportError:
         print("ERROR: unsloth not found. Install with: pip install unsloth[colab-new]")
         sys.exit(1)
@@ -125,14 +124,16 @@ def main():
             warmup_steps=0 if args.smoke else 10,
             max_steps=2 if args.smoke else args.max_steps,
             learning_rate=2e-4,
-            fp16=not _is_bf16_supported(),
-            bf16=_is_bf16_supported(),
+            fp16=not is_bfloat16_supported(),
+            bf16=is_bfloat16_supported(),
             logging_steps=1,
+            eval_strategy="epoch",
             optim="adamw_8bit",
             weight_decay=0.01,
             lr_scheduler_type="cosine",
             seed=args.seed,
             output_dir=str(args.output_dir / "checkpoints"),
+            report_to="none",
         ),
     )
     trainer.train()
@@ -172,14 +173,6 @@ def main():
     print(f"Before (calib): {before.get('accuracy', 0):.4f}")
     print(f"After  (calib): {after_calib.get('accuracy', 0):.4f}")
     print(f"After  (TEST):  {after_test.get('accuracy', 0):.4f}")
-
-
-def _is_bf16_supported() -> bool:
-    try:
-        import torch
-        return torch.cuda.is_bf16_supported()
-    except Exception:
-        return False
 
 
 if __name__ == "__main__":
