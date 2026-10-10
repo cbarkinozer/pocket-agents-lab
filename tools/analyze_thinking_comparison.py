@@ -196,10 +196,27 @@ def report(on_data: dict, off_data: dict, jni_acc: float, jni_lat: float) -> str
     return "\n".join(lines) + "\n"
 
 
+def raw_summary(raw_data: dict) -> str:
+    cases = raw_data.get("cases", [])
+    if not cases:
+        return "raw-mode: no data"
+    correct = sum(1 for c in cases if c.get("rawCorrect"))
+    total   = len(cases)
+    mean    = mean_latency(cases)
+    cats    = per_category(cases, "rawCorrect")
+    lines   = [f"\n## Raw-Mode Results (no chat template — replicates JNI path)\n",
+               f"raw: {correct}/{total} ({100*correct/total:.1f}%)  mean={mean:.1f}s\n",
+               "Per-category:"]
+    for cat, (c, n) in sorted(cats.items()):
+        lines.append(f"  {cat}: {c}/{n}")
+    return "\n".join(lines)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--thinking-on",  type=Path, required=True)
     parser.add_argument("--thinking-off", type=Path, required=True)
+    parser.add_argument("--raw",          type=Path, help="raw-results.json from run-thinking-on.py")
     parser.add_argument("--jni-accuracy", type=float, default=0.82)
     parser.add_argument("--jni-latency-s", type=float, default=53.0)
     parser.add_argument("--out", type=Path, required=True)
@@ -208,6 +225,11 @@ def main():
     on_data  = load(args.thinking_on)
     off_data = load(args.thinking_off)
     md = report(on_data, off_data, args.jni_accuracy, args.jni_latency_s)
+
+    if args.raw and args.raw.exists():
+        raw_data = load(args.raw)
+        md += raw_summary(raw_data)
+
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(md)
     print(f"Report written to {args.out}")
@@ -218,6 +240,11 @@ def main():
     off_c, off_t = sum(c.get("rawCorrect",0) for c in off_cases), len(off_cases)
     print(f"  Thinking ON:  {on_c}/{on_t}  ({100*on_c/on_t:.1f}%)" if on_t else "  Thinking ON: no data")
     print(f"  Thinking OFF: {off_c}/{off_t} ({100*off_c/off_t:.1f}%)" if off_t else "  Thinking OFF: no data")
+    if args.raw and args.raw.exists():
+        raw_cases = load(args.raw).get("cases", [])
+        raw_c = sum(c.get("rawCorrect",0) for c in raw_cases)
+        raw_t = len(raw_cases)
+        print(f"  Raw mode:     {raw_c}/{raw_t} ({100*raw_c/raw_t:.1f}%)" if raw_t else "  Raw mode: no data")
 
 
 if __name__ == "__main__":

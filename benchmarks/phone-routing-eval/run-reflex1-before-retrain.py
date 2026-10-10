@@ -16,6 +16,7 @@ OUT_DIR   = ROOT / "benchmarks/phone-routing-eval"
 ADB       = "/Users/cbarkinozer/.cache/reflex-android/platform-tools/adb"
 SERIAL    = "R68T800LZ0H"
 MODEL_PATH = "/sdcard/Download/models/reflex-1-Q4_K_M.gguf"
+MODEL_SHA  = "8480ccc295ac7379106f33ad76c978da5d9e8da0785e827786fe9d17f5a5beb5"
 PORT      = 8091
 
 SERVER_CMD = (
@@ -69,6 +70,12 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 fwd = subprocess.check_output([ADB, "-s", SERIAL, "forward", "--list"], text=True)
 if f"tcp:{PORT}" not in fwd:
     subprocess.check_call([ADB, "-s", SERIAL, "forward", f"tcp:{PORT}", f"tcp:{PORT}"])
+
+# Verify model SHA
+print("Verifying reflex-1 model SHA…", flush=True)
+live_sha = adb("shell", f"sha256sum {MODEL_PATH}").split()[0]
+assert live_sha == MODEL_SHA, f"SHA mismatch: {live_sha} != {MODEL_SHA}"
+print(f"SHA verified: {live_sha[:16]}…", flush=True)
 
 proc, pid = start_server(OUT_DIR / "reflex1-before-retrain-server.log")
 try:

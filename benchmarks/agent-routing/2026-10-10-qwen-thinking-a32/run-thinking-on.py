@@ -136,3 +136,18 @@ print()
 print("If raw ≈ JNI: the chat template is the problem, not thinking.")
 print("If thinking-ON ≈ JNI: disabling thinking was the problem.")
 print("If both are low: the prompt format or runtime version is the issue.")
+
+# ── generate comparison report ────────────────────────────────────────────────
+report_path = OUT / "thinking-comparison-report.md"
+analyze_cmd = [
+    sys.executable, str(ROOT / "tools/analyze_thinking_comparison.py"),
+    "--thinking-on",  str(OUT / "thinking-on-v2-results.json"),
+    "--thinking-off", str(OUT / "thinking-off-results.json"),
+    "--raw",          str(OUT / "raw-results.json"),
+    "--out",          str(report_path),
+]
+try:
+    subprocess.run(analyze_cmd, cwd=ROOT, check=True)
+    print(f"\nComparison report → {report_path}")
+except Exception as e:
+    print(f"WARNING: report generation failed: {e}")

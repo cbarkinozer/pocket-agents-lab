@@ -33,4 +33,10 @@ while True:
 
 print("\nLaunching run-thinking-on.py…", flush=True)
 subprocess.run([sys.executable, str(NEXT)], cwd=ROOT, check=True)
-print("\nAll three treatments complete.", flush=True)
+print("\nThree Qwen treatments complete.", flush=True)
+
+# Run reflex-1 before-retrain baseline on phone routing test set
+retrain_eval = ROOT / "benchmarks/phone-routing-eval/run-reflex1-before-retrain.py"
+print("\nLaunching reflex-1 phone routing before-retrain eval…", flush=True)
+subprocess.run([sys.executable, str(retrain_eval)], cwd=ROOT, check=True)
+print("\nAll benchmark runs complete.", flush=True)
