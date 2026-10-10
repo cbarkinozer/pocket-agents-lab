@@ -124,9 +124,13 @@ context issue — the backbone is the same Qwen weights.
 **Why the battery category collapsed:** The RELEVANCE_KEYWORDS for `get_battery_info` include
 'battery', 'charge', 'charging', 'power', 'temperature', 'hot', 'cool'. Most prompts contain
 these terms, yet the head still prefers phone_health_check with 0.39–0.45 probability against
-get_battery_info's 0.10–0.39. The head learned that battery-related language also implies
-overall health — likely because training data for phone_health_check over-represented battery
-queries, or because the label boundary was not clear during training.
+get_battery_info's 0.10–0.39. The head was trained on `LocalLLaMA/typed-decisions`
+(agent_trace_observability, customer_service, invoice_processing, security_incidents) — four
+generic business workflows with zero phone-specific labels. `get_battery_info`,
+`phone_health_check`, and the other eight phone routes never appeared in training. The Clef
+head is generalizing from business-workflow decision boundaries to a phone routing schema it
+has never seen, and that generalization is miscalibrated toward phone_health_check. This is a
+training domain gap, not a label overrepresentation bug.
 
 **Can fine-tuning fix this?**
 
@@ -142,11 +146,19 @@ Possibly, but with caveats:
 - If the shared-backbone architecture (single loaded model, two output paths) is the actual
   goal, validate that first before investing further training compute.
 
-**Verdict:** Further fine-tuning is not yet warranted. The immediate next step is to audit
-the battery/health_check label distribution in the training data and run the matched Qwen
-HTTP baseline. If the Qwen baseline reproduces a similar accuracy in chat mode, the routing
-task is learnable and the issue is specifically the head training. If Qwen underperforms too,
-the suite itself may need redesign.
+**Verdict:** Further fine-tuning makes sense but the prerequisites are not complete.
+
+1. The Qwen HTTP baseline (20%) used `enable_thinking: false`. The September JNI run (82%)
+   did not explicitly document thinking on/off. Run Qwen HTTP with thinking enabled first to
+   establish the real comparison target. Do not treat 48% vs 20% as the final comparison.
+
+2. There is no phone-specific training data to audit or augment. Building it is a new
+   dataset project (~900 examples, 9 routes, phone domain). Only after that dataset exists
+   and a held-out eval is reserved does retraining make sense.
+
+3. If Qwen HTTP with thinking enabled also achieves ~82%, the decision model needs to beat
+   that at lower latency to justify the architecture. At 2.6× faster (25 s vs 65 s) with
+   phone-domain retraining, a 80%+ raw accuracy target is a reasonable goal.
 
 ## Caveats and Limitations
 
