@@ -1,0 +1,53 @@
+{
+  "dataset": "phone_routing_v1",
+  "schema": "typed-decisions-compatible",
+  "routes": [
+    "answer",
+    "get_device_info",
+    "get_battery_info",
+    "get_storage_info",
+    "get_media_info",
+    "search_local_files",
+    "search_notes",
+    "save_note",
+    "phone_health_check"
+  ],
+  "questions": {
+    "route": {
+      "type": "choice",
+      "instructions": "Select exactly one Android agent route by the meaning of the request. Use live phone tools only for current phone facts. Use phone_health_check for overall condition or two or more live categories. Otherwise answer without a tool.",
+      "criteria": {
+        "answer": "Writing, jokes, arithmetic, definitions, general knowledge, or unclear requests. No live phone data needed.",
+        "get_device_info": "Current phone model, manufacturer, Android version, CPU ABI or physical RAM.",
+        "get_battery_info": "Live battery level, charging status, temperature, heat or need to cool down.",
+        "get_storage_info": "Live internal disk space, used/free/total storage, capacity to save files or models.",
+        "get_media_info": "Currently playing song or video metadata.",
+        "search_local_files": "Find a filename or phrase in previously authorized local files.",
+        "search_notes": "Recall or find information previously saved to notes.",
+        "save_note": "Explicitly remember or save information for later.",
+        "phone_health_check": "Overall phone health, condition, AI workload readiness, check everything, or two or more live categories together."
+      }
+    }
+  },
+  "splits": {
+    "train": {
+      "records": 900,
+      "per_route": 100
+    },
+    "calibration": {
+      "records": 90,
+      "per_route": 10
+    },
+    "test": {
+      "records": 90,
+      "per_route": 10
+    }
+  },
+  "label_type": "hard (confidence=1.0)",
+  "dev_cases_excluded": true,
+  "notes": [
+    "phone_health_check covers multi-category queries and overall-health phrasing.",
+    "Single-category queries with health language (e.g. 'is my battery healthy?') are single-category tools.",
+    "Test split is held-out; do not train on it or use it to tune thresholds."
+  ]
+}

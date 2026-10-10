@@ -17,6 +17,8 @@ import time
 import urllib.request
 from pathlib import Path
 
+_JSON_RE = re.compile(r"\{[^{}]*\}", re.DOTALL)
+
 from replay_agent_pilot import (
     AGENT_TEST_CASES, AGENT_SYSTEM_PROMPT, AGENT_ROUTE_GRAMMAR,
     ROUTING_PROMPT_TEMPLATE, CLARIFICATION_MESSAGE, expected_route,
@@ -88,10 +90,14 @@ def main():
     parser.add_argument("--runtime-revision", required=True)
     parser.add_argument("--pid", type=int)
     parser.add_argument("--limit", type=int, default=50)
+    parser.add_argument("--enable-thinking", action="store_true",
+                        help="Pass enable_thinking=True in chat_template_kwargs (chat mode only)")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
+    thinking_enabled = args.enable_thinking if args.mode == "chat" else None
     report = {"suite": "tool-routing-3-tools-v5", "treatment": args.mode,
-              "label": args.label, "modelSha256": args.model_sha256,
+              "label": args.label, "enableThinking": thinking_enabled,
+              "modelSha256": args.model_sha256,
               "runtimeRevision": args.runtime_revision, "inferenceDevice": "Android",
               "transport": "ADB forwarded localhost HTTP", "finalAnswersTested": False,
               "questions": QUESTIONS if args.mode == "decision" else None,
@@ -132,15 +138,37 @@ def main():
                 route = "answer" if chosen == "answer" else (
                     "workflow:" + chosen if chosen == "phone_health_check" else "tool:" + chosen)
             else:
-                response = request(args, "/v1/chat/completions", {
-                    "messages": [{"role": "system", "content": AGENT_SYSTEM_PROMPT},
-                                 {"role": "user", "content": ROUTING_PROMPT_TEMPLATE.format(
-                                     user_prompt=case.prompt, clarification=CLARIFICATION_MESSAGE)}],
-                    "temperature": 0.3, "seed": 3407, "max_tokens": 64,
-                    "grammar": AGENT_ROUTE_GRAMMAR,
-                    "cache_prompt": False,
-                    "chat_template_kwargs": {"enable_thinking": False}})
-                decision = json.loads(response["choices"][0]["message"]["content"])
+                # Thinking mode: grammar conflicts with <think>…</think> prefix;
+                # use larger budget and parse JSON from content with regex instead.
+                if args.enable_thinking:
+                    req_body = {
+                        "messages": [{"role": "system", "content": AGENT_SYSTEM_PROMPT},
+                                     {"role": "user", "content": ROUTING_PROMPT_TEMPLATE.format(
+                                         user_prompt=case.prompt, clarification=CLARIFICATION_MESSAGE)}],
+                        "temperature": 0.3, "seed": 3407, "max_tokens": 1024,
+                        "cache_prompt": False,
+                        "chat_template_kwargs": {"enable_thinking": True}}
+                    response = request(args, "/v1/chat/completions", req_body)
+                    msg = response["choices"][0]["message"]
+                    raw_content = msg.get("content") or msg.get("reasoning_content") or ""
+                    # extract the first JSON object; strip any leftover thinking tags
+                    clean = re.sub(r"<think>.*?</think>", "", raw_content, flags=re.DOTALL).strip()
+                    if not clean:
+                        clean = raw_content.strip()
+                    m = _JSON_RE.search(clean)
+                    if not m:
+                        raise ValueError(f"No JSON found in thinking response: {repr(raw_content[:200])}")
+                    decision = json.loads(m.group())
+                else:
+                    response = request(args, "/v1/chat/completions", {
+                        "messages": [{"role": "system", "content": AGENT_SYSTEM_PROMPT},
+                                     {"role": "user", "content": ROUTING_PROMPT_TEMPLATE.format(
+                                         user_prompt=case.prompt, clarification=CLARIFICATION_MESSAGE)}],
+                        "temperature": 0.3, "seed": 3407, "max_tokens": 64,
+                        "grammar": AGENT_ROUTE_GRAMMAR,
+                        "cache_prompt": False,
+                        "chat_template_kwargs": {"enable_thinking": False}})
+                    decision = json.loads(response["choices"][0]["message"]["content"])
                 chosen = decision.get("name") if decision["action"] != "answer" else "answer"
                 if chosen not in CRITERIA:
                     raise ValueError("Unexpected chat route")
