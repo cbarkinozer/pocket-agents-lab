@@ -1,0 +1,193 @@
+13
+33
+SM-A325F
+arm64-v8a
+MemTotal:        5791272 kB
+MemFree:          677840 kB
+MemAvailable:    2717340 kB
+Buffers:            4776 kB
+Cached:          2289152 kB
+SwapCached:        90220 kB
+Active:          2634396 kB
+Inactive:        1257772 kB
+Active(anon):    1406260 kB
+Inactive(anon):   454128 kB
+Active(file):    1228136 kB
+Inactive(file):   803644 kB
+Unevictable:        4672 kB
+Mlocked:            4672 kB
+RbinTotal:        204800 kB
+RbinAlloced:         480 kB
+RbinPool:              0 kB
+RbinFree:           1084 kB
+RbinCached:       203236 kB
+SwapTotal:       4194300 kB
+SwapFree:        3355388 kB
+Dirty:                60 kB
+Writeback:             0 kB
+AnonPages:       1804564 kB
+Mapped:          1423940 kB
+Shmem:             58252 kB
+KReclaimable:      65664 kB
+Slab:             262704 kB
+SReclaimable:      65504 kB
+SUnreclaim:       197200 kB
+KernelStack:       62736 kB
+PageTables:        96668 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     6987536 kB
+Committed_AS:   93674112 kB
+VmallocTotal:   263061440 kB
+VmallocUsed:      141272 kB
+VmallocChunk:          0 kB
+CmaTotal:         589824 kB
+CmaFree:          283712 kB
+processor	: 0
+BogoMIPS	: 26.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x1
+CPU part	: 0xd05
+CPU revision	: 0
+
+processor	: 1
+BogoMIPS	: 26.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x1
+CPU part	: 0xd05
+CPU revision	: 0
+
+processor	: 2
+BogoMIPS	: 26.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x1
+CPU part	: 0xd05
+CPU revision	: 0
+
+processor	: 3
+BogoMIPS	: 26.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x1
+CPU part	: 0xd05
+CPU revision	: 0
+
+processor	: 4
+BogoMIPS	: 26.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x1
+CPU part	: 0xd05
+CPU revision	: 0
+
+processor	: 5
+BogoMIPS	: 26.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x1
+CPU part	: 0xd05
+CPU revision	: 0
+
+processor	: 6
+BogoMIPS	: 26.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x3
+CPU part	: 0xd0a
+CPU revision	: 1
+
+processor	: 7
+BogoMIPS	: 26.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x3
+CPU part	: 0xd0a
+CPU revision	: 1
+
+Hardware	: MT6769V/CT
+Current Battery Service state:
+  AC powered: false
+  USB powered: true
+  Wireless powered: false
+  Max charging current: 0
+  Max charging voltage: 0
+  Charge counter: 4975000
+  status: 5
+  health: 2
+  present: true
+  level: 100
+  scale: 100
+  voltage: 4199
+  temperature: 332
+  technology: Li-ion
+  batteryMiscEvent: 65536
+  batteryCurrentEvent: 0
+  mSecPlugTypeSummary: 2
+  LED Charging: true
+  LED Low Battery: true
+  current now: -454
+  charge counter: 4975000
+  Adaptive Fast Charging Settings: true
+  Super Fast Charging Settings: false
+FEATURE_WIRELESS_FAST_CHARGER_CONTROL: true
+  mWasUsedWirelessFastChargerPreviously: false
+  mWirelessFastChargingSettingsEnable: true
+LLB CAL: 20220811
+LLB MAN: 
+LLB CURRENT: YEAR2026M10D10
+LLB DIFF: 216
+  mSavedBatteryBeginningDate: 0
+SEC_FEATURE_BATTERY_FULL_CAPACITY: true
+  mFullCapacityEnable: false
+FEATURE_HICCUP_CONTROL: false
+FEATURE_SUPPORTED_DAILY_BOARD: false
+SEC_FEATURE_BATTERY_LIFE_EXTENDER: false
+SEC_FEATURE_USE_WIRELESS_POWER_SHARING: false
+BatteryInfoBackUp
+  mSavedBatteryAsoc: 83
+  mSavedBatteryMaxTemp: 486
+  mSavedBatteryMaxCurrent: 2119
+  mSavedBatteryUsage: 68517
+  FEATURE_SAVE_BATTERY_CYCLE: true
+  SEC_FEATURE_PREVENT_SWELLING: false
+IsStatusOverride: false
+ThermalEventListeners:
+	callbacks: 1
+	killed: false
+	broadcasts count: -1
+ThermalStatusListeners:
+	callbacks: 7
+	killed: false
+	broadcasts count: -1
+Thermal Status: 1
+Cached temperatures:
+	Temperature{mValue=0.0, mType=2, mName=SUBBAT, mStatus=0}
+	Temperature{mValue=51.5, mType=0, mName=AP, mStatus=0}
+	Temperature{mValue=42.3, mType=5, mName=PA, mStatus=0}
+	Temperature{mValue=33.2, mType=2, mName=BAT, mStatus=0}
+	Temperature{mValue=0.0, mType=4, mName=USB, mStatus=0}
+	Temperature{mValue=39.7, mType=3, mName=SKIN, mStatus=1}
+HAL Ready: true
+HAL connection:
+	ThermalHAL 2.0 connected: yes
+Current temperatures from HAL:
+	Temperature{mValue=51.5, mType=0, mName=AP, mStatus=0}
+	Temperature{mValue=33.2, mType=2, mName=BAT, mStatus=0}
+	Temperature{mValue=42.3, mType=5, mName=PA, mStatus=0}
+	Temperature{mValue=39.7, mType=3, mName=SKIN, mStatus=1}
+	Temperature{mValue=0.0, mType=2, mName=SUBBAT, mStatus=0}
+	Temperature{mValue=0.0, mType=4, mName=USB, mStatus=0}
+Current cooling devices from HAL:
+Temperature static thresholds from HAL:

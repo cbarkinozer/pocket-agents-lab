@@ -1,0 +1,25 @@
+0.00.033.026 I srv  llama_server: initializing ...
+0.00.033.113 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.034.193 W srv  llama_server: security: no API key is set and CORS allows all origins (see https://github.com/ggml-org/llama.cpp/pull/25655)
+0.00.036.726 I srv    load_model: loading model '/sdcard/Download/models/reflex-1-Q4_K_M.gguf'
+0.04.050.658 I decision model reads the embeddings output, enabling embedding mode
+0.04.050.673 W embeddings enabled: setting n_batch = n_ubatch = 512
+0.04.053.899 W llama_init_from_model: model default pooling_type is [-1], but [0] was specified
+/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-backend.cpp:1437: GGML_ASSERT(*cur_backend_id != -1) failed
+0: 0x79abef3198 
+1: 0x79abef30a4 ggml_print_backtrace
+2: 0x79abef333c ggml_abort
+3: 0x79abf11eac ggml_backend_sched_split_graph
+4: 0x79a6a10850 _ZN13llama_context13graph_reserveEjjjPK22llama_memory_context_ibPm
+5: 0x79a6a0f788 
+6: 0x79a6a0f6d8 _ZN13llama_context17resolve_fused_opsEPK22llama_memory_context_ij
+7: 0x79a6a0e4ac _ZN13llama_context13sched_reserveEv
+8: 0x79a6a0cf04 _ZN13llama_contextC2ERK11llama_model20llama_context_params
+9: 0x79a6a19f9c llama_init_from_model
+10: 0x79a60d132c _ZN18common_init_resultC2ER13common_paramsb
+11: 0x79a60d1e34 _Z23common_init_from_paramsR13common_paramsb
+12: 0x79a1d205b8 _ZN19server_context_impl10load_modelER13common_params
+13: 0x79a1c738e0 _Z12llama_serverR13common_paramsiPPcR12server_child
+14: 0x79a1c6d140 _Z12llama_serveriPPc
+15: 0x799e942e14 __libc_init
+Aborted 

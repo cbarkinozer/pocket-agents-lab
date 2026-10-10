@@ -53,6 +53,11 @@ internal fun interface AgentGenerator {
     suspend fun generate(prompt: String, maxTokens: Int): GeneratedText
 }
 
+/** Structured routing uses a decision head; final answers still use AgentGenerator. */
+internal fun interface AgentDecisionSelector {
+    suspend fun select(userPrompt: String): AgentSelection
+}
+
 internal fun interface ReadOnlyToolExecutor {
     suspend fun execute(name: String, userPrompt: String): String
 }
@@ -73,6 +78,7 @@ internal class AgentBackend(
     private val hierarchicalRouting: Boolean = false,
     private val allowDeviceActions: Boolean = false,
     private val routingMode: AgentRoutingMode = AgentRoutingMode.PRODUCT,
+    private val decisionSelector: AgentDecisionSelector? = null,
     private val actionResolver: (String, String) -> DeviceActionProposal? = { action, request ->
         buildDeviceActionProposal(action, request)
     },
@@ -92,6 +98,10 @@ internal class AgentBackend(
                     )
                 }
             }
+        }
+        decisionSelector?.let { selector ->
+            onProgress(AgentProgress(0.15f, "Selecting an action with the decision model…"))
+            return selector.select(userPrompt)
         }
         if (hierarchicalRouting) return selectHierarchically(userPrompt)
         onProgress(AgentProgress(0.15f, "Selecting an action with the local model…"))

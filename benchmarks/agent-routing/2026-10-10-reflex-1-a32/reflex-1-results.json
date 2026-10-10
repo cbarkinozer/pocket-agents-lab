@@ -1,0 +1,2492 @@
+{
+  "suite": "tool-routing-3-tools-v5",
+  "treatment": "decision",
+  "label": "reflex-1-Q4_K_M",
+  "modelSha256": "8480ccc295ac7379106f33ad76c978da5d9e8da0785e827786fe9d17f5a5beb5",
+  "runtimeRevision": "f0c41e016-b11443",
+  "inferenceDevice": "Android",
+  "transport": "ADB forwarded localhost HTTP",
+  "finalAnswersTested": false,
+  "questions": {
+    "route": {
+      "type": "choice",
+      "instructions": "Select exactly one Android agent route by the meaning of the request. Use live phone tools only for current phone facts. Use phone_health_check for overall condition or two or more live categories. Otherwise answer without a tool.",
+      "criteria": {
+        "answer": "Writing, jokes, arithmetic, definitions, general knowledge, or unclear requests. No live phone data needed.",
+        "get_device_info": "Current phone model, manufacturer, Android version, CPU ABI or physical RAM.",
+        "get_battery_info": "Live battery level, charging status, temperature, heat or need to cool down.",
+        "get_storage_info": "Live internal disk space, used/free/total storage, capacity to save files or models.",
+        "get_media_info": "Currently playing song or video metadata.",
+        "search_local_files": "Find a filename or phrase in previously authorized local files.",
+        "search_notes": "Recall or find information previously saved to notes.",
+        "save_note": "Explicitly remember or save information for later.",
+        "phone_health_check": "Overall phone health, condition, AI workload readiness, check everything, or two or more live categories together."
+      }
+    }
+  },
+  "maxTemperatureC": 38,
+  "maxThermalStatus": 1,
+  "caseTimeoutSeconds": 300,
+  "context": 2048,
+  "caseOrder": [
+    "storage-01",
+    "storage-02",
+    "storage-03",
+    "storage-04",
+    "storage-05",
+    "storage-06",
+    "storage-07",
+    "storage-08",
+    "storage-09",
+    "storage-10",
+    "device-01",
+    "device-02",
+    "device-03",
+    "device-04",
+    "device-05",
+    "device-06",
+    "device-07",
+    "device-08",
+    "device-09",
+    "device-10",
+    "battery-01",
+    "battery-02",
+    "battery-03",
+    "battery-04",
+    "battery-05",
+    "battery-06",
+    "battery-07",
+    "battery-08",
+    "battery-09",
+    "battery-10",
+    "answer-01",
+    "answer-02",
+    "answer-03",
+    "answer-04",
+    "answer-05",
+    "answer-06",
+    "answer-07",
+    "answer-08",
+    "answer-09",
+    "answer-10",
+    "health-01",
+    "health-02",
+    "health-03",
+    "health-04",
+    "health-05",
+    "health-06",
+    "health-07",
+    "health-08",
+    "health-09",
+    "health-10"
+  ],
+  "harnessSha256": "63b9938c3e347289cbcd4357f3597c18edfe46f5a847df591ae27937f85cca65",
+  "complete": true,
+  "cases": [
+    {
+      "id": "storage-01",
+      "prompt": "How much storage do I have?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.4,
+        "thermalStatus": 0,
+        "pssKb": 641079,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.276398625,
+      "rawRoute": "tool:get_storage_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.0735250754998505,
+              "get_battery_info": 0.06610305987802215,
+              "get_device_info": 0.17391115259251683,
+              "get_media_info": 0.006529067443924389,
+              "get_storage_info": 0.3302421046042344,
+              "phone_health_check": 0.23952916834873328,
+              "save_note": 0.03332420846507451,
+              "search_local_files": 0.018078302974895627,
+              "search_notes": 0.0587578601927484
+            },
+            "confidence": 0.24652236767976374
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_storage_info",
+      "correct": true,
+      "latencyMs": 25407.230790999998,
+      "after": {
+        "temperatureC": 31.4,
+        "thermalStatus": 0,
+        "pssKb": 1054742,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-02",
+      "prompt": "How much free space is left on this phone?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.4,
+        "thermalStatus": 0,
+        "pssKb": 1054743,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.27870108299999785,
+      "rawRoute": "tool:get_storage_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.05255172262757527,
+              "get_battery_info": 0.08774883219735505,
+              "get_device_info": 0.1422730790499691,
+              "get_media_info": 0.005493204964308838,
+              "get_storage_info": 0.36819407743074,
+              "phone_health_check": 0.26863287003372954,
+              "save_note": 0.02678587225397087,
+              "search_local_files": 0.011311051923537895,
+              "search_notes": 0.03700928951881346
+            },
+            "confidence": 0.28921833710958256
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_storage_info",
+      "correct": true,
+      "latencyMs": 23208.113542,
+      "after": {
+        "temperatureC": 31.5,
+        "thermalStatus": 0,
+        "pssKb": 1058078,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-03",
+      "prompt": "Am I running out of disk space?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.5,
+        "thermalStatus": 0,
+        "pssKb": 1058078,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25205091699999826,
+      "rawRoute": "tool:get_storage_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.07075532980890711,
+              "get_battery_info": 0.08907856364977525,
+              "get_device_info": 0.13264246012840386,
+              "get_media_info": 0.008007839915343921,
+              "get_storage_info": 0.31836403114936834,
+              "phone_health_check": 0.26664052984942643,
+              "save_note": 0.03592068831375266,
+              "search_local_files": 0.021846988716321014,
+              "search_notes": 0.05674356846870145
+            },
+            "confidence": 0.2331595350430394
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_storage_info",
+      "correct": true,
+      "latencyMs": 24728.788249999994,
+      "after": {
+        "temperatureC": 31.6,
+        "thermalStatus": 0,
+        "pssKb": 1058171,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-04",
+      "prompt": "Show my internal storage usage.",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.6,
+        "thermalStatus": 0,
+        "pssKb": 1058171,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.29613716599999407,
+      "rawRoute": "tool:get_storage_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.06360421106438015,
+              "get_battery_info": 0.0935334999568645,
+              "get_device_info": 0.15958742991706426,
+              "get_media_info": 0.0076549834771521405,
+              "get_storage_info": 0.3261148279326375,
+              "phone_health_check": 0.26357952260342743,
+              "save_note": 0.02732942708530714,
+              "search_local_files": 0.01447569225992938,
+              "search_notes": 0.044120405703237386
+            },
+            "confidence": 0.24187918142421722
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_storage_info",
+      "correct": true,
+      "latencyMs": 21807.709958000003,
+      "after": {
+        "temperatureC": 31.6,
+        "thermalStatus": 0,
+        "pssKb": 1058272,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-05",
+      "prompt": "How many gigabytes can I still save?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.6,
+        "thermalStatus": 0,
+        "pssKb": 1058271,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.272083166999991,
+      "rawRoute": "tool:get_storage_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.07455540609226499,
+              "get_battery_info": 0.05319405399596005,
+              "get_device_info": 0.12094745661622497,
+              "get_media_info": 0.007699798098331419,
+              "get_storage_info": 0.3694694523029554,
+              "phone_health_check": 0.2464362681916034,
+              "save_note": 0.045019595835909525,
+              "search_local_files": 0.024557351755307648,
+              "search_notes": 0.05812061711144253
+            },
+            "confidence": 0.29065313384082486
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 22675.593207999995,
+      "after": {
+        "temperatureC": 31.6,
+        "thermalStatus": 0,
+        "pssKb": 1058379,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-06",
+      "prompt": "Is there room for another large model?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.6,
+        "thermalStatus": 0,
+        "pssKb": 1058378,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2598515840000033,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.09853769175157111,
+              "get_battery_info": 0.04417215763518172,
+              "get_device_info": 0.14811390143920614,
+              "get_media_info": 0.005432927270489723,
+              "get_storage_info": 0.1165915898058359,
+              "phone_health_check": 0.45428450299500794,
+              "save_note": 0.05162524007321465,
+              "search_local_files": 0.015770968348766123,
+              "search_notes": 0.06547102068072669
+            },
+            "confidence": 0.38607006586938397
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 22719.33433299999,
+      "after": {
+        "temperatureC": 31.8,
+        "thermalStatus": 0,
+        "pssKb": 1058451,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-07",
+      "prompt": "Check available space, not battery level.",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.8,
+        "thermalStatus": 0,
+        "pssKb": 1058452,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25291541600000755,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0810779369313968,
+              "get_battery_info": 0.0271528343396385,
+              "get_device_info": 0.112995571497485,
+              "get_media_info": 0.009621069395761178,
+              "get_storage_info": 0.23962426883970372,
+              "phone_health_check": 0.41509645221963926,
+              "save_note": 0.03580769326184791,
+              "search_local_files": 0.01851312269067449,
+              "search_notes": 0.060111050823853256
+            },
+            "confidence": 0.3419835087470942
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 27296.938333000013,
+      "after": {
+        "temperatureC": 31.9,
+        "thermalStatus": 0,
+        "pssKb": 1058563,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-08",
+      "prompt": "What fraction of the phone storage is free?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.9,
+        "thermalStatus": 0,
+        "pssKb": 1058563,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.27102787499998726,
+      "rawRoute": "tool:get_storage_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.08536150664833385,
+              "get_battery_info": 0.06529129305755894,
+              "get_device_info": 0.14514045357107966,
+              "get_media_info": 0.00749239957605787,
+              "get_storage_info": 0.3630528261953306,
+              "phone_health_check": 0.24669440427072487,
+              "save_note": 0.03085336043840573,
+              "search_local_files": 0.012608324393951337,
+              "search_notes": 0.04350543184855712
+            },
+            "confidence": 0.28343442946974695
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_storage_info",
+      "correct": true,
+      "latencyMs": 23340.49491599998,
+      "after": {
+        "temperatureC": 31.9,
+        "thermalStatus": 1,
+        "pssKb": 1058659,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-09",
+      "prompt": "Tell me the used and total storage.",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 31.9,
+        "thermalStatus": 1,
+        "pssKb": 1058659,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.26143529099999796,
+      "rawRoute": "tool:get_storage_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.07872144647532443,
+              "get_battery_info": 0.06108888826859618,
+              "get_device_info": 0.16894228205632575,
+              "get_media_info": 0.007254655330397907,
+              "get_storage_info": 0.3179957119964303,
+              "phone_health_check": 0.2687902280229039,
+              "save_note": 0.030484717591325722,
+              "search_local_files": 0.015896871148929605,
+              "search_notes": 0.05082519910976615
+            },
+            "confidence": 0.2327451759959841
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_storage_info",
+      "correct": true,
+      "latencyMs": 21920.130333000005,
+      "after": {
+        "temperatureC": 32.0,
+        "thermalStatus": 1,
+        "pssKb": 1058683,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "storage-10",
+      "prompt": "Could a 2 GB file fit on this device right now?",
+      "expected": "tool:get_storage_info",
+      "before": {
+        "temperatureC": 32.0,
+        "thermalStatus": 1,
+        "pssKb": 1058683,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.26721491600000036,
+      "rawRoute": "tool:get_storage_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.05718729343852947,
+              "get_battery_info": 0.04978734213040986,
+              "get_device_info": 0.2119965941093221,
+              "get_media_info": 0.006050684768740134,
+              "get_storage_info": 0.3762377964926576,
+              "phone_health_check": 0.21964396966630098,
+              "save_note": 0.027293219916651634,
+              "search_local_files": 0.017390373304407056,
+              "search_notes": 0.03441272617298136
+            },
+            "confidence": 0.2982675210542398
+          }
+        },
+        "usage": {
+          "input_tokens": 411,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_storage_info",
+      "correct": true,
+      "latencyMs": 22652.227374999995,
+      "after": {
+        "temperatureC": 32.2,
+        "thermalStatus": 1,
+        "pssKb": 1061863,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-01",
+      "prompt": "What Android version is this?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 32.2,
+        "thermalStatus": 1,
+        "pssKb": 1061864,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2484767500000089,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07663486676985835,
+              "get_battery_info": 0.0469675331963786,
+              "get_device_info": 0.35664806712466335,
+              "get_media_info": 0.00682254298299123,
+              "get_storage_info": 0.04355156193028107,
+              "phone_health_check": 0.3669785741114248,
+              "save_note": 0.032021166280649806,
+              "search_local_files": 0.013315629404204578,
+              "search_notes": 0.057060058199548264
+            },
+            "confidence": 0.28785089587535295
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 22859.665208000024,
+      "after": {
+        "temperatureC": 32.3,
+        "thermalStatus": 1,
+        "pssKb": 1061879,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-02",
+      "prompt": "What CPU ABI does this device use?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 32.3,
+        "thermalStatus": 1,
+        "pssKb": 1061879,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.27084899999999834,
+      "rawRoute": "tool:get_device_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_device_info",
+            "probabilities": {
+              "answer": 0.07361402777400626,
+              "get_battery_info": 0.06681561229397581,
+              "get_device_info": 0.42407333216850496,
+              "get_media_info": 0.006001494740043303,
+              "get_storage_info": 0.030148951038561446,
+              "phone_health_check": 0.3180206565802676,
+              "save_note": 0.028105108425706384,
+              "search_local_files": 0.012282269894119057,
+              "search_notes": 0.040938547084815036
+            },
+            "confidence": 0.3520824986895681
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_device_info",
+      "correct": true,
+      "latencyMs": 25978.24083399996,
+      "after": {
+        "temperatureC": 32.4,
+        "thermalStatus": 1,
+        "pssKb": 1061903,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-03",
+      "prompt": "Which phone model am I using?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 32.4,
+        "thermalStatus": 1,
+        "pssKb": 1061903,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.260320207999996,
+      "rawRoute": "tool:get_device_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_device_info",
+            "probabilities": {
+              "answer": 0.06757390187092158,
+              "get_battery_info": 0.062187413558345526,
+              "get_device_info": 0.3783238199954795,
+              "get_media_info": 0.008548672913526671,
+              "get_storage_info": 0.051268495894221396,
+              "phone_health_check": 0.33569033614005084,
+              "save_note": 0.03131517888922238,
+              "search_local_files": 0.013957100684775847,
+              "search_notes": 0.05113508005345621
+            },
+            "confidence": 0.3006142974949144
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_device_info",
+      "correct": true,
+      "latencyMs": 25237.425709000036,
+      "after": {
+        "temperatureC": 32.5,
+        "thermalStatus": 1,
+        "pssKb": 1061915,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-04",
+      "prompt": "Who manufactured this handset?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 32.5,
+        "thermalStatus": 1,
+        "pssKb": 1061916,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.28422891699995034,
+      "rawRoute": "tool:get_device_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_device_info",
+            "probabilities": {
+              "answer": 0.0831768671621061,
+              "get_battery_info": 0.050961058829260615,
+              "get_device_info": 0.36023986127804075,
+              "get_media_info": 0.007127174455563335,
+              "get_storage_info": 0.03406027384182133,
+              "phone_health_check": 0.34066994279462354,
+              "save_note": 0.04476039762278815,
+              "search_local_files": 0.013434520726338056,
+              "search_notes": 0.06556990328945816
+            },
+            "confidence": 0.28026984393779586
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26470.875750000007,
+      "after": {
+        "temperatureC": 32.7,
+        "thermalStatus": 1,
+        "pssKb": 1061928,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-05",
+      "prompt": "Is this device arm64-v8a?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 32.7,
+        "thermalStatus": 1,
+        "pssKb": 1061927,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.27509808399997837,
+      "rawRoute": "tool:get_device_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_device_info",
+            "probabilities": {
+              "answer": 0.07807739535454195,
+              "get_battery_info": 0.05281690125875269,
+              "get_device_info": 0.35904667380354827,
+              "get_media_info": 0.008466359428405285,
+              "get_storage_info": 0.04313244710370767,
+              "phone_health_check": 0.35675544693845346,
+              "save_note": 0.03272501322648449,
+              "search_local_files": 0.014882859963192658,
+              "search_notes": 0.05409690292291342
+            },
+            "confidence": 0.2789275080289918
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_device_info",
+      "correct": true,
+      "latencyMs": 23085.355041000013,
+      "after": {
+        "temperatureC": 32.8,
+        "thermalStatus": 1,
+        "pssKb": 1061932,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-06",
+      "prompt": "Report the model, Android release, and architecture.",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 32.8,
+        "thermalStatus": 1,
+        "pssKb": 1061932,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2924190420000059,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.09615192509671047,
+              "get_battery_info": 0.04985184672467654,
+              "get_device_info": 0.3317684593475422,
+              "get_media_info": 0.009474031891218876,
+              "get_storage_info": 0.0513975251692014,
+              "phone_health_check": 0.3394740995280229,
+              "save_note": 0.0399376695465131,
+              "search_local_files": 0.016507741188641532,
+              "search_notes": 0.06543670150747302
+            },
+            "confidence": 0.2569083619690258
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26824.254833,
+      "after": {
+        "temperatureC": 33.0,
+        "thermalStatus": 1,
+        "pssKb": 1061941,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-07",
+      "prompt": "How much physical RAM does this phone expose?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.0,
+        "thermalStatus": 1,
+        "pssKb": 1061939,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2646444169999995,
+      "rawRoute": "tool:get_device_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_device_info",
+            "probabilities": {
+              "answer": 0.06386453064820453,
+              "get_battery_info": 0.060313392864680265,
+              "get_device_info": 0.43936638599506006,
+              "get_media_info": 0.004838126103150807,
+              "get_storage_info": 0.04149511982628718,
+              "phone_health_check": 0.3026405473721393,
+              "save_note": 0.033474249467152786,
+              "search_local_files": 0.010945947456866315,
+              "search_notes": 0.04306170026645879
+            },
+            "confidence": 0.36928718424444257
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_device_info",
+      "correct": true,
+      "latencyMs": 26552.55975,
+      "after": {
+        "temperatureC": 33.0,
+        "thermalStatus": 1,
+        "pssKb": 1062247,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-08",
+      "prompt": "Identify the current device without discussing storage.",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.0,
+        "thermalStatus": 1,
+        "pssKb": 1062247,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25750300000004245,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07429123498884284,
+              "get_battery_info": 0.08932734985874193,
+              "get_device_info": 0.25337459306935295,
+              "get_media_info": 0.01229225553564671,
+              "get_storage_info": 0.06409342867198599,
+              "phone_health_check": 0.39633639947404625,
+              "save_note": 0.03629719266070267,
+              "search_local_files": 0.018761382561383565,
+              "search_notes": 0.055226163179297
+            },
+            "confidence": 0.32087844940830207
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26323.01041599999,
+      "after": {
+        "temperatureC": 33.2,
+        "thermalStatus": 1,
+        "pssKb": 1062251,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-09",
+      "prompt": "Which Android SDK and OS version are running?",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.2,
+        "thermalStatus": 1,
+        "pssKb": 1062253,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2623552499999846,
+      "rawRoute": "tool:get_device_info",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_device_info",
+            "probabilities": {
+              "answer": 0.07846071112420382,
+              "get_battery_info": 0.06512570889986233,
+              "get_device_info": 0.3596038260089135,
+              "get_media_info": 0.00679393828251941,
+              "get_storage_info": 0.046743372595385906,
+              "phone_health_check": 0.3492776861287265,
+              "save_note": 0.031614564910800204,
+              "search_local_files": 0.012564975170611826,
+              "search_notes": 0.04981521687897643
+            },
+            "confidence": 0.2795543042600277
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "tool:get_device_info",
+      "correct": true,
+      "latencyMs": 23211.362124999992,
+      "after": {
+        "temperatureC": 33.3,
+        "thermalStatus": 1,
+        "pssKb": 1062246,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "device-10",
+      "prompt": "Give me this phone's hardware identity.",
+      "expected": "tool:get_device_info",
+      "before": {
+        "temperatureC": 33.3,
+        "thermalStatus": 1,
+        "pssKb": 1062245,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25474416600002314,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07068167634811892,
+              "get_battery_info": 0.08507831403093859,
+              "get_device_info": 0.2954840048023105,
+              "get_media_info": 0.010548489493980564,
+              "get_storage_info": 0.0705292553418873,
+              "phone_health_check": 0.36550230761246033,
+              "save_note": 0.030645718456301516,
+              "search_local_files": 0.016455406410022036,
+              "search_notes": 0.0550748275039802
+            },
+            "confidence": 0.2861900960640179
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 24720.91445900003,
+      "after": {
+        "temperatureC": 33.4,
+        "thermalStatus": 1,
+        "pssKb": 1062247,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-01",
+      "prompt": "Is my battery hot?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.4,
+        "thermalStatus": 1,
+        "pssKb": 1062247,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25472487500002217,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.05687460383746903,
+              "get_battery_info": 0.38804858437278134,
+              "get_device_info": 0.05915660251679989,
+              "get_media_info": 0.00477922049153496,
+              "get_storage_info": 0.022059630979649157,
+              "phone_health_check": 0.39590577927141485,
+              "save_note": 0.02592184166414396,
+              "search_local_files": 0.010319506049282508,
+              "search_notes": 0.0369342308169241
+            },
+            "confidence": 0.3203940016803417
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26508.126625000044,
+      "after": {
+        "temperatureC": 33.6,
+        "thermalStatus": 2,
+        "pssKb": 1062247,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-02",
+      "prompt": "What is my battery percentage?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.8,
+        "thermalStatus": 1,
+        "pssKb": 1062247,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 41.57818045900001,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08210504159591461,
+              "get_battery_info": 0.24099524263233185,
+              "get_device_info": 0.08956922392627088,
+              "get_media_info": 0.007378497594534347,
+              "get_storage_info": 0.03371001170845366,
+              "phone_health_check": 0.4368183211881418,
+              "save_note": 0.03845374271320297,
+              "search_local_files": 0.011982430482952042,
+              "search_notes": 0.058987488158197945
+            },
+            "confidence": 0.36642061133665954
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 22176.51266600001,
+      "after": {
+        "temperatureC": 33.8,
+        "thermalStatus": 1,
+        "pssKb": 1062235,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-03",
+      "prompt": "Is the phone charging right now?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.8,
+        "thermalStatus": 1,
+        "pssKb": 1062236,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2482870000000048,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07870536903595629,
+              "get_battery_info": 0.26739915308141105,
+              "get_device_info": 0.08724936532870876,
+              "get_media_info": 0.008711627687501278,
+              "get_storage_info": 0.043347952040437385,
+              "phone_health_check": 0.40670248402133347,
+              "save_note": 0.032256247995604385,
+              "search_local_files": 0.01619734186905911,
+              "search_notes": 0.05943045893998807
+            },
+            "confidence": 0.3325402945240002
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 24991.125832999955,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": 1062239,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-04",
+      "prompt": "Tell me the current battery temperature.",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "pssKb": 1062239,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2588201250000566,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06677698336142099,
+              "get_battery_info": 0.33103624336851645,
+              "get_device_info": 0.08250845409743734,
+              "get_media_info": 0.00593361446234538,
+              "get_storage_info": 0.02669765007316902,
+              "phone_health_check": 0.39221825846137787,
+              "save_note": 0.03524638257048086,
+              "search_local_files": 0.01263273767329002,
+              "search_notes": 0.04694967593196207
+            },
+            "confidence": 0.31624554076905015
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26793.010665999987,
+      "after": {
+        "temperatureC": 34.0,
+        "thermalStatus": 1,
+        "pssKb": 1061975,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-05",
+      "prompt": "How much charge remains?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 34.0,
+        "thermalStatus": 1,
+        "pssKb": 1061977,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2804201249999778,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0885696822935253,
+              "get_battery_info": 0.10521069476014791,
+              "get_device_info": 0.11526055358414986,
+              "get_media_info": 0.008365156462385857,
+              "get_storage_info": 0.087798242948853,
+              "phone_health_check": 0.4501289875034904,
+              "save_note": 0.041949327728483025,
+              "search_local_files": 0.01895011542419223,
+              "search_notes": 0.08376723929477259
+            },
+            "confidence": 0.38139511094142675
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26491.179957999975,
+      "after": {
+        "temperatureC": 34.0,
+        "thermalStatus": 1,
+        "pssKb": 1061985,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-06",
+      "prompt": "Check battery heat, not free storage.",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 34.0,
+        "thermalStatus": 1,
+        "pssKb": 1061988,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2518478749999531,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0640879774244434,
+              "get_battery_info": 0.35330119030913687,
+              "get_device_info": 0.06314245217611074,
+              "get_media_info": 0.00518013366289177,
+              "get_storage_info": 0.049716678286316894,
+              "phone_health_check": 0.36692049363958495,
+              "save_note": 0.036141218248570216,
+              "search_local_files": 0.014220659780928282,
+              "search_notes": 0.047289196472016876
+            },
+            "confidence": 0.2877855553445331
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 27027.052207999986,
+      "after": {
+        "temperatureC": 34.2,
+        "thermalStatus": 2,
+        "pssKb": 1061987,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-07",
+      "prompt": "Should I let the battery cool down?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 34.3,
+        "thermalStatus": 1,
+        "pssKb": 1061989,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 41.569168624999975,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07182259375689365,
+              "get_battery_info": 0.3365728644432926,
+              "get_device_info": 0.0759055574890207,
+              "get_media_info": 0.006011834412135039,
+              "get_storage_info": 0.029263292081847775,
+              "phone_health_check": 0.3908274722177077,
+              "save_note": 0.03392665088355974,
+              "search_local_files": 0.011817105656874185,
+              "search_notes": 0.0438526290586686
+            },
+            "confidence": 0.3146809062449212
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 25276.1845,
+      "after": {
+        "temperatureC": 34.4,
+        "thermalStatus": 1,
+        "pssKb": 1061991,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-08",
+      "prompt": "Read the live charging state.",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 34.4,
+        "thermalStatus": 1,
+        "pssKb": 1061991,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.26503933300000426,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07463634440407095,
+              "get_battery_info": 0.19616466464738966,
+              "get_device_info": 0.1433151944289089,
+              "get_media_info": 0.01215351579514241,
+              "get_storage_info": 0.07218964546507349,
+              "phone_health_check": 0.3875274187282537,
+              "save_note": 0.03638536791123768,
+              "search_local_files": 0.018370458883676995,
+              "search_notes": 0.059257389736246134
+            },
+            "confidence": 0.3109683460692854
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 23726.836875000005,
+      "after": {
+        "temperatureC": 34.3,
+        "thermalStatus": 1,
+        "pssKb": 1061995,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-09",
+      "prompt": "Is my current battery temperature above 40 C?",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 34.3,
+        "thermalStatus": 1,
+        "pssKb": 1061995,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2490010420000317,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0766888587665586,
+              "get_battery_info": 0.32537896030224256,
+              "get_device_info": 0.07459337344290268,
+              "get_media_info": 0.005530750370097089,
+              "get_storage_info": 0.026623248040724728,
+              "phone_health_check": 0.4009484605873511,
+              "save_note": 0.03443887024867337,
+              "search_local_files": 0.011732639250246051,
+              "search_notes": 0.044064838991203746
+            },
+            "confidence": 0.32606701816077005
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26790.39558299996,
+      "after": {
+        "temperatureC": 34.5,
+        "thermalStatus": 1,
+        "pssKb": 1062000,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "battery-10",
+      "prompt": "Give me charge level and temperature.",
+      "expected": "tool:get_battery_info",
+      "before": {
+        "temperatureC": 34.5,
+        "thermalStatus": 1,
+        "pssKb": 1061999,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.32375262499999735,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.09748230611459625,
+              "get_battery_info": 0.1738178010161484,
+              "get_device_info": 0.1319308704950757,
+              "get_media_info": 0.00959344206806137,
+              "get_storage_info": 0.055952495034040976,
+              "phone_health_check": 0.4203021462569142,
+              "save_note": 0.03413326122906813,
+              "search_local_files": 0.016089182927785287,
+              "search_notes": 0.060698494858309665
+            },
+            "confidence": 0.3478399145390285
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26197.457792000023,
+      "after": {
+        "temperatureC": 34.5,
+        "thermalStatus": 2,
+        "pssKb": 1061995,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-01",
+      "prompt": "Tell me a joke.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 34.7,
+        "thermalStatus": 1,
+        "pssKb": 1061996,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 41.573564084000054,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.21626499066223703,
+              "get_battery_info": 0.02346778393404519,
+              "get_device_info": 0.09194207626530682,
+              "get_media_info": 0.008198156932885517,
+              "get_storage_info": 0.05031406273684429,
+              "phone_health_check": 0.44385536813814,
+              "save_note": 0.04983325901865687,
+              "search_local_files": 0.01877896935944651,
+              "search_notes": 0.0973453329524378
+            },
+            "confidence": 0.37433728915540754
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 23711.731542000052,
+      "after": {
+        "temperatureC": 34.7,
+        "thermalStatus": 1,
+        "pssKb": 1062000,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-02",
+      "prompt": "What is 2+2?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 34.7,
+        "thermalStatus": 1,
+        "pssKb": 1062001,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25776424999992287,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.30638031881249156,
+              "get_battery_info": 0.015457055371302826,
+              "get_device_info": 0.061194444412404285,
+              "get_media_info": 0.004634312795064317,
+              "get_storage_info": 0.028794495639626164,
+              "phone_health_check": 0.40182289340653793,
+              "save_note": 0.05491499585981142,
+              "search_local_files": 0.019453581296669048,
+              "search_notes": 0.10734790240609249
+            },
+            "confidence": 0.3270507550823552
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 24436.447333999924,
+      "after": {
+        "temperatureC": 34.7,
+        "thermalStatus": 1,
+        "pssKb": 1061949,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-03",
+      "prompt": "Write a five-word greeting.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 34.7,
+        "thermalStatus": 1,
+        "pssKb": 1061948,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2600943749999942,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.13670315768462363,
+              "get_battery_info": 0.0336001442440889,
+              "get_device_info": 0.13915636896478895,
+              "get_media_info": 0.009266389212068607,
+              "get_storage_info": 0.053931317928523854,
+              "phone_health_check": 0.4944555982392572,
+              "save_note": 0.04003967263758744,
+              "search_local_files": 0.020154428176079795,
+              "search_notes": 0.07269292291298156
+            },
+            "confidence": 0.4312625480191644
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 26701.751624999928,
+      "after": {
+        "temperatureC": 34.7,
+        "thermalStatus": 2,
+        "pssKb": 1061952,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-04",
+      "prompt": "What is the capital of France?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 34.9,
+        "thermalStatus": 1,
+        "pssKb": 1061952,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.873310833999994,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.19575922168776305,
+              "get_battery_info": 0.019727279584380638,
+              "get_device_info": 0.05270647976413991,
+              "get_media_info": 0.006093059660850944,
+              "get_storage_info": 0.03475055991702726,
+              "phone_health_check": 0.41411845651648244,
+              "save_note": 0.0885800601950104,
+              "search_local_files": 0.024103926695243454,
+              "search_notes": 0.164160955979102
+            },
+            "confidence": 0.34088326358104276
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 25659.96033299996,
+      "after": {
+        "temperatureC": 34.9,
+        "thermalStatus": 1,
+        "pssKb": 1061952,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-05",
+      "prompt": "Explain what an ABI is in one sentence.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 34.9,
+        "thermalStatus": 1,
+        "pssKb": 1061953,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.24547758400012754,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.11871088718411174,
+              "get_battery_info": 0.05675576031093772,
+              "get_device_info": 0.21779996951997688,
+              "get_media_info": 0.008761507627150346,
+              "get_storage_info": 0.058685456139388296,
+              "phone_health_check": 0.404395239399281,
+              "save_note": 0.04136071914157596,
+              "search_local_files": 0.02052842014917468,
+              "search_notes": 0.07300204052840345
+            },
+            "confidence": 0.3299446443241912
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 25344.43875000011,
+      "after": {
+        "temperatureC": 34.9,
+        "thermalStatus": 1,
+        "pssKb": 1061956,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-06",
+      "prompt": "Give me a short riddle.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 34.9,
+        "thermalStatus": 1,
+        "pssKb": 1061956,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25387995799997043,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.17050077479895348,
+              "get_battery_info": 0.04329839810748703,
+              "get_device_info": 0.1430766373050382,
+              "get_media_info": 0.00912842361140945,
+              "get_storage_info": 0.06719004694646459,
+              "phone_health_check": 0.4243690494880965,
+              "save_note": 0.0373888300698543,
+              "search_local_files": 0.01919224026262197,
+              "search_notes": 0.08585559941007435
+            },
+            "confidence": 0.3524151806741086
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 26361.979292000113,
+      "after": {
+        "temperatureC": 35.0,
+        "thermalStatus": 2,
+        "pssKb": 1061964,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-07",
+      "prompt": "Say hello without checking my device.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.0,
+        "thermalStatus": 1,
+        "pssKb": 1061964,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.83654625000008,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.15204733922077573,
+              "get_battery_info": 0.036282555503919144,
+              "get_device_info": 0.1652163235622755,
+              "get_media_info": 0.011954455145967232,
+              "get_storage_info": 0.0435260697678588,
+              "phone_health_check": 0.44665412157643924,
+              "save_note": 0.04228239398811226,
+              "search_local_files": 0.022942008940892752,
+              "search_notes": 0.07909473229375935
+            },
+            "confidence": 0.3774858867734942
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 24712.570041999927,
+      "after": {
+        "temperatureC": 35.0,
+        "thermalStatus": 1,
+        "pssKb": 1061965,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-08",
+      "prompt": "What does CPU stand for?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.0,
+        "thermalStatus": 1,
+        "pssKb": 1061964,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.23580433300003278,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.13218524587597222,
+              "get_battery_info": 0.038560435685338276,
+              "get_device_info": 0.2734206233368422,
+              "get_media_info": 0.005618820551498528,
+              "get_storage_info": 0.04022172522067939,
+              "phone_health_check": 0.40157890601731566,
+              "save_note": 0.03710552719045752,
+              "search_local_files": 0.012832791356911948,
+              "search_notes": 0.058475924764983984
+            },
+            "confidence": 0.32677626926948017
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 25230.15416599992,
+      "after": {
+        "temperatureC": 35.0,
+        "thermalStatus": 1,
+        "pssKb": 1061972,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-09",
+      "prompt": "Name a primary color.",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.0,
+        "thermalStatus": 1,
+        "pssKb": 1061972,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25862908300018717,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.11998872014421766,
+              "get_battery_info": 0.04853496276571758,
+              "get_device_info": 0.13187371871889328,
+              "get_media_info": 0.011701066300677762,
+              "get_storage_info": 0.06121361647452665,
+              "phone_health_check": 0.47332647061685773,
+              "save_note": 0.046135990962051183,
+              "search_local_files": 0.023035332745874586,
+              "search_notes": 0.08419012127118355
+            },
+            "confidence": 0.407492279443965
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 25948.18074999989,
+      "after": {
+        "temperatureC": 35.0,
+        "thermalStatus": 2,
+        "pssKb": 1061973,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "answer-10",
+      "prompt": "Complete this sequence: 2, 4, 6, 8, ?",
+      "expected": "answer",
+      "before": {
+        "temperatureC": 35.2,
+        "thermalStatus": 1,
+        "pssKb": 1061972,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 51.79375012500009,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": false,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.23576280984004558,
+              "get_battery_info": 0.02488925468180703,
+              "get_device_info": 0.07972234665296528,
+              "get_media_info": 0.006096129984747381,
+              "get_storage_info": 0.04884446585473208,
+              "phone_health_check": 0.44467225439919966,
+              "save_note": 0.051021403261305796,
+              "search_local_files": 0.018678226689741013,
+              "search_notes": 0.0903131086354561
+            },
+            "confidence": 0.3752562861990997
+          }
+        },
+        "usage": {
+          "input_tokens": 415,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": true,
+      "latencyMs": 21516.98691599995,
+      "after": {
+        "temperatureC": 35.1,
+        "thermalStatus": 1,
+        "pssKb": 1066238,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-01",
+      "prompt": "Run a phone health check.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.1,
+        "thermalStatus": 1,
+        "pssKb": 1066236,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25339712499999223,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06684619770159782,
+              "get_battery_info": 0.12595872024936475,
+              "get_device_info": 0.16530941644230546,
+              "get_media_info": 0.010310289652569535,
+              "get_storage_info": 0.06591087447221539,
+              "phone_health_check": 0.4889429346676845,
+              "save_note": 0.026359138394215137,
+              "search_local_files": 0.012670337497465236,
+              "search_notes": 0.03769209092258215
+            },
+            "confidence": 0.4250608015011451
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "route": "workflow:phone_health_check",
+      "correct": true,
+      "latencyMs": 26427.25529199993,
+      "after": {
+        "temperatureC": 35.1,
+        "thermalStatus": 1,
+        "pssKb": 1066244,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-02",
+      "prompt": "Check whether my phone is healthy.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.1,
+        "thermalStatus": 1,
+        "pssKb": 1066244,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.25121966599999723,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.05763254162171339,
+              "get_battery_info": 0.12404487475047012,
+              "get_device_info": 0.11849349485438497,
+              "get_media_info": 0.006160453540581837,
+              "get_storage_info": 0.04956696875661439,
+              "phone_health_check": 0.5607438746072706,
+              "save_note": 0.026526929474995426,
+              "search_local_files": 0.011849233314447706,
+              "search_notes": 0.04498162907952154
+            },
+            "confidence": 0.5058368589331794
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "workflow:phone_health_check",
+      "correct": true,
+      "latencyMs": 27797.825500000043,
+      "after": {
+        "temperatureC": 35.2,
+        "thermalStatus": 2,
+        "pssKb": 1066244,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-03",
+      "prompt": "Inspect my phone and suggest health improvements.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.2,
+        "thermalStatus": 1,
+        "pssKb": 1066244,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 62.234388166000144,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06836188042112377,
+              "get_battery_info": 0.10849245965209864,
+              "get_device_info": 0.1539844355704648,
+              "get_media_info": 0.006884874203493896,
+              "get_storage_info": 0.08362986775640256,
+              "phone_health_check": 0.470764386247558,
+              "save_note": 0.03562799185969731,
+              "search_local_files": 0.015494817574502641,
+              "search_notes": 0.05675928671465846
+            },
+            "confidence": 0.4046099345285028
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "workflow:phone_health_check",
+      "correct": true,
+      "latencyMs": 22405.585583999935,
+      "after": {
+        "temperatureC": 35.3,
+        "thermalStatus": 1,
+        "pssKb": 1066249,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-04",
+      "prompt": "Are storage and battery temperature okay?",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.3,
+        "thermalStatus": 1,
+        "pssKb": 1066246,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2615320840000095,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.05993455425172653,
+              "get_battery_info": 0.28117193846141936,
+              "get_device_info": 0.06546214912049975,
+              "get_media_info": 0.004704728083262426,
+              "get_storage_info": 0.07942350743619783,
+              "phone_health_check": 0.4147069361894231,
+              "save_note": 0.030863792827901467,
+              "search_local_files": 0.012746378303591184,
+              "search_notes": 0.05098601532597852
+            },
+            "confidence": 0.341545303213101
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 24886.96637499993,
+      "after": {
+        "temperatureC": 35.3,
+        "thermalStatus": 1,
+        "pssKb": 1066247,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-05",
+      "prompt": "Give this handset a complete health assessment.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.3,
+        "thermalStatus": 1,
+        "pssKb": 1066247,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.24764262500002587,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0725627854246014,
+              "get_battery_info": 0.11373241414926603,
+              "get_device_info": 0.17492337963089014,
+              "get_media_info": 0.012694824231453307,
+              "get_storage_info": 0.07096194783135626,
+              "phone_health_check": 0.449173103149417,
+              "save_note": 0.03644989751062495,
+              "search_local_files": 0.01569932559352268,
+              "search_notes": 0.05380232247886832
+            },
+            "confidence": 0.38031974104309413
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "route": "workflow:phone_health_check",
+      "correct": true,
+      "latencyMs": 22732.42845799996,
+      "after": {
+        "temperatureC": 35.2,
+        "thermalStatus": 2,
+        "pssKb": 1066252,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-06",
+      "prompt": "Check both free space and battery heat together.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.4,
+        "thermalStatus": 1,
+        "pssKb": 1066253,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 41.56796533299985,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.04904021365165837,
+              "get_battery_info": 0.23612181942887925,
+              "get_device_info": 0.07949126140267747,
+              "get_media_info": 0.004679030255304911,
+              "get_storage_info": 0.1393062486031585,
+              "phone_health_check": 0.416224796115885,
+              "save_note": 0.027704139605012196,
+              "search_local_files": 0.010019096282051778,
+              "search_notes": 0.03741339465537256
+            },
+            "confidence": 0.34325289563037065
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 25362.559124999963,
+      "after": {
+        "temperatureC": 35.3,
+        "thermalStatus": 1,
+        "pssKb": 1066252,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-07",
+      "prompt": "Diagnose the phone's overall condition.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.3,
+        "thermalStatus": 1,
+        "pssKb": 1066252,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.26680245900001864,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06357683059389388,
+              "get_battery_info": 0.08782982772565122,
+              "get_device_info": 0.14537922473182222,
+              "get_media_info": 0.008132218192266604,
+              "get_storage_info": 0.06425332707189077,
+              "phone_health_check": 0.5433611788705426,
+              "save_note": 0.027005659685454368,
+              "search_local_files": 0.014356997236441628,
+              "search_notes": 0.04610473589203665
+            },
+            "confidence": 0.48628132622936043
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "workflow:phone_health_check",
+      "correct": true,
+      "latencyMs": 26322.438542000098,
+      "after": {
+        "temperatureC": 35.3,
+        "thermalStatus": 2,
+        "pssKb": 1066251,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-08",
+      "prompt": "Do a device wellness check and recommend actions.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.4,
+        "thermalStatus": 1,
+        "pssKb": 1066252,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 62.078089957999964,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06818356030481604,
+              "get_battery_info": 0.10679671824320151,
+              "get_device_info": 0.170199985414279,
+              "get_media_info": 0.007866407443727233,
+              "get_storage_info": 0.07732851680024232,
+              "phone_health_check": 0.45871149501194014,
+              "save_note": 0.03558902798003301,
+              "search_local_files": 0.016097211682626095,
+              "search_notes": 0.059227077119134705
+            },
+            "confidence": 0.3910504318884327
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 26024.138166000055,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 1,
+        "pssKb": 1066247,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-09",
+      "prompt": "Is this phone ready for a sustained AI workload?",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.4,
+        "thermalStatus": 1,
+        "pssKb": 1066247,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2703025829998751,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07528309418035321,
+              "get_battery_info": 0.06942237572345479,
+              "get_device_info": 0.1543669928060689,
+              "get_media_info": 0.00482367623955449,
+              "get_storage_info": 0.08754582929502534,
+              "phone_health_check": 0.5128243022121383,
+              "save_note": 0.038641991775150666,
+              "search_local_files": 0.011971370544567992,
+              "search_notes": 0.04512036722368647
+            },
+            "confidence": 0.4519273399886556
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "route": "answer",
+      "correct": false,
+      "latencyMs": 25815.941708000082,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 1,
+        "pssKb": 1066252,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "health-10",
+      "prompt": "Review device, battery, and storage health.",
+      "expected": "workflow:phone_health_check",
+      "before": {
+        "temperatureC": 35.4,
+        "thermalStatus": 1,
+        "pssKb": 1066253,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.2495891670000674,
+      "rawRoute": "workflow:phone_health_check",
+      "rawCorrect": true,
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06146404479209281,
+              "get_battery_info": 0.14712269110364545,
+              "get_device_info": 0.1466251214552049,
+              "get_media_info": 0.007753277220869963,
+              "get_storage_info": 0.15894126053186317,
+              "phone_health_check": 0.3764842648847171,
+              "save_note": 0.03536474238442305,
+              "search_local_files": 0.014388008285989651,
+              "search_notes": 0.05185658934119413
+            },
+            "confidence": 0.29854479799530675
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "route": "workflow:phone_health_check",
+      "correct": true,
+      "latencyMs": 22355.12937499993,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "pssKb": 1066251,
+        "usbPowered": true
+      }
+    }
+  ],
+  "correct": 28,
+  "rawCorrect": 24,
+  "total": 50,
+  "meanLatencyMs": 24855.051534899994,
+  "medianLatencyMs": 25256.805104500017
+}

@@ -11,6 +11,28 @@ import org.junit.Test
 
 class AgentBackendTest {
     @Test
+    fun decisionHeadSelectsRouteAndFinalAnswerStillUsesGenerator() = runBlocking {
+        val prompts = mutableListOf<String>()
+        val backend = AgentBackend(
+            generator = AgentGenerator { prompt, _ ->
+                prompts += prompt
+                GeneratedText("Paris is the capital of France.", 7)
+            },
+            tools = ReadOnlyToolExecutor { _, _ -> error("No tool expected") },
+            routingMode = AgentRoutingMode.RESEARCH,
+            decisionSelector = AgentDecisionSelector {
+                AgentSelection(AgentDecision(action = "answer", text = ""), generatedPieces = 0)
+            },
+        )
+
+        val result = backend.run("What is the capital of France?")
+
+        assertEquals("Paris is the capital of France.", result.answer)
+        assertEquals(1, prompts.size)
+        assertEquals(7, result.generatedPieces)
+    }
+
+    @Test
     fun hierarchicalAnswerStopsAfterScopeDecision() = runBlocking {
         val fixture = fixture(
             """{"scope":"answer"}""",

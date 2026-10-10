@@ -1,0 +1,25 @@
+0.00.027.798 I srv  llama_server: initializing ...
+0.00.027.891 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.028.958 W srv  llama_server: security: no API key is set and CORS allows all origins (see https://github.com/ggml-org/llama.cpp/pull/25655)
+0.00.032.170 I srv    load_model: loading model '/sdcard/Download/models/reflex-1-Q4_K_M.gguf'
+/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-backend.cpp:1437: GGML_ASSERT(*cur_backend_id != -1) failed
+0: 0x70fd499198 
+1: 0x70fd4990a4 ggml_print_backtrace
+2: 0x70fd49933c ggml_abort
+3: 0x70fd4b7eac ggml_backend_sched_split_graph
+4: 0x70fa645850 _ZN13llama_context13graph_reserveEjjjPK22llama_memory_context_ibPm
+5: 0x70fa644788 
+6: 0x70fa64461c _ZN13llama_context17resolve_fused_opsEPK22llama_memory_context_ij
+7: 0x70fa6434ac _ZN13llama_context13sched_reserveEv
+8: 0x70fa641f04 _ZN13llama_contextC2ERK11llama_model20llama_context_params
+9: 0x70fa64ef9c llama_init_from_model
+10: 0x70f8ae5b54 
+11: 0x70f8ae64bc 
+12: 0x70f8ae620c _Z17common_fit_paramsPKcP18llama_model_paramsP20llama_context_paramsPfP32llama_model_tensor_buft_overridePmjPK22common_fit_extra_model14ggml_log_level
+13: 0x70f8ac43f8 _ZN18common_init_resultC2ER13common_paramsb
+14: 0x70f8ac5e34 _Z23common_init_from_paramsR13common_paramsb
+15: 0x70effa45b8 _ZN19server_context_impl10load_modelER13common_params
+16: 0x70efef78e0 _Z12llama_serverR13common_paramsiPPcR12server_child
+17: 0x70efef1140 _Z12llama_serveriPPc
+18: 0x70f1f23e14 __libc_init
+Aborted 
