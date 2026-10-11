@@ -46,20 +46,28 @@ Before-retrain eval: benchmarks/phone-routing-eval/run-reflex1-before-retrain.py
 
 ## 4 — Training and eval targets
 
-- [ ] Retrain Clef head on phone-specific data using the pod-backup checkpoint
-      at experiments/unsloth-qwen35-08b-decision/runs/pod-backup/
+**Baselines now established (2026-10-11):**
+- reflex-1 before-retrain: 18/90 (20%), 28.1s mean — 82/90 routes to phone_health_check
+- Qwen raw mode (comparison target): 33/50 (66%), 36.5s — the bar to beat
+- reflex-1 latency advantage: 28.1s vs 36.5s (already 1.3× faster pre-retrain)
 
-- [ ] Report on all 4 benchmarks post-retrain:
-        1. Phone routing eval (new held-out split) — primary target: ≥80% raw
-        2. typed-decisions holdout (80-case calibration set) — should not regress
-        3. BANKING77 (44.59% baseline)
-        4. CLINC150 (47.11% baseline)
-        Note: the "3 benchmarks" from REPORT.md are typed-decisions, BANKING77,
-        CLINC150. Phone routing eval is new. Report all four.
+Routes invisible to reflex-1 pre-retrain: answer, get_battery_info,
+save_note, search_local_files, search_notes.
 
-- [ ] Only claim "decision model is worthwhile" once raw accuracy on the new
-      held-out phone routing eval matches or beats the Qwen HTTP thinking-enabled
-      baseline at lower latency (current advantage: ~2.6× faster).
+- [ ] Retrain Clef head on phone_routing_v1 data:
+        cd ReflexModels && python3 /path/to/pocket-agents-lab/tools/train_phone_routing.py \
+            --data-dir /path/to/pocket-agents-lab/data/phone_routing \
+            --output-dir runs/phone-routing-v1
+        (Uses same unsloth env as reflex-1. Smoke test with --smoke first.)
+
+- [ ] Report on all 4 benchmarks post-retrain using evaluate_phone_routing_model.py:
+        1. Phone routing test.jsonl (90 held-out) — target: ≥70% to beat raw Qwen (66%)
+        2. typed-decisions test — should not collapse (pre-retrain baseline unknown)
+        3. BANKING77 (pre-retrain: 44.59%)
+        4. CLINC150 (pre-retrain: 47.11%)
+
+- [ ] Claim decision model worthwhile once phone routing test ≥70% at ≤30s mean.
+      Current latency: 28.1s — already under the 30s target pre-retrain.
 
 ## 5 — Kotlin integration (do AFTER accuracy target met)
 
