@@ -1,32 +1,35 @@
 # reflex-1 next steps
 
-Last updated: 2026-10-11. All Qwen baselines established. reflex-1 phone routing
-before-retrain eval running. Next: retrain on phone_routing_v1, beat 66% raw.
+Last updated: 2026-10-11. Working HTTP baseline: Qwen raw 66% on dev suite.
+Next: run that same config on the 90-case phone routing test, then retrain.
 
-## 1 — Establish the real Qwen baseline ✅ DONE
+## 1 — HTTP baseline established (qualified)
 
 Three-way comparison complete (2026-10-11). See thinking-comparison-report.md.
 
-| Treatment | Accuracy | Mean latency | Note |
+| Treatment | Test set | Accuracy | Mean latency |
 |---|---|---|---|
-| chat, thinking=OFF | 10/50 (20%) | 65.7s | grammar |
-| chat, thinking=ON-v2 | 3/50 (6%) | 157.8s | broken JSON format |
-| raw (no chat template) | 33/50 (66%) | 36.5s | grammar, guard=70% |
-| JNI Sep-11 baseline | 41/50 (82%) | 53.0s | POCKET_GRAMMAR_ROUTE |
+| chat, thinking=OFF | 50-case dev suite | 10/50 (20%) | 65.7s |
+| chat, thinking=ON-v2 | 50-case dev suite | 3/50 (6%) | 157.8s |
+| raw (no chat template) | 50-case dev suite | 33/50 (66%) | 36.5s |
+| JNI Sep-11 | 50-case dev suite | 41/50 (82%) | 53.0s |
 
-**Conclusion:** Chat template caused the 20% result. Raw mode (no template)
-reaches 66%. Remaining 16pp gap to JNI (82%) is likely due to the
-`[[POCKET_GRAMMAR_ROUTE]]` prefix mechanism vs HTTP GBNF grammar.
-Thinking mode broke JSON schema (model generates wrong keys without grammar).
+**Qualified conclusions:**
+- Removing chat formatting improved this run from 20% to 66%. The exact cause
+  within the raw path is not isolated (could be prompt format, grammar handling,
+  absence of role markers, or a combination).
+- The 16pp gap to JNI (82%) is unexplained. It has not been shown to come from
+  the `[[POCKET_GRAMMAR_ROUTE]]` mechanism specifically, nor that it cannot be
+  closed over HTTP.
+- Thinking mode produced broken JSON without grammar (model omits "action" key).
 
-**Comparison baseline for retraining: raw mode = 66%.** reflex-1 at 48%
-raw on the dev suite is below this. Training target: ≥70% on phone routing
-test.jsonl to beat the raw Qwen baseline at ≤30s latency.
+**The 66% result is a useful working HTTP configuration, not a definitive root
+cause analysis.** It is sufficient to use as a matched comparison target.
 
-Weakness analysis from raw mode:
-- answer category 3/10: "ABI" and "CPU" in prompts trigger device routing
-  (the routing prompt lists ABI as a device-info example — confuses the model)
-- health category 2/10: multi-category rule not applied to complex phrasings
+**IMPORTANT — mismatched test sets:** The 66% raw result and the 20% reflex-1
+before-retrain result use different test sets (50-case dev suite vs 90-case
+phone routing test). They cannot be directly compared. The matched comparison
+run (step 4a below) is required before any win claim.
 
 ## 2 — Audit the training data domain gap ✅ DONE
 
@@ -46,28 +49,34 @@ Before-retrain eval: benchmarks/phone-routing-eval/run-reflex1-before-retrain.py
 
 ## 4 — Training and eval targets
 
-**Baselines now established (2026-10-11):**
-- reflex-1 before-retrain: 18/90 (20%), 28.1s mean — 82/90 routes to phone_health_check
-- Qwen raw mode (comparison target): 33/50 (66%), 36.5s — the bar to beat
-- reflex-1 latency advantage: 28.1s vs 36.5s (already 1.3× faster pre-retrain)
+**Known baselines (same test sets cannot yet be compared):**
+- reflex-1 before-retrain on phone_routing test.jsonl: 18/90 (20%), 28.1s
+  → 82/90 routes to phone_health_check; 5 routes never chosen
+- Qwen raw on dev suite (50-case): 33/50 (66%), 36.5s
+  → different test set; not directly comparable to the 18/90 result
 
-Routes invisible to reflex-1 pre-retrain: answer, get_battery_info,
-save_note, search_local_files, search_notes.
+- [ ] **4a — Run Qwen raw on the same 90-case phone routing test (BEFORE training)**
+      Script: benchmarks/phone-routing-eval/run-qwen-raw-phone-routing.py
+      This produces the matched comparison baseline. The win condition is:
+      retrained reflex-1 accuracy on test.jsonl > Qwen raw accuracy on test.jsonl,
+      measured on the same 90 cases on the same A32 hardware.
 
-- [ ] Retrain Clef head on phone_routing_v1 data:
+- [ ] **4b — Retrain Clef head on phone_routing_v1 data:**
         cd ReflexModels && python3 /path/to/pocket-agents-lab/tools/train_phone_routing.py \
             --data-dir /path/to/pocket-agents-lab/data/phone_routing \
             --output-dir runs/phone-routing-v1
-        (Uses same unsloth env as reflex-1. Smoke test with --smoke first.)
+        Use calibration split for model selection and probability calibration.
+        Smoke test with --smoke first.
 
-- [ ] Report on all 4 benchmarks post-retrain using evaluate_phone_routing_model.py:
-        1. Phone routing test.jsonl (90 held-out) — target: ≥70% to beat raw Qwen (66%)
-        2. typed-decisions test — should not collapse (pre-retrain baseline unknown)
+- [ ] **4c — Evaluate on all 4 benchmarks** using evaluate_phone_routing_model.py:
+        1. Phone routing test.jsonl (90 held-out) — must beat step 4a Qwen raw score
+        2. typed-decisions test — must not collapse
         3. BANKING77 (pre-retrain: 44.59%)
         4. CLINC150 (pre-retrain: 47.11%)
 
-- [ ] Claim decision model worthwhile once phone routing test ≥70% at ≤30s mean.
-      Current latency: 28.1s — already under the 30s target pre-retrain.
+- [ ] **Win condition:** retrained reflex-1 on test.jsonl > Qwen raw on test.jsonl,
+      with lower measured A32 latency and acceptable memory, heat, regression scores.
+      Beating 66% on a different test set does not count.
 
 ## 5 — Kotlin integration (do AFTER accuracy target met)
 
