@@ -1,37 +1,32 @@
 # reflex-1 next steps
 
-Last updated: 2026-10-11. Three-way Qwen benchmark pipeline running autonomously
-via wait-then-run.py → run-thinking-on.py. thinking-off: ~10/50 in progress
-(~2h remaining). thinking-on-v2 and raw queued. reflex-1 phone routing before-
-retrain eval will run automatically after all three. Return here when complete.
+Last updated: 2026-10-11. All Qwen baselines established. reflex-1 phone routing
+before-retrain eval running. Next: retrain on phone_routing_v1, beat 66% raw.
 
-## 1 — Establish the real Qwen baseline FIRST (blockers — do before retraining)
+## 1 — Establish the real Qwen baseline ✅ DONE
 
-**Key architectural finding (2026-10-11):** The September JNI baseline used raw
-text completion (no Qwen chat template):
-```kotlin
-// AgentBackend.kt line 108
-generator.generate(GRAMMAR_ROUTE_PREFIX + buildRoutingPrompt(userPrompt), ...)
-```
-HTTP runs use `/v1/chat/completions` which applies the Qwen chat template
-(`<|im_start|>system/user/assistant`). This bypass of the chat template is the
-most likely explanation for 82% vs 20%, not thinking configuration.
+Three-way comparison complete (2026-10-11). See thinking-comparison-report.md.
 
-Three treatments being run via `run-thinking-on.py`:
-- `thinking-off-results.json`: chat, thinking=False, grammar (the 20% run)
-- `thinking-on-v2-results.json`: chat, thinking=True, no grammar, 1024 tokens
-- `raw-results.json`: /v1/completions (NO chat template), grammar — replicates JNI
+| Treatment | Accuracy | Mean latency | Note |
+|---|---|---|---|
+| chat, thinking=OFF | 10/50 (20%) | 65.7s | grammar |
+| chat, thinking=ON-v2 | 3/50 (6%) | 157.8s | broken JSON format |
+| raw (no chat template) | 33/50 (66%) | 36.5s | grammar, guard=70% |
+| JNI Sep-11 baseline | 41/50 (82%) | 53.0s | POCKET_GRAMMAR_ROUTE |
 
-- [ ] Check `raw-results.json` once `run-thinking-on.py` completes.
-      If raw ≈ 82%: chat template is the root cause. The comparison baseline for
-      reflex-1 is raw mode, not chat. Thinking on/off is secondary.
-      If raw ≈ 20%: the llama.cpp version difference (2a15f3a72 vs f0c41e016) or
-      grammar behavior change may be the cause. Investigate further.
+**Conclusion:** Chat template caused the 20% result. Raw mode (no template)
+reaches 66%. Remaining 16pp gap to JNI (82%) is likely due to the
+`[[POCKET_GRAMMAR_ROUTE]]` prefix mechanism vs HTTP GBNF grammar.
+Thinking mode broke JSON schema (model generates wrong keys without grammar).
 
-- [ ] Compare thinking-on vs thinking-off (both chat mode) to isolate that variable.
+**Comparison baseline for retraining: raw mode = 66%.** reflex-1 at 48%
+raw on the dev suite is below this. Training target: ≥70% on phone routing
+test.jsonl to beat the raw Qwen baseline at ≤30s latency.
 
-- [ ] Do NOT claim reflex-1 (48% raw) beats the baseline until raw-results.json
-      is known. If raw = 82%, reflex-1 at 48% is still well below baseline.
+Weakness analysis from raw mode:
+- answer category 3/10: "ABI" and "CPU" in prompts trigger device routing
+  (the routing prompt lists ABI as a device-info example — confuses the model)
+- health category 2/10: multi-category rule not applied to complex phrasings
 
 ## 2 — Audit the training data domain gap ✅ DONE
 
