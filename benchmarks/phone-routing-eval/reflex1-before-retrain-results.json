@@ -1,0 +1,4019 @@
+{
+  "dataset": "phone_routing_v1",
+  "split": "test",
+  "model": "reflex-1-Q4_K_M",
+  "total": 90,
+  "complete": true,
+  "cases": [
+    {
+      "id": "pr_answer_test_000",
+      "state": "How do I convert miles to kilometers?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.1823713435210017,
+        "get_battery_info": 0.021053086597006963,
+        "get_device_info": 0.10662461807509081,
+        "get_media_info": 0.00542715328006732,
+        "get_storage_info": 0.0429909334313274,
+        "phone_health_check": 0.441009636855009,
+        "save_note": 0.06338055828464981,
+        "search_local_files": 0.022420939833100884,
+        "search_notes": 0.11472173012274615
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.1823713435210017,
+              "get_battery_info": 0.021053086597006963,
+              "get_device_info": 0.10662461807509081,
+              "get_media_info": 0.00542715328006732,
+              "get_storage_info": 0.0429909334313274,
+              "phone_health_check": 0.441009636855009,
+              "save_note": 0.06338055828464981,
+              "search_local_files": 0.022420939833100884,
+              "search_notes": 0.11472173012274615
+            },
+            "confidence": 0.37113584146188516
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 20948.796041
+    },
+    {
+      "id": "pr_answer_test_001",
+      "state": "How does a vaccine work?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.14082432310712928,
+        "get_battery_info": 0.018794722308760604,
+        "get_device_info": 0.06874780062874258,
+        "get_media_info": 0.005513015892927925,
+        "get_storage_info": 0.03294630109617776,
+        "phone_health_check": 0.5307358724124018,
+        "save_note": 0.059691006294552255,
+        "search_local_files": 0.022471560394326358,
+        "search_notes": 0.12027539786498134
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.14082432310712928,
+              "get_battery_info": 0.018794722308760604,
+              "get_device_info": 0.06874780062874258,
+              "get_media_info": 0.005513015892927925,
+              "get_storage_info": 0.03294630109617776,
+              "phone_health_check": 0.5307358724124018,
+              "save_note": 0.059691006294552255,
+              "search_local_files": 0.022471560394326358,
+              "search_notes": 0.12027539786498134
+            },
+            "confidence": 0.4720778564639521
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 25683.896833
+    },
+    {
+      "id": "pr_answer_test_002",
+      "state": "What time is it?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.09104079527987673,
+        "get_battery_info": 0.05491502762305371,
+        "get_device_info": 0.16373682473149825,
+        "get_media_info": 0.010936031899139801,
+        "get_storage_info": 0.056197927697143546,
+        "phone_health_check": 0.46934448220997527,
+        "save_note": 0.042686010691957904,
+        "search_local_files": 0.021213646289155213,
+        "search_notes": 0.08992925357819968
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.09104079527987673,
+              "get_battery_info": 0.05491502762305371,
+              "get_device_info": 0.16373682473149825,
+              "get_media_info": 0.010936031899139801,
+              "get_storage_info": 0.056197927697143546,
+              "phone_health_check": 0.46934448220997527,
+              "save_note": 0.042686010691957904,
+              "search_local_files": 0.021213646289155213,
+              "search_notes": 0.08992925357819968
+            },
+            "confidence": 0.4030125424862222
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 25921.834291000003
+    },
+    {
+      "id": "pr_answer_test_003",
+      "state": "Compose a two-sentence product description",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.10624646827353021,
+        "get_battery_info": 0.06308862702996094,
+        "get_device_info": 0.20251601434727065,
+        "get_media_info": 0.007354556465236987,
+        "get_storage_info": 0.06675031937134315,
+        "phone_health_check": 0.42904494684173805,
+        "save_note": 0.03734495671392477,
+        "search_local_files": 0.018984263347026513,
+        "search_notes": 0.06866984760996876
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.10624646827353021,
+              "get_battery_info": 0.06308862702996094,
+              "get_device_info": 0.20251601434727065,
+              "get_media_info": 0.007354556465236987,
+              "get_storage_info": 0.06675031937134315,
+              "phone_health_check": 0.42904494684173805,
+              "save_note": 0.03734495671392477,
+              "search_local_files": 0.018984263347026513,
+              "search_notes": 0.06866984760996876
+            },
+            "confidence": 0.3576755651969553
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 22568.199750000003
+    },
+    {
+      "id": "pr_answer_test_004",
+      "state": "What is 7 multiplied by 8?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.27290081552217466,
+        "get_battery_info": 0.018009056416101805,
+        "get_device_info": 0.06003873880017402,
+        "get_media_info": 0.005075190998801094,
+        "get_storage_info": 0.035615651317827415,
+        "phone_health_check": 0.40660781652235106,
+        "save_note": 0.06887603612881503,
+        "search_local_files": 0.020871992636056682,
+        "search_notes": 0.11200470165769834
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.27290081552217466,
+              "get_battery_info": 0.018009056416101805,
+              "get_device_info": 0.06003873880017402,
+              "get_media_info": 0.005075190998801094,
+              "get_storage_info": 0.035615651317827415,
+              "phone_health_check": 0.40660781652235106,
+              "save_note": 0.06887603612881503,
+              "search_local_files": 0.020871992636056682,
+              "search_notes": 0.11200470165769834
+            },
+            "confidence": 0.33243379358764497
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 23369.385500000008
+    },
+    {
+      "id": "pr_answer_test_005",
+      "state": "What is a haiku exactly?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.20056614242578993,
+        "get_battery_info": 0.023142907086822713,
+        "get_device_info": 0.10141964260021133,
+        "get_media_info": 0.010260154967280668,
+        "get_storage_info": 0.040197460588034944,
+        "phone_health_check": 0.4291976852314523,
+        "save_note": 0.06941302622029336,
+        "search_local_files": 0.02087276123837224,
+        "search_notes": 0.10493021964174246
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.20056614242578993,
+              "get_battery_info": 0.023142907086822713,
+              "get_device_info": 0.10141964260021133,
+              "get_media_info": 0.010260154967280668,
+              "get_storage_info": 0.040197460588034944,
+              "phone_health_check": 0.4291976852314523,
+              "save_note": 0.06941302622029336,
+              "search_local_files": 0.02087276123837224,
+              "search_notes": 0.10493021964174246
+            },
+            "confidence": 0.35784739588538383
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 22748.14737499999
+    },
+    {
+      "id": "pr_answer_test_006",
+      "state": "How do you pronounce 'Worcestershire'?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.22970925416275906,
+        "get_battery_info": 0.01569382392599069,
+        "get_device_info": 0.06374602898695989,
+        "get_media_info": 0.005694150730404605,
+        "get_storage_info": 0.024123869323256428,
+        "phone_health_check": 0.41106095174241114,
+        "save_note": 0.06933037677725866,
+        "search_local_files": 0.02644006787457763,
+        "search_notes": 0.15420147647638194
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.22970925416275906,
+              "get_battery_info": 0.01569382392599069,
+              "get_device_info": 0.06374602898695989,
+              "get_media_info": 0.005694150730404605,
+              "get_storage_info": 0.024123869323256428,
+              "phone_health_check": 0.41106095174241114,
+              "save_note": 0.06933037677725866,
+              "search_local_files": 0.02644006787457763,
+              "search_notes": 0.15420147647638194
+            },
+            "confidence": 0.3374435707102126
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27483.26179200001
+    },
+    {
+      "id": "pr_answer_test_007",
+      "state": "What is machine learning?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.13918100690831356,
+        "get_battery_info": 0.028177862830634396,
+        "get_device_info": 0.10579055912208475,
+        "get_media_info": 0.0059989982140634624,
+        "get_storage_info": 0.055823829419676806,
+        "phone_health_check": 0.4923456104424829,
+        "save_note": 0.06657827956506075,
+        "search_local_files": 0.01860231386931539,
+        "search_notes": 0.0875015396283682
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.13918100690831356,
+              "get_battery_info": 0.028177862830634396,
+              "get_device_info": 0.10579055912208475,
+              "get_media_info": 0.0059989982140634624,
+              "get_storage_info": 0.055823829419676806,
+              "phone_health_check": 0.4923456104424829,
+              "save_note": 0.06657827956506075,
+              "search_local_files": 0.01860231386931539,
+              "search_notes": 0.0875015396283682
+            },
+            "confidence": 0.42888881174779325
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27206.379625000012
+    },
+    {
+      "id": "pr_answer_test_008",
+      "state": "What is the atomic number of carbon?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.19282092761907246,
+        "get_battery_info": 0.017780206194250275,
+        "get_device_info": 0.0619799419273548,
+        "get_media_info": 0.0052302186546505924,
+        "get_storage_info": 0.03591227703316146,
+        "phone_health_check": 0.4303003777363203,
+        "save_note": 0.08142855579316575,
+        "search_local_files": 0.020996415982873808,
+        "search_notes": 0.15355107905915058
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.19282092761907246,
+              "get_battery_info": 0.017780206194250275,
+              "get_device_info": 0.0619799419273548,
+              "get_media_info": 0.0052302186546505924,
+              "get_storage_info": 0.03591227703316146,
+              "phone_health_check": 0.4303003777363203,
+              "save_note": 0.08142855579316575,
+              "search_local_files": 0.020996415982873808,
+              "search_notes": 0.15355107905915058
+            },
+            "confidence": 0.35908792495336034
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27408.389499999997
+    },
+    {
+      "id": "pr_answer_test_009",
+      "state": "What are the primary colors?",
+      "gold": "answer",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.17350568613339373,
+        "get_battery_info": 0.028899201759927946,
+        "get_device_info": 0.07216119585299856,
+        "get_media_info": 0.007848522962699606,
+        "get_storage_info": 0.053916824517513236,
+        "phone_health_check": 0.4808812790556693,
+        "save_note": 0.05609587297438823,
+        "search_local_files": 0.020723649046507687,
+        "search_notes": 0.10596776769690157
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.17350568613339373,
+              "get_battery_info": 0.028899201759927946,
+              "get_device_info": 0.07216119585299856,
+              "get_media_info": 0.007848522962699606,
+              "get_storage_info": 0.053916824517513236,
+              "phone_health_check": 0.4808812790556693,
+              "save_note": 0.05609587297438823,
+              "search_local_files": 0.020723649046507687,
+              "search_notes": 0.10596776769690157
+            },
+            "confidence": 0.41599143893762797
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27307.518499999987
+    },
+    {
+      "id": "pr_get_battery_info_test_000",
+      "state": "How long will my battery last at this rate?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07792626245092965,
+        "get_battery_info": 0.14421972566642294,
+        "get_device_info": 0.14375386756802058,
+        "get_media_info": 0.0055151288619082715,
+        "get_storage_info": 0.03427689028034496,
+        "phone_health_check": 0.4915975777222796,
+        "save_note": 0.03730525809058881,
+        "search_local_files": 0.011689590779964693,
+        "search_notes": 0.053715698579540526
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07792626245092965,
+              "get_battery_info": 0.14421972566642294,
+              "get_device_info": 0.14375386756802058,
+              "get_media_info": 0.0055151288619082715,
+              "get_storage_info": 0.03427689028034496,
+              "phone_health_check": 0.4915975777222796,
+              "save_note": 0.03730525809058881,
+              "search_local_files": 0.011689590779964693,
+              "search_notes": 0.053715698579540526
+            },
+            "confidence": 0.42804727493756456
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28248.02887499999
+    },
+    {
+      "id": "pr_get_battery_info_test_001",
+      "state": "Is my battery too low to record a video?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06749136627874287,
+        "get_battery_info": 0.21855929147125414,
+        "get_device_info": 0.09793406212154163,
+        "get_media_info": 0.026085315467628593,
+        "get_storage_info": 0.060180204178902866,
+        "phone_health_check": 0.42719834609085294,
+        "save_note": 0.03344916891890007,
+        "search_local_files": 0.019950334678074902,
+        "search_notes": 0.04915191079410179
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06749136627874287,
+              "get_battery_info": 0.21855929147125414,
+              "get_device_info": 0.09793406212154163,
+              "get_media_info": 0.026085315467628593,
+              "get_storage_info": 0.060180204178902866,
+              "phone_health_check": 0.42719834609085294,
+              "save_note": 0.03344916891890007,
+              "search_local_files": 0.019950334678074902,
+              "search_notes": 0.04915191079410179
+            },
+            "confidence": 0.3555981393522096
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27827.212707999992
+    },
+    {
+      "id": "pr_get_battery_info_test_002",
+      "state": "How much battery have I used today?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07452081560156984,
+        "get_battery_info": 0.2380418337443565,
+        "get_device_info": 0.0930203693006453,
+        "get_media_info": 0.007989109255032005,
+        "get_storage_info": 0.03926396204425243,
+        "phone_health_check": 0.41336305361212894,
+        "save_note": 0.04442254342019991,
+        "search_local_files": 0.015110786872444928,
+        "search_notes": 0.07426752614937016
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07452081560156984,
+              "get_battery_info": 0.2380418337443565,
+              "get_device_info": 0.0930203693006453,
+              "get_media_info": 0.007989109255032005,
+              "get_storage_info": 0.03926396204425243,
+              "phone_health_check": 0.41336305361212894,
+              "save_note": 0.04442254342019991,
+              "search_local_files": 0.015110786872444928,
+              "search_notes": 0.07426752614937016
+            },
+            "confidence": 0.3400334353136451
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27653.836541999965
+    },
+    {
+      "id": "pr_get_battery_info_test_003",
+      "state": "What is my battery health percentage?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0660235651163155,
+        "get_battery_info": 0.21781020536409618,
+        "get_device_info": 0.07983367168528599,
+        "get_media_info": 0.005147318475087956,
+        "get_storage_info": 0.02654367795086819,
+        "phone_health_check": 0.5201382232968859,
+        "save_note": 0.031772465579847545,
+        "search_local_files": 0.009167997707006381,
+        "search_notes": 0.04356287482460643
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0660235651163155,
+              "get_battery_info": 0.21781020536409618,
+              "get_device_info": 0.07983367168528599,
+              "get_media_info": 0.005147318475087956,
+              "get_storage_info": 0.02654367795086819,
+              "phone_health_check": 0.5201382232968859,
+              "save_note": 0.031772465579847545,
+              "search_local_files": 0.009167997707006381,
+              "search_notes": 0.04356287482460643
+            },
+            "confidence": 0.4601555012089966
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28037.71712500003
+    },
+    {
+      "id": "pr_get_battery_info_test_004",
+      "state": "Is my battery still healthy?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06832208067629804,
+        "get_battery_info": 0.21267283399451148,
+        "get_device_info": 0.0798923021716148,
+        "get_media_info": 0.004748939962107293,
+        "get_storage_info": 0.03169709052637469,
+        "phone_health_check": 0.5210676518514663,
+        "save_note": 0.027439899814197418,
+        "search_local_files": 0.009765897382588953,
+        "search_notes": 0.04439330362084093
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06832208067629804,
+              "get_battery_info": 0.21267283399451148,
+              "get_device_info": 0.0798923021716148,
+              "get_media_info": 0.004748939962107293,
+              "get_storage_info": 0.03169709052637469,
+              "phone_health_check": 0.5210676518514663,
+              "save_note": 0.027439899814197418,
+              "search_local_files": 0.009765897382588953,
+              "search_notes": 0.04439330362084093
+            },
+            "confidence": 0.4612011083328996
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27896.891541
+    },
+    {
+      "id": "pr_get_battery_info_test_005",
+      "state": "What app is consuming the most battery?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07274791854491107,
+        "get_battery_info": 0.2586071669832319,
+        "get_device_info": 0.09273767175178727,
+        "get_media_info": 0.014851030342479098,
+        "get_storage_info": 0.053553744366924394,
+        "phone_health_check": 0.4029284934071949,
+        "save_note": 0.03584290258092538,
+        "search_local_files": 0.014274374925609151,
+        "search_notes": 0.05445669709693674
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07274791854491107,
+              "get_battery_info": 0.2586071669832319,
+              "get_device_info": 0.09273767175178727,
+              "get_media_info": 0.014851030342479098,
+              "get_storage_info": 0.053553744366924394,
+              "phone_health_check": 0.4029284934071949,
+              "save_note": 0.03584290258092538,
+              "search_local_files": 0.014274374925609151,
+              "search_notes": 0.05445669709693674
+            },
+            "confidence": 0.3282945550830943
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28868.84329200001
+    },
+    {
+      "id": "pr_get_battery_info_test_006",
+      "state": "Am I plugged in?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08762769958741559,
+        "get_battery_info": 0.12124290442061038,
+        "get_device_info": 0.14521361295799917,
+        "get_media_info": 0.012984674365008804,
+        "get_storage_info": 0.05663987789556481,
+        "phone_health_check": 0.4414339843745837,
+        "save_note": 0.03666308806607674,
+        "search_local_files": 0.01966773947065029,
+        "search_notes": 0.07852641886209048
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08762769958741559,
+              "get_battery_info": 0.12124290442061038,
+              "get_device_info": 0.14521361295799917,
+              "get_media_info": 0.012984674365008804,
+              "get_storage_info": 0.05663987789556481,
+              "phone_health_check": 0.4414339843745837,
+              "save_note": 0.03666308806607674,
+              "search_local_files": 0.01966773947065029,
+              "search_notes": 0.07852641886209048
+            },
+            "confidence": 0.3716132324214067
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27920.937125000022
+    },
+    {
+      "id": "pr_get_battery_info_test_007",
+      "state": "Has my battery degraded?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.05946926800443646,
+        "get_battery_info": 0.20014336510865025,
+        "get_device_info": 0.08414969334836071,
+        "get_media_info": 0.006006422693328956,
+        "get_storage_info": 0.037409923911490096,
+        "phone_health_check": 0.5044404731164969,
+        "save_note": 0.03760589515893469,
+        "search_local_files": 0.013195612216491926,
+        "search_notes": 0.057579346441810085
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.05946926800443646,
+              "get_battery_info": 0.20014336510865025,
+              "get_device_info": 0.08414969334836071,
+              "get_media_info": 0.006006422693328956,
+              "get_storage_info": 0.037409923911490096,
+              "phone_health_check": 0.5044404731164969,
+              "save_note": 0.03760589515893469,
+              "search_local_files": 0.013195612216491926,
+              "search_notes": 0.057579346441810085
+            },
+            "confidence": 0.44249553225605903
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 23800.774249999962
+    },
+    {
+      "id": "pr_get_battery_info_test_008",
+      "state": "Will the battery last until I get home?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08729155488156312,
+        "get_battery_info": 0.19955074111186724,
+        "get_device_info": 0.1082155568001062,
+        "get_media_info": 0.006612705895323976,
+        "get_storage_info": 0.040544379730451253,
+        "phone_health_check": 0.42264274363684995,
+        "save_note": 0.045689182427957144,
+        "search_local_files": 0.016530486251539266,
+        "search_notes": 0.07292264926434194
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08729155488156312,
+              "get_battery_info": 0.19955074111186724,
+              "get_device_info": 0.1082155568001062,
+              "get_media_info": 0.006612705895323976,
+              "get_storage_info": 0.040544379730451253,
+              "phone_health_check": 0.42264274363684995,
+              "save_note": 0.045689182427957144,
+              "search_local_files": 0.016530486251539266,
+              "search_notes": 0.07292264926434194
+            },
+            "confidence": 0.3504730865914562
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28434.21991699995
+    },
+    {
+      "id": "pr_get_battery_info_test_009",
+      "state": "Is my battery above 30%?",
+      "gold": "get_battery_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08398955438204986,
+        "get_battery_info": 0.23171595896449765,
+        "get_device_info": 0.07882926216547671,
+        "get_media_info": 0.005915030953504762,
+        "get_storage_info": 0.03351577104685812,
+        "phone_health_check": 0.45936789399988176,
+        "save_note": 0.03683216936270406,
+        "search_local_files": 0.012005118800623325,
+        "search_notes": 0.05782924032440384
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08398955438204986,
+              "get_battery_info": 0.23171595896449765,
+              "get_device_info": 0.07882926216547671,
+              "get_media_info": 0.005915030953504762,
+              "get_storage_info": 0.03351577104685812,
+              "phone_health_check": 0.45936789399988176,
+              "save_note": 0.03683216936270406,
+              "search_local_files": 0.012005118800623325,
+              "search_notes": 0.05782924032440384
+            },
+            "confidence": 0.391788880749867
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28364.871333000054
+    },
+    {
+      "id": "pr_get_device_info_test_000",
+      "state": "How old is this device model?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07719045337427051,
+        "get_battery_info": 0.04335866445980027,
+        "get_device_info": 0.3444948883092286,
+        "get_media_info": 0.0065787257777358814,
+        "get_storage_info": 0.0499004040630564,
+        "phone_health_check": 0.3759092849748284,
+        "save_note": 0.03293566801420477,
+        "search_local_files": 0.013130051632782112,
+        "search_notes": 0.05650185939409323
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07719045337427051,
+              "get_battery_info": 0.04335866445980027,
+              "get_device_info": 0.3444948883092286,
+              "get_media_info": 0.0065787257777358814,
+              "get_storage_info": 0.0499004040630564,
+              "phone_health_check": 0.3759092849748284,
+              "save_note": 0.03293566801420477,
+              "search_local_files": 0.013130051632782112,
+              "search_notes": 0.05650185939409323
+            },
+            "confidence": 0.297897945596682
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28136.406458999998
+    },
+    {
+      "id": "pr_get_device_info_test_001",
+      "state": "Is this phone officially supported by the manufacturer?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07652862175102568,
+        "get_battery_info": 0.05661155756703935,
+        "get_device_info": 0.2947734631398169,
+        "get_media_info": 0.007328265606524313,
+        "get_storage_info": 0.049750404251722266,
+        "phone_health_check": 0.4193987079145499,
+        "save_note": 0.030282759544968313,
+        "search_local_files": 0.01372599662938225,
+        "search_notes": 0.051600223594971094
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07652862175102568,
+              "get_battery_info": 0.05661155756703935,
+              "get_device_info": 0.2947734631398169,
+              "get_media_info": 0.007328265606524313,
+              "get_storage_info": 0.049750404251722266,
+              "phone_health_check": 0.4193987079145499,
+              "save_note": 0.030282759544968313,
+              "search_local_files": 0.01372599662938225,
+              "search_notes": 0.051600223594971094
+            },
+            "confidence": 0.3468235464038687
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29063.544417000005
+    },
+    {
+      "id": "pr_get_device_info_test_002",
+      "state": "What is the last official Android version for this phone?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06690940232722153,
+        "get_battery_info": 0.04937205124373689,
+        "get_device_info": 0.358605673457218,
+        "get_media_info": 0.005141182892899023,
+        "get_storage_info": 0.05324631094123683,
+        "phone_health_check": 0.36160714885040524,
+        "save_note": 0.035665265395584234,
+        "search_local_files": 0.012118889354189423,
+        "search_notes": 0.057334075537509
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06690940232722153,
+              "get_battery_info": 0.04937205124373689,
+              "get_device_info": 0.358605673457218,
+              "get_media_info": 0.005141182892899023,
+              "get_storage_info": 0.05324631094123683,
+              "phone_health_check": 0.36160714885040524,
+              "save_note": 0.035665265395584234,
+              "search_local_files": 0.012118889354189423,
+              "search_notes": 0.057334075537509
+            },
+            "confidence": 0.28180804245670593
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 24527.254125000014
+    },
+    {
+      "id": "pr_get_device_info_test_003",
+      "state": "What is the hardware revision number?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06711085946567055,
+        "get_battery_info": 0.060696949663011646,
+        "get_device_info": 0.33409506770071257,
+        "get_media_info": 0.006135211057787372,
+        "get_storage_info": 0.04770751267810457,
+        "phone_health_check": 0.3817854981385708,
+        "save_note": 0.03461755177665598,
+        "search_local_files": 0.01311917052899543,
+        "search_notes": 0.05473217899049119
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06711085946567055,
+              "get_battery_info": 0.060696949663011646,
+              "get_device_info": 0.33409506770071257,
+              "get_media_info": 0.006135211057787372,
+              "get_storage_info": 0.04770751267810457,
+              "phone_health_check": 0.3817854981385708,
+              "save_note": 0.03461755177665598,
+              "search_local_files": 0.01311917052899543,
+              "search_notes": 0.05473217899049119
+            },
+            "confidence": 0.3045086854058922
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28349.93104099999
+    },
+    {
+      "id": "pr_get_device_info_test_004",
+      "state": "What is the exact Android patch date on this phone?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06778616818242104,
+        "get_battery_info": 0.0541996115695447,
+        "get_device_info": 0.33053293968427977,
+        "get_media_info": 0.0064460002191356934,
+        "get_storage_info": 0.05247374177136317,
+        "phone_health_check": 0.3798612007383641,
+        "save_note": 0.035047574334912644,
+        "search_local_files": 0.013369501878126336,
+        "search_notes": 0.060283261621852456
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06778616818242104,
+              "get_battery_info": 0.0541996115695447,
+              "get_device_info": 0.33053293968427977,
+              "get_media_info": 0.0064460002191356934,
+              "get_storage_info": 0.05247374177136317,
+              "phone_health_check": 0.3798612007383641,
+              "save_note": 0.035047574334912644,
+              "search_local_files": 0.013369501878126336,
+              "search_notes": 0.060283261621852456
+            },
+            "confidence": 0.3023438508306596
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29086.409000000003
+    },
+    {
+      "id": "pr_get_device_info_test_005",
+      "state": "What carrier bands does this phone support?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07889929338031365,
+        "get_battery_info": 0.048140855591242954,
+        "get_device_info": 0.2624158136230553,
+        "get_media_info": 0.016060544813099164,
+        "get_storage_info": 0.053236184985621826,
+        "phone_health_check": 0.41868168862012006,
+        "save_note": 0.03752221349689334,
+        "search_local_files": 0.017350471621296295,
+        "search_notes": 0.0676929338683574
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07889929338031365,
+              "get_battery_info": 0.048140855591242954,
+              "get_device_info": 0.2624158136230553,
+              "get_media_info": 0.016060544813099164,
+              "get_storage_info": 0.053236184985621826,
+              "phone_health_check": 0.41868168862012006,
+              "save_note": 0.03752221349689334,
+              "search_local_files": 0.017350471621296295,
+              "search_notes": 0.0676929338683574
+            },
+            "confidence": 0.3460168996976351
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28516.01283299999
+    },
+    {
+      "id": "pr_get_device_info_test_006",
+      "state": "What kernel is running on this device?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06441421182783537,
+        "get_battery_info": 0.049528223580676795,
+        "get_device_info": 0.36719350883277996,
+        "get_media_info": 0.00841027251660669,
+        "get_storage_info": 0.051328455257288345,
+        "phone_health_check": 0.37267456098807306,
+        "save_note": 0.028473368128283397,
+        "search_local_files": 0.013844018194747777,
+        "search_notes": 0.04413338067370874
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06441421182783537,
+              "get_battery_info": 0.049528223580676795,
+              "get_device_info": 0.36719350883277996,
+              "get_media_info": 0.00841027251660669,
+              "get_storage_info": 0.051328455257288345,
+              "phone_health_check": 0.37267456098807306,
+              "save_note": 0.028473368128283397,
+              "search_local_files": 0.013844018194747777,
+              "search_notes": 0.04413338067370874
+            },
+            "confidence": 0.2942588811115822
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29152.797250000047
+    },
+    {
+      "id": "pr_get_device_info_test_007",
+      "state": "What is the full device fingerprint?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07933781110007983,
+        "get_battery_info": 0.06479326055765218,
+        "get_device_info": 0.31842369378477714,
+        "get_media_info": 0.013596650215493906,
+        "get_storage_info": 0.061565884827109,
+        "phone_health_check": 0.3515747975706688,
+        "save_note": 0.032267002299711585,
+        "search_local_files": 0.017259570335346024,
+        "search_notes": 0.06118132930916157
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07933781110007983,
+              "get_battery_info": 0.06479326055765218,
+              "get_device_info": 0.31842369378477714,
+              "get_media_info": 0.013596650215493906,
+              "get_storage_info": 0.061565884827109,
+              "phone_health_check": 0.3515747975706688,
+              "save_note": 0.032267002299711585,
+              "search_local_files": 0.017259570335346024,
+              "search_notes": 0.06118132930916157
+            },
+            "confidence": 0.2705216472670024
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28388.588124999955
+    },
+    {
+      "id": "pr_get_device_info_test_008",
+      "state": "Is this device end-of-life?",
+      "gold": "get_device_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0796655420047118,
+        "get_battery_info": 0.07003341380034273,
+        "get_device_info": 0.18324868261124996,
+        "get_media_info": 0.008210433647324253,
+        "get_storage_info": 0.07250114827760708,
+        "phone_health_check": 0.48815803402593233,
+        "save_note": 0.030871943180388814,
+        "search_local_files": 0.015790748816859507,
+        "search_notes": 0.05152005363558357
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0796655420047118,
+              "get_battery_info": 0.07003341380034273,
+              "get_device_info": 0.18324868261124996,
+              "get_media_info": 0.008210433647324253,
+              "get_storage_info": 0.07250114827760708,
+              "phone_health_check": 0.48815803402593233,
+              "save_note": 0.030871943180388814,
+              "search_local_files": 0.015790748816859507,
+              "search_notes": 0.05152005363558357
+            },
+            "confidence": 0.4241777882791739
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 24591.511458000015
+    },
+    {
+      "id": "pr_get_device_info_test_009",
+      "state": "What OS version does this phone have?",
+      "gold": "get_device_info",
+      "chosen": "get_device_info",
+      "correct": true,
+      "probs": {
+        "answer": 0.06249052776914946,
+        "get_battery_info": 0.04939463153219692,
+        "get_device_info": 0.3991508697412309,
+        "get_media_info": 0.005927324871960535,
+        "get_storage_info": 0.03815173428447382,
+        "phone_health_check": 0.3480465553587815,
+        "save_note": 0.03176723334360026,
+        "search_local_files": 0.012547924734863611,
+        "search_notes": 0.05252319836374325
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_device_info",
+            "probabilities": {
+              "answer": 0.06249052776914946,
+              "get_battery_info": 0.04939463153219692,
+              "get_device_info": 0.3991508697412309,
+              "get_media_info": 0.005927324871960535,
+              "get_storage_info": 0.03815173428447382,
+              "phone_health_check": 0.3480465553587815,
+              "save_note": 0.03176723334360026,
+              "search_local_files": 0.012547924734863611,
+              "search_notes": 0.05252319836374325
+            },
+            "confidence": 0.32404472845888477
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28931.047749999947
+    },
+    {
+      "id": "pr_get_storage_info_test_000",
+      "state": "Can my phone handle more data without slowdown?",
+      "gold": "get_storage_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07377927713188472,
+        "get_battery_info": 0.10408965472462929,
+        "get_device_info": 0.16191909340548588,
+        "get_media_info": 0.00778661813283168,
+        "get_storage_info": 0.19571095174060954,
+        "phone_health_check": 0.36095702905070415,
+        "save_note": 0.03553847224877962,
+        "search_local_files": 0.013775020940121544,
+        "search_notes": 0.04644388262495369
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07377927713188472,
+              "get_battery_info": 0.10408965472462929,
+              "get_device_info": 0.16191909340548588,
+              "get_media_info": 0.00778661813283168,
+              "get_storage_info": 0.19571095174060954,
+              "phone_health_check": 0.36095702905070415,
+              "save_note": 0.03553847224877962,
+              "search_local_files": 0.013775020940121544,
+              "search_notes": 0.04644388262495369
+            },
+            "confidence": 0.2810766576820422
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29394.73804199997
+    },
+    {
+      "id": "pr_get_storage_info_test_001",
+      "state": "Can I cache this streaming content offline?",
+      "gold": "get_storage_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07320393454280821,
+        "get_battery_info": 0.043565415587386566,
+        "get_device_info": 0.11827770987340677,
+        "get_media_info": 0.022268193219219686,
+        "get_storage_info": 0.19911436576649136,
+        "phone_health_check": 0.2539422855704051,
+        "save_note": 0.1474189140199095,
+        "search_local_files": 0.044568856490975334,
+        "search_notes": 0.09764032492939752
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07320393454280821,
+              "get_battery_info": 0.043565415587386566,
+              "get_device_info": 0.11827770987340677,
+              "get_media_info": 0.022268193219219686,
+              "get_storage_info": 0.19911436576649136,
+              "phone_health_check": 0.2539422855704051,
+              "save_note": 0.1474189140199095,
+              "search_local_files": 0.044568856490975334,
+              "search_notes": 0.09764032492939752
+            },
+            "confidence": 0.16068507126670575
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28649.48274999995
+    },
+    {
+      "id": "pr_get_storage_info_test_002",
+      "state": "Tell me my storage numbers",
+      "gold": "get_storage_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0742165633408664,
+        "get_battery_info": 0.06023829222205882,
+        "get_device_info": 0.19077903570928845,
+        "get_media_info": 0.008139236068555183,
+        "get_storage_info": 0.22091248513401698,
+        "phone_health_check": 0.2980738083503818,
+        "save_note": 0.048069936698535536,
+        "search_local_files": 0.021553144765580956,
+        "search_notes": 0.07801749771071585
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0742165633408664,
+              "get_battery_info": 0.06023829222205882,
+              "get_device_info": 0.19077903570928845,
+              "get_media_info": 0.008139236068555183,
+              "get_storage_info": 0.22091248513401698,
+              "phone_health_check": 0.2980738083503818,
+              "save_note": 0.048069936698535536,
+              "search_local_files": 0.021553144765580956,
+              "search_notes": 0.07801749771071585
+            },
+            "confidence": 0.21033303439417952
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 27890.39470800003
+    },
+    {
+      "id": "pr_get_storage_info_test_003",
+      "state": "How much combined storage do I have?",
+      "gold": "get_storage_info",
+      "chosen": "get_storage_info",
+      "correct": true,
+      "probs": {
+        "answer": 0.07562108897399131,
+        "get_battery_info": 0.05755808485707214,
+        "get_device_info": 0.15075631748858045,
+        "get_media_info": 0.006959416772169626,
+        "get_storage_info": 0.35589698535800146,
+        "phone_health_check": 0.24737066348715173,
+        "save_note": 0.032645642608463,
+        "search_local_files": 0.016839589119606542,
+        "search_notes": 0.056352211334963806
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.07562108897399131,
+              "get_battery_info": 0.05755808485707214,
+              "get_device_info": 0.15075631748858045,
+              "get_media_info": 0.006959416772169626,
+              "get_storage_info": 0.35589698535800146,
+              "phone_health_check": 0.24737066348715173,
+              "save_note": 0.032645642608463,
+              "search_local_files": 0.016839589119606542,
+              "search_notes": 0.056352211334963806
+            },
+            "confidence": 0.2753841085277517
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29178.63045899992
+    },
+    {
+      "id": "pr_get_storage_info_test_004",
+      "state": "How close am I to running out of disk space?",
+      "gold": "get_storage_info",
+      "chosen": "get_storage_info",
+      "correct": true,
+      "probs": {
+        "answer": 0.06679340850575133,
+        "get_battery_info": 0.08638613510452418,
+        "get_device_info": 0.128408841768112,
+        "get_media_info": 0.007294260544956726,
+        "get_storage_info": 0.32887978839323456,
+        "phone_health_check": 0.2755380848418433,
+        "save_note": 0.033693687287603455,
+        "search_local_files": 0.019625342092984603,
+        "search_notes": 0.053380451460989915
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.06679340850575133,
+              "get_battery_info": 0.08638613510452418,
+              "get_device_info": 0.128408841768112,
+              "get_media_info": 0.007294260544956726,
+              "get_storage_info": 0.32887978839323456,
+              "phone_health_check": 0.2755380848418433,
+              "save_note": 0.033693687287603455,
+              "search_local_files": 0.019625342092984603,
+              "search_notes": 0.053380451460989915
+            },
+            "confidence": 0.2449897619423889
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 24273.056915999972
+    },
+    {
+      "id": "pr_get_storage_info_test_005",
+      "state": "Can I install this 1.5GB update?",
+      "gold": "get_storage_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06445469360328313,
+        "get_battery_info": 0.05656247820664608,
+        "get_device_info": 0.1858348333858003,
+        "get_media_info": 0.006369964547930796,
+        "get_storage_info": 0.2649195359397171,
+        "phone_health_check": 0.3178534094962351,
+        "save_note": 0.038860373150346995,
+        "search_local_files": 0.014896414788659535,
+        "search_notes": 0.05024829688138087
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06445469360328313,
+              "get_battery_info": 0.05656247820664608,
+              "get_device_info": 0.1858348333858003,
+              "get_media_info": 0.006369964547930796,
+              "get_storage_info": 0.2649195359397171,
+              "phone_health_check": 0.3178534094962351,
+              "save_note": 0.038860373150346995,
+              "search_local_files": 0.014896414788659535,
+              "search_notes": 0.05024829688138087
+            },
+            "confidence": 0.2325850856832645
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28658.979208999994
+    },
+    {
+      "id": "pr_get_storage_info_test_006",
+      "state": "Can I download a 1.2GB file?",
+      "gold": "get_storage_info",
+      "chosen": "get_storage_info",
+      "correct": true,
+      "probs": {
+        "answer": 0.066030952951929,
+        "get_battery_info": 0.04137745469801414,
+        "get_device_info": 0.15241121352972375,
+        "get_media_info": 0.01108460558317757,
+        "get_storage_info": 0.33010470274944287,
+        "phone_health_check": 0.2637880765960988,
+        "save_note": 0.04574776503476012,
+        "search_local_files": 0.03390172779426882,
+        "search_notes": 0.05555350106258492
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.066030952951929,
+              "get_battery_info": 0.04137745469801414,
+              "get_device_info": 0.15241121352972375,
+              "get_media_info": 0.01108460558317757,
+              "get_storage_info": 0.33010470274944287,
+              "phone_health_check": 0.2637880765960988,
+              "save_note": 0.04574776503476012,
+              "search_local_files": 0.03390172779426882,
+              "search_notes": 0.05555350106258492
+            },
+            "confidence": 0.24636779059312325
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28705.93529200005
+    },
+    {
+      "id": "pr_get_storage_info_test_007",
+      "state": "Is my storage fragmented?",
+      "gold": "get_storage_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06465041192972949,
+        "get_battery_info": 0.04731032661245008,
+        "get_device_info": 0.13940592024724988,
+        "get_media_info": 0.005592144163349139,
+        "get_storage_info": 0.2998831066002253,
+        "phone_health_check": 0.32396852174900115,
+        "save_note": 0.03865995196720253,
+        "search_local_files": 0.020015726043282743,
+        "search_notes": 0.060513890687509585
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06465041192972949,
+              "get_battery_info": 0.04731032661245008,
+              "get_device_info": 0.13940592024724988,
+              "get_media_info": 0.005592144163349139,
+              "get_storage_info": 0.2998831066002253,
+              "phone_health_check": 0.32396852174900115,
+              "save_note": 0.03865995196720253,
+              "search_local_files": 0.020015726043282743,
+              "search_notes": 0.060513890687509585
+            },
+            "confidence": 0.23946458696762632
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28950.783583000088
+    },
+    {
+      "id": "pr_get_storage_info_test_008",
+      "state": "How full is my phone's storage?",
+      "gold": "get_storage_info",
+      "chosen": "get_storage_info",
+      "correct": true,
+      "probs": {
+        "answer": 0.0626443807909131,
+        "get_battery_info": 0.05398512959948279,
+        "get_device_info": 0.17768800656641176,
+        "get_media_info": 0.007913875043613666,
+        "get_storage_info": 0.36860526429469975,
+        "phone_health_check": 0.25258769618050314,
+        "save_note": 0.027492334548342483,
+        "search_local_files": 0.012931546125844472,
+        "search_notes": 0.03615176685018863
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_storage_info",
+            "probabilities": {
+              "answer": 0.0626443807909131,
+              "get_battery_info": 0.05398512959948279,
+              "get_device_info": 0.17768800656641176,
+              "get_media_info": 0.007913875043613666,
+              "get_storage_info": 0.36860526429469975,
+              "phone_health_check": 0.25258769618050314,
+              "save_note": 0.027492334548342483,
+              "search_local_files": 0.012931546125844472,
+              "search_notes": 0.03615176685018863
+            },
+            "confidence": 0.28968092233153725
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29477.22045899991
+    },
+    {
+      "id": "pr_get_storage_info_test_009",
+      "state": "Is there room for a system update?",
+      "gold": "get_storage_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08968646462402291,
+        "get_battery_info": 0.05878835373617293,
+        "get_device_info": 0.14503581825765038,
+        "get_media_info": 0.007230396948945512,
+        "get_storage_info": 0.102064670878714,
+        "phone_health_check": 0.47349664225792,
+        "save_note": 0.040109303390436786,
+        "search_local_files": 0.016892459570491094,
+        "search_notes": 0.06669589033564638
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08968646462402291,
+              "get_battery_info": 0.05878835373617293,
+              "get_device_info": 0.14503581825765038,
+              "get_media_info": 0.007230396948945512,
+              "get_storage_info": 0.102064670878714,
+              "phone_health_check": 0.47349664225792,
+              "save_note": 0.040109303390436786,
+              "search_local_files": 0.016892459570491094,
+              "search_notes": 0.06669589033564638
+            },
+            "confidence": 0.40768372254016
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29681.733041000145
+    },
+    {
+      "id": "pr_get_media_info_test_000",
+      "state": "How far am I through the podcast?",
+      "gold": "get_media_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0986195134286535,
+        "get_battery_info": 0.033931327195067654,
+        "get_device_info": 0.16572630918906012,
+        "get_media_info": 0.030990424211386376,
+        "get_storage_info": 0.04921297797763709,
+        "phone_health_check": 0.4553167584912977,
+        "save_note": 0.04730179148257386,
+        "search_local_files": 0.02228561746034948,
+        "search_notes": 0.09661528056397409
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0986195134286535,
+              "get_battery_info": 0.033931327195067654,
+              "get_device_info": 0.16572630918906012,
+              "get_media_info": 0.030990424211386376,
+              "get_storage_info": 0.04921297797763709,
+              "phone_health_check": 0.4553167584912977,
+              "save_note": 0.04730179148257386,
+              "search_local_files": 0.02228561746034948,
+              "search_notes": 0.09661528056397409
+            },
+            "confidence": 0.38723135330270997
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28615.477332999944
+    },
+    {
+      "id": "pr_get_media_info_test_001",
+      "state": "Is this track DRM protected?",
+      "gold": "get_media_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.11066553036321006,
+        "get_battery_info": 0.046232514877625475,
+        "get_device_info": 0.17138105764471703,
+        "get_media_info": 0.030184800167121408,
+        "get_storage_info": 0.046911545061894995,
+        "phone_health_check": 0.43698254364837263,
+        "save_note": 0.044876306325129414,
+        "search_local_files": 0.02663848465469477,
+        "search_notes": 0.08612721725723432
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.11066553036321006,
+              "get_battery_info": 0.046232514877625475,
+              "get_device_info": 0.17138105764471703,
+              "get_media_info": 0.030184800167121408,
+              "get_storage_info": 0.046911545061894995,
+              "phone_health_check": 0.43698254364837263,
+              "save_note": 0.044876306325129414,
+              "search_local_files": 0.02663848465469477,
+              "search_notes": 0.08612721725723432
+            },
+            "confidence": 0.36660536160441926
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28784.67058399997
+    },
+    {
+      "id": "pr_get_media_info_test_002",
+      "state": "What track am I listening to?",
+      "gold": "get_media_info",
+      "chosen": "get_media_info",
+      "correct": true,
+      "probs": {
+        "answer": 0.09705596548579096,
+        "get_battery_info": 0.04734076859434704,
+        "get_device_info": 0.14254348485450377,
+        "get_media_info": 0.3430140678480688,
+        "get_storage_info": 0.027155595588119353,
+        "phone_health_check": 0.22857223818762898,
+        "save_note": 0.033515492381090514,
+        "search_local_files": 0.020417611700517438,
+        "search_notes": 0.06038477535993325
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_media_info",
+            "probabilities": {
+              "answer": 0.09705596548579096,
+              "get_battery_info": 0.04734076859434704,
+              "get_device_info": 0.14254348485450377,
+              "get_media_info": 0.3430140678480688,
+              "get_storage_info": 0.027155595588119353,
+              "phone_health_check": 0.22857223818762898,
+              "save_note": 0.033515492381090514,
+              "search_local_files": 0.020417611700517438,
+              "search_notes": 0.06038477535993325
+            },
+            "confidence": 0.26089082632907745
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28807.482791999973
+    },
+    {
+      "id": "pr_get_media_info_test_003",
+      "state": "Is music paused or playing?",
+      "gold": "get_media_info",
+      "chosen": "get_media_info",
+      "correct": true,
+      "probs": {
+        "answer": 0.10472448318571219,
+        "get_battery_info": 0.03088607111442628,
+        "get_device_info": 0.1059695350771797,
+        "get_media_info": 0.3570004323230909,
+        "get_storage_info": 0.02325815142601383,
+        "phone_health_check": 0.2496463954827474,
+        "save_note": 0.04441583860754174,
+        "search_local_files": 0.016171321589152365,
+        "search_notes": 0.0679277711941356
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_media_info",
+            "probabilities": {
+              "answer": 0.10472448318571219,
+              "get_battery_info": 0.03088607111442628,
+              "get_device_info": 0.1059695350771797,
+              "get_media_info": 0.3570004323230909,
+              "get_storage_info": 0.02325815142601383,
+              "phone_health_check": 0.2496463954827474,
+              "save_note": 0.04441583860754174,
+              "search_local_files": 0.016171321589152365,
+              "search_notes": 0.0679277711941356
+            },
+            "confidence": 0.27662548636347734
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28559.319417000097
+    },
+    {
+      "id": "pr_get_media_info_test_004",
+      "state": "Media info please",
+      "gold": "get_media_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.10612363367528393,
+        "get_battery_info": 0.07128914039681859,
+        "get_device_info": 0.2055412848504754,
+        "get_media_info": 0.03474363107549271,
+        "get_storage_info": 0.06163483924902994,
+        "phone_health_check": 0.3707737802236031,
+        "save_note": 0.04305930856461228,
+        "search_local_files": 0.027217557560143844,
+        "search_notes": 0.07961682440454027
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.10612363367528393,
+              "get_battery_info": 0.07128914039681859,
+              "get_device_info": 0.2055412848504754,
+              "get_media_info": 0.03474363107549271,
+              "get_storage_info": 0.06163483924902994,
+              "phone_health_check": 0.3707737802236031,
+              "save_note": 0.04305930856461228,
+              "search_local_files": 0.027217557560143844,
+              "search_notes": 0.07961682440454027
+            },
+            "confidence": 0.2921205027515535
+          }
+        },
+        "usage": {
+          "input_tokens": 401,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29139.063333999955
+    },
+    {
+      "id": "pr_get_media_info_test_005",
+      "state": "Is the player active right now?",
+      "gold": "get_media_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.09529769954969364,
+        "get_battery_info": 0.07988139332479688,
+        "get_device_info": 0.13825229601713288,
+        "get_media_info": 0.012526269411483087,
+        "get_storage_info": 0.04386753230790419,
+        "phone_health_check": 0.502034471649537,
+        "save_note": 0.03368920095026762,
+        "search_local_files": 0.017465147264371508,
+        "search_notes": 0.07698598952481328
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.09529769954969364,
+              "get_battery_info": 0.07988139332479688,
+              "get_device_info": 0.13825229601713288,
+              "get_media_info": 0.012526269411483087,
+              "get_storage_info": 0.04386753230790419,
+              "phone_health_check": 0.502034471649537,
+              "save_note": 0.03368920095026762,
+              "search_local_files": 0.017465147264371508,
+              "search_notes": 0.07698598952481328
+            },
+            "confidence": 0.4397887806057291
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29185.76287499991
+    },
+    {
+      "id": "pr_get_media_info_test_006",
+      "state": "Is the music too loud according to my current volume?",
+      "gold": "get_media_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0958745629432914,
+        "get_battery_info": 0.039505011727434654,
+        "get_device_info": 0.12881643306660973,
+        "get_media_info": 0.2853158964905997,
+        "get_storage_info": 0.030480904202392762,
+        "phone_health_check": 0.30272740147511823,
+        "save_note": 0.04380955158793114,
+        "search_local_files": 0.016439956597499195,
+        "search_notes": 0.05703028190912314
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0958745629432914,
+              "get_battery_info": 0.039505011727434654,
+              "get_device_info": 0.12881643306660973,
+              "get_media_info": 0.2853158964905997,
+              "get_storage_info": 0.030480904202392762,
+              "phone_health_check": 0.30272740147511823,
+              "save_note": 0.04380955158793114,
+              "search_local_files": 0.016439956597499195,
+              "search_notes": 0.05703028190912314
+            },
+            "confidence": 0.21556832665950804
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29393.379125000138
+    },
+    {
+      "id": "pr_get_media_info_test_007",
+      "state": "What is the podcast title?",
+      "gold": "get_media_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.13271554345390146,
+        "get_battery_info": 0.04690017915392484,
+        "get_device_info": 0.16500102013671994,
+        "get_media_info": 0.017859635561143613,
+        "get_storage_info": 0.06468516839770962,
+        "phone_health_check": 0.41435600409705264,
+        "save_note": 0.04367933705508923,
+        "search_local_files": 0.022839265916532243,
+        "search_notes": 0.0919638462279263
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.13271554345390146,
+              "get_battery_info": 0.04690017915392484,
+              "get_device_info": 0.16500102013671994,
+              "get_media_info": 0.017859635561143613,
+              "get_storage_info": 0.06468516839770962,
+              "phone_health_check": 0.41435600409705264,
+              "save_note": 0.04367933705508923,
+              "search_local_files": 0.022839265916532243,
+              "search_notes": 0.0919638462279263
+            },
+            "confidence": 0.3411505046091842
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28981.703375000052
+    },
+    {
+      "id": "pr_get_media_info_test_008",
+      "state": "What is the total length of this track?",
+      "gold": "get_media_info",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.10615372573708912,
+        "get_battery_info": 0.028004477201167204,
+        "get_device_info": 0.1171729242832698,
+        "get_media_info": 0.011400383835403212,
+        "get_storage_info": 0.06429615540414332,
+        "phone_health_check": 0.503670423021268,
+        "save_note": 0.0544664657410201,
+        "search_local_files": 0.019353674624359843,
+        "search_notes": 0.09548177015227936
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.10615372573708912,
+              "get_battery_info": 0.028004477201167204,
+              "get_device_info": 0.1171729242832698,
+              "get_media_info": 0.011400383835403212,
+              "get_storage_info": 0.06429615540414332,
+              "phone_health_check": 0.503670423021268,
+              "save_note": 0.0544664657410201,
+              "search_local_files": 0.019353674624359843,
+              "search_notes": 0.09548177015227936
+            },
+            "confidence": 0.4416292258989265
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29177.57762500014
+    },
+    {
+      "id": "pr_get_media_info_test_009",
+      "state": "What video is playing?",
+      "gold": "get_media_info",
+      "chosen": "get_media_info",
+      "correct": true,
+      "probs": {
+        "answer": 0.07641399546720293,
+        "get_battery_info": 0.047172651741619255,
+        "get_device_info": 0.14757032907609477,
+        "get_media_info": 0.3540575958311441,
+        "get_storage_info": 0.02466253754805656,
+        "phone_health_check": 0.23909914248880904,
+        "save_note": 0.03384893844093606,
+        "search_local_files": 0.021240836775840093,
+        "search_notes": 0.055933972630297216
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "get_media_info",
+            "probabilities": {
+              "answer": 0.07641399546720293,
+              "get_battery_info": 0.047172651741619255,
+              "get_device_info": 0.14757032907609477,
+              "get_media_info": 0.3540575958311441,
+              "get_storage_info": 0.02466253754805656,
+              "phone_health_check": 0.23909914248880904,
+              "save_note": 0.03384893844093606,
+              "search_local_files": 0.021240836775840093,
+              "search_notes": 0.055933972630297216
+            },
+            "confidence": 0.27331479531003716
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28478.92449999995
+    },
+    {
+      "id": "pr_search_local_files_test_000",
+      "state": "Find text files on my device",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.05479662793889683,
+        "get_battery_info": 0.05559198637932401,
+        "get_device_info": 0.15000972167217766,
+        "get_media_info": 0.010288257640083249,
+        "get_storage_info": 0.15699676589627395,
+        "phone_health_check": 0.28042169458600624,
+        "save_note": 0.047887518999272925,
+        "search_local_files": 0.16113866125216758,
+        "search_notes": 0.08286876563579751
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.05479662793889683,
+              "get_battery_info": 0.05559198637932401,
+              "get_device_info": 0.15000972167217766,
+              "get_media_info": 0.010288257640083249,
+              "get_storage_info": 0.15699676589627395,
+              "phone_health_check": 0.28042169458600624,
+              "save_note": 0.047887518999272925,
+              "search_local_files": 0.16113866125216758,
+              "search_notes": 0.08286876563579751
+            },
+            "confidence": 0.19047440640925703
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29315.69829099999
+    },
+    {
+      "id": "pr_search_local_files_test_001",
+      "state": "Search for a document called budget_2026",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08602963051088762,
+        "get_battery_info": 0.05626546137904596,
+        "get_device_info": 0.148684332698761,
+        "get_media_info": 0.0063766444765819925,
+        "get_storage_info": 0.08890103598763259,
+        "phone_health_check": 0.4160506107965996,
+        "save_note": 0.04990649338654676,
+        "search_local_files": 0.056462914263451146,
+        "search_notes": 0.09132287650049317
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08602963051088762,
+              "get_battery_info": 0.05626546137904596,
+              "get_device_info": 0.148684332698761,
+              "get_media_info": 0.0063766444765819925,
+              "get_storage_info": 0.08890103598763259,
+              "phone_health_check": 0.4160506107965996,
+              "save_note": 0.04990649338654676,
+              "search_local_files": 0.056462914263451146,
+              "search_notes": 0.09132287650049317
+            },
+            "confidence": 0.3430569371461746
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 24702.7149999999
+    },
+    {
+      "id": "pr_search_local_files_test_002",
+      "state": "Search for a file called budget_q4.xlsx",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07888123969555388,
+        "get_battery_info": 0.05744856203590753,
+        "get_device_info": 0.135324588321689,
+        "get_media_info": 0.00709044167189025,
+        "get_storage_info": 0.10587862076838939,
+        "phone_health_check": 0.3942042961316024,
+        "save_note": 0.052955431807150094,
+        "search_local_files": 0.07628130035099745,
+        "search_notes": 0.09193551921681985
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07888123969555388,
+              "get_battery_info": 0.05744856203590753,
+              "get_device_info": 0.135324588321689,
+              "get_media_info": 0.00709044167189025,
+              "get_storage_info": 0.10587862076838939,
+              "phone_health_check": 0.3942042961316024,
+              "save_note": 0.052955431807150094,
+              "search_local_files": 0.07628130035099745,
+              "search_notes": 0.09193551921681985
+            },
+            "confidence": 0.3184798331480527
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28735.670124999844
+    },
+    {
+      "id": "pr_search_local_files_test_003",
+      "state": "Find the audio recording I made",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0987194676604787,
+        "get_battery_info": 0.05296038082363892,
+        "get_device_info": 0.160994894574156,
+        "get_media_info": 0.050701203370265,
+        "get_storage_info": 0.052085363253292785,
+        "phone_health_check": 0.3543073251215564,
+        "save_note": 0.058758259781158076,
+        "search_local_files": 0.0458753986253002,
+        "search_notes": 0.12559770679015395
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0987194676604787,
+              "get_battery_info": 0.05296038082363892,
+              "get_device_info": 0.160994894574156,
+              "get_media_info": 0.050701203370265,
+              "get_storage_info": 0.052085363253292785,
+              "phone_health_check": 0.3543073251215564,
+              "save_note": 0.058758259781158076,
+              "search_local_files": 0.0458753986253002,
+              "search_notes": 0.12559770679015395
+            },
+            "confidence": 0.27359574076175097
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 25157.735582999976
+    },
+    {
+      "id": "pr_search_local_files_test_004",
+      "state": "Look for any files that contain my name",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08565970361406204,
+        "get_battery_info": 0.03846099932079638,
+        "get_device_info": 0.17996910643126068,
+        "get_media_info": 0.008103669269575856,
+        "get_storage_info": 0.06532202030451945,
+        "phone_health_check": 0.3120509635315133,
+        "save_note": 0.0555328955498224,
+        "search_local_files": 0.11445170674177801,
+        "search_notes": 0.1404489352366719
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08565970361406204,
+              "get_battery_info": 0.03846099932079638,
+              "get_device_info": 0.17996910643126068,
+              "get_media_info": 0.008103669269575856,
+              "get_storage_info": 0.06532202030451945,
+              "phone_health_check": 0.3120509635315133,
+              "save_note": 0.0555328955498224,
+              "search_local_files": 0.11445170674177801,
+              "search_notes": 0.1404489352366719
+            },
+            "confidence": 0.22605733397295247
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 25960.681582999998
+    },
+    {
+      "id": "pr_search_local_files_test_005",
+      "state": "Search my downloaded folder for the application form",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08147599348337069,
+        "get_battery_info": 0.0484204164175111,
+        "get_device_info": 0.15264985323908717,
+        "get_media_info": 0.007933175701062733,
+        "get_storage_info": 0.10315388822210138,
+        "phone_health_check": 0.3664710814795165,
+        "save_note": 0.05573762287703602,
+        "search_local_files": 0.07370404686343193,
+        "search_notes": 0.11045392171688262
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08147599348337069,
+              "get_battery_info": 0.0484204164175111,
+              "get_device_info": 0.15264985323908717,
+              "get_media_info": 0.007933175701062733,
+              "get_storage_info": 0.10315388822210138,
+              "phone_health_check": 0.3664710814795165,
+              "save_note": 0.05573762287703602,
+              "search_local_files": 0.07370404686343193,
+              "search_notes": 0.11045392171688262
+            },
+            "confidence": 0.2872799666644561
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28894.75587499987
+    },
+    {
+      "id": "pr_search_local_files_test_006",
+      "state": "Find my file named contract.docx",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06986568315583973,
+        "get_battery_info": 0.043499300295777525,
+        "get_device_info": 0.1410190009698165,
+        "get_media_info": 0.007406357040485751,
+        "get_storage_info": 0.08164979231168763,
+        "phone_health_check": 0.3454374779978391,
+        "save_note": 0.06218335305646947,
+        "search_local_files": 0.11262885371987982,
+        "search_notes": 0.13631018145220444
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06986568315583973,
+              "get_battery_info": 0.043499300295777525,
+              "get_device_info": 0.1410190009698165,
+              "get_media_info": 0.007406357040485751,
+              "get_storage_info": 0.08164979231168763,
+              "phone_health_check": 0.3454374779978391,
+              "save_note": 0.06218335305646947,
+              "search_local_files": 0.11262885371987982,
+              "search_notes": 0.13631018145220444
+            },
+            "confidence": 0.26361716274756897
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 24681.979583000157
+    },
+    {
+      "id": "pr_search_local_files_test_007",
+      "state": "Search for Markdown files I've saved",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07749371090382935,
+        "get_battery_info": 0.050839907521090966,
+        "get_device_info": 0.12971291539233817,
+        "get_media_info": 0.006670516338136054,
+        "get_storage_info": 0.10503655382096472,
+        "phone_health_check": 0.3122571625044829,
+        "save_note": 0.06359158421620827,
+        "search_local_files": 0.12004569301632395,
+        "search_notes": 0.1343519562866256
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07749371090382935,
+              "get_battery_info": 0.050839907521090966,
+              "get_device_info": 0.12971291539233817,
+              "get_media_info": 0.006670516338136054,
+              "get_storage_info": 0.10503655382096472,
+              "phone_health_check": 0.3122571625044829,
+              "save_note": 0.06359158421620827,
+              "search_local_files": 0.12004569301632395,
+              "search_notes": 0.1343519562866256
+            },
+            "confidence": 0.22628930781754325
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29065.991582999915
+    },
+    {
+      "id": "pr_search_local_files_test_008",
+      "state": "Find any SQLite database files",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07583799578008724,
+        "get_battery_info": 0.06900140611114178,
+        "get_device_info": 0.15912643131316787,
+        "get_media_info": 0.010838233975371802,
+        "get_storage_info": 0.1080091889431268,
+        "phone_health_check": 0.38661342451633984,
+        "save_note": 0.042301334328429925,
+        "search_local_files": 0.05510991283821131,
+        "search_notes": 0.09316207219412356
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07583799578008724,
+              "get_battery_info": 0.06900140611114178,
+              "get_device_info": 0.15912643131316787,
+              "get_media_info": 0.010838233975371802,
+              "get_storage_info": 0.1080091889431268,
+              "phone_health_check": 0.38661342451633984,
+              "save_note": 0.042301334328429925,
+              "search_local_files": 0.05510991283821131,
+              "search_notes": 0.09316207219412356
+            },
+            "confidence": 0.30994010258088234
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29137.308458000007
+    },
+    {
+      "id": "pr_search_local_files_test_009",
+      "state": "I need to find a document on my device",
+      "gold": "search_local_files",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07655271866775844,
+        "get_battery_info": 0.053947613582444626,
+        "get_device_info": 0.18525786785457074,
+        "get_media_info": 0.014395359193397525,
+        "get_storage_info": 0.10979949069387437,
+        "phone_health_check": 0.31620489069103475,
+        "save_note": 0.04692996908856891,
+        "search_local_files": 0.08702088070703534,
+        "search_notes": 0.10989120952131536
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07655271866775844,
+              "get_battery_info": 0.053947613582444626,
+              "get_device_info": 0.18525786785457074,
+              "get_media_info": 0.014395359193397525,
+              "get_storage_info": 0.10979949069387437,
+              "phone_health_check": 0.31620489069103475,
+              "save_note": 0.04692996908856891,
+              "search_local_files": 0.08702088070703534,
+              "search_notes": 0.10989120952131536
+            },
+            "confidence": 0.2307305020274141
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29006.546874999913
+    },
+    {
+      "id": "pr_search_notes_test_000",
+      "state": "Find the note I made about the software license",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08136932608206121,
+        "get_battery_info": 0.04304324946555385,
+        "get_device_info": 0.16272222570857725,
+        "get_media_info": 0.008763686519772114,
+        "get_storage_info": 0.08286343663302143,
+        "phone_health_check": 0.3629088168870569,
+        "save_note": 0.05091237483055863,
+        "search_local_files": 0.03405388425500115,
+        "search_notes": 0.1733629996183974
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08136932608206121,
+              "get_battery_info": 0.04304324946555385,
+              "get_device_info": 0.16272222570857725,
+              "get_media_info": 0.008763686519772114,
+              "get_storage_info": 0.08286343663302143,
+              "phone_health_check": 0.3629088168870569,
+              "save_note": 0.05091237483055863,
+              "search_local_files": 0.03405388425500115,
+              "search_notes": 0.1733629996183974
+            },
+            "confidence": 0.28327241899793904
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28882.578625000177
+    },
+    {
+      "id": "pr_search_notes_test_001",
+      "state": "What was the PIN I wrote down?",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0772902294470603,
+        "get_battery_info": 0.038328951861544454,
+        "get_device_info": 0.15944138312416542,
+        "get_media_info": 0.00909953914594539,
+        "get_storage_info": 0.06289013987081944,
+        "phone_health_check": 0.3662167022454079,
+        "save_note": 0.07548992591206598,
+        "search_local_files": 0.032808360462903786,
+        "search_notes": 0.17843476793008728
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0772902294470603,
+              "get_battery_info": 0.038328951861544454,
+              "get_device_info": 0.15944138312416542,
+              "get_media_info": 0.00909953914594539,
+              "get_storage_info": 0.06289013987081944,
+              "phone_health_check": 0.3662167022454079,
+              "save_note": 0.07548992591206598,
+              "search_local_files": 0.032808360462903786,
+              "search_notes": 0.17843476793008728
+            },
+            "confidence": 0.28699379002608394
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28909.800916999986
+    },
+    {
+      "id": "pr_search_notes_test_002",
+      "state": "Find the order number I saved",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.05222170399525084,
+        "get_battery_info": 0.030104423637115282,
+        "get_device_info": 0.11839044511082121,
+        "get_media_info": 0.008018357650809528,
+        "get_storage_info": 0.07650389505925738,
+        "phone_health_check": 0.2658404238722517,
+        "save_note": 0.1903696732337213,
+        "search_local_files": 0.03843884032695246,
+        "search_notes": 0.2201122371138202
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.05222170399525084,
+              "get_battery_info": 0.030104423637115282,
+              "get_device_info": 0.11839044511082121,
+              "get_media_info": 0.008018357650809528,
+              "get_storage_info": 0.07650389505925738,
+              "phone_health_check": 0.2658404238722517,
+              "save_note": 0.1903696732337213,
+              "search_local_files": 0.03843884032695246,
+              "search_notes": 0.2201122371138202
+            },
+            "confidence": 0.17407047685628319
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29337.61795800001
+    },
+    {
+      "id": "pr_search_notes_test_003",
+      "state": "What address did I note down?",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0686031131661995,
+        "get_battery_info": 0.0327552999805427,
+        "get_device_info": 0.16930228130555,
+        "get_media_info": 0.00810398408214971,
+        "get_storage_info": 0.061384846541524346,
+        "phone_health_check": 0.34787124150690785,
+        "save_note": 0.09777469543712128,
+        "search_local_files": 0.030857991582602464,
+        "search_notes": 0.18334654639740205
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0686031131661995,
+              "get_battery_info": 0.0327552999805427,
+              "get_device_info": 0.16930228130555,
+              "get_media_info": 0.00810398408214971,
+              "get_storage_info": 0.061384846541524346,
+              "phone_health_check": 0.34787124150690785,
+              "save_note": 0.09777469543712128,
+              "search_local_files": 0.030857991582602464,
+              "search_notes": 0.18334654639740205
+            },
+            "confidence": 0.2663551466952713
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28900.810207999937
+    },
+    {
+      "id": "pr_search_notes_test_004",
+      "state": "What budget note do I have for the trip?",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07348306675167623,
+        "get_battery_info": 0.04525641011563044,
+        "get_device_info": 0.1219308975791094,
+        "get_media_info": 0.010491625473652256,
+        "get_storage_info": 0.07943826865870658,
+        "phone_health_check": 0.38153840584799964,
+        "save_note": 0.0617126890551059,
+        "search_local_files": 0.04126220668734236,
+        "search_notes": 0.18488642983077727
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07348306675167623,
+              "get_battery_info": 0.04525641011563044,
+              "get_device_info": 0.1219308975791094,
+              "get_media_info": 0.010491625473652256,
+              "get_storage_info": 0.07943826865870658,
+              "phone_health_check": 0.38153840584799964,
+              "save_note": 0.0617126890551059,
+              "search_local_files": 0.04126220668734236,
+              "search_notes": 0.18488642983077727
+            },
+            "confidence": 0.30423070657899964
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29016.97591600009
+    },
+    {
+      "id": "pr_search_notes_test_005",
+      "state": "What have I noted?",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.09037614477762937,
+        "get_battery_info": 0.05570772813697248,
+        "get_device_info": 0.15490123046792842,
+        "get_media_info": 0.009029503853088539,
+        "get_storage_info": 0.06710699823039766,
+        "phone_health_check": 0.4148110122496944,
+        "save_note": 0.05303784988978156,
+        "search_local_files": 0.024394158948478878,
+        "search_notes": 0.1306353734460287
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.09037614477762937,
+              "get_battery_info": 0.05570772813697248,
+              "get_device_info": 0.15490123046792842,
+              "get_media_info": 0.009029503853088539,
+              "get_storage_info": 0.06710699823039766,
+              "phone_health_check": 0.4148110122496944,
+              "save_note": 0.05303784988978156,
+              "search_local_files": 0.024394158948478878,
+              "search_notes": 0.1306353734460287
+            },
+            "confidence": 0.3416623887809062
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29739.98762500014
+    },
+    {
+      "id": "pr_search_notes_test_006",
+      "state": "Find the packing list I made",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08224693283216042,
+        "get_battery_info": 0.04675543524752927,
+        "get_device_info": 0.14332573674098184,
+        "get_media_info": 0.008635211838351602,
+        "get_storage_info": 0.08935613592471821,
+        "phone_health_check": 0.39161190268523904,
+        "save_note": 0.06162224076980365,
+        "search_local_files": 0.03320077034375809,
+        "search_notes": 0.14324563361745804
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08224693283216042,
+              "get_battery_info": 0.04675543524752927,
+              "get_device_info": 0.14332573674098184,
+              "get_media_info": 0.008635211838351602,
+              "get_storage_info": 0.08935613592471821,
+              "phone_health_check": 0.39161190268523904,
+              "save_note": 0.06162224076980365,
+              "search_local_files": 0.03320077034375809,
+              "search_notes": 0.14324563361745804
+            },
+            "confidence": 0.31556339052089394
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28937.93370800017
+    },
+    {
+      "id": "pr_search_notes_test_007",
+      "state": "What do I need to buy at the store?",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.10149620734846074,
+        "get_battery_info": 0.05552976305613835,
+        "get_device_info": 0.16026469052877473,
+        "get_media_info": 0.010965195815145,
+        "get_storage_info": 0.10026615474637872,
+        "phone_health_check": 0.42362834891320233,
+        "save_note": 0.048007745091109465,
+        "search_local_files": 0.021390654454998204,
+        "search_notes": 0.07845124004579251
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.10149620734846074,
+              "get_battery_info": 0.05552976305613835,
+              "get_device_info": 0.16026469052877473,
+              "get_media_info": 0.010965195815145,
+              "get_storage_info": 0.10026615474637872,
+              "phone_health_check": 0.42362834891320233,
+              "save_note": 0.048007745091109465,
+              "search_local_files": 0.021390654454998204,
+              "search_notes": 0.07845124004579251
+            },
+            "confidence": 0.35158189252735267
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29494.224082999834
+    },
+    {
+      "id": "pr_search_notes_test_008",
+      "state": "When is my dentist appointment?",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0891872350630095,
+        "get_battery_info": 0.022312173718512334,
+        "get_device_info": 0.13083110613260965,
+        "get_media_info": 0.00542825508124587,
+        "get_storage_info": 0.04202527763909481,
+        "phone_health_check": 0.48637922815803475,
+        "save_note": 0.06103374096805262,
+        "search_local_files": 0.021241015038557267,
+        "search_notes": 0.14156196820088315
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0891872350630095,
+              "get_battery_info": 0.022312173718512334,
+              "get_device_info": 0.13083110613260965,
+              "get_media_info": 0.00542825508124587,
+              "get_storage_info": 0.04202527763909481,
+              "phone_health_check": 0.48637922815803475,
+              "save_note": 0.06103374096805262,
+              "search_local_files": 0.021241015038557267,
+              "search_notes": 0.14156196820088315
+            },
+            "confidence": 0.4221766316777891
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28822.553874999812
+    },
+    {
+      "id": "pr_search_notes_test_009",
+      "state": "What information did I save?",
+      "gold": "search_notes",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.06959520459509941,
+        "get_battery_info": 0.045696512378540395,
+        "get_device_info": 0.1327139416887606,
+        "get_media_info": 0.008949212533831049,
+        "get_storage_info": 0.0914320497987077,
+        "phone_health_check": 0.3119092516532937,
+        "save_note": 0.14262877559165862,
+        "search_local_files": 0.03998288871271581,
+        "search_notes": 0.15709216304739257
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06959520459509941,
+              "get_battery_info": 0.045696512378540395,
+              "get_device_info": 0.1327139416887606,
+              "get_media_info": 0.008949212533831049,
+              "get_storage_info": 0.0914320497987077,
+              "phone_health_check": 0.3119092516532937,
+              "save_note": 0.14262877559165862,
+              "search_local_files": 0.03998288871271581,
+              "search_notes": 0.15709216304739257
+            },
+            "confidence": 0.22589790810995541
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28584.872041999915
+    },
+    {
+      "id": "pr_save_note_test_000",
+      "state": "Save this: my gym locker combo is 14-27-38",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.07997733197694906,
+        "get_battery_info": 0.05069433160388197,
+        "get_device_info": 0.12885056985375065,
+        "get_media_info": 0.005803028844177759,
+        "get_storage_info": 0.08672575553477264,
+        "phone_health_check": 0.3430245199374211,
+        "save_note": 0.1590838057460004,
+        "search_local_files": 0.0312215958136284,
+        "search_notes": 0.11461906068941789
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07997733197694906,
+              "get_battery_info": 0.05069433160388197,
+              "get_device_info": 0.12885056985375065,
+              "get_media_info": 0.005803028844177759,
+              "get_storage_info": 0.08672575553477264,
+              "phone_health_check": 0.3430245199374211,
+              "save_note": 0.1590838057460004,
+              "search_local_files": 0.0312215958136284,
+              "search_notes": 0.11461906068941789
+            },
+            "confidence": 0.2609025849295988
+          }
+        },
+        "usage": {
+          "input_tokens": 415,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29800.18599999994
+    },
+    {
+      "id": "pr_save_note_test_001",
+      "state": "Remember to water the basil every two days",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.10470350932535122,
+        "get_battery_info": 0.03239246488652637,
+        "get_device_info": 0.09111000630234449,
+        "get_media_info": 0.004777978745057435,
+        "get_storage_info": 0.03760951864125345,
+        "phone_health_check": 0.4087769129044063,
+        "save_note": 0.1463857319551164,
+        "search_local_files": 0.020998959454429058,
+        "search_notes": 0.15324491778551527
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.10470350932535122,
+              "get_battery_info": 0.03239246488652637,
+              "get_device_info": 0.09111000630234449,
+              "get_media_info": 0.004777978745057435,
+              "get_storage_info": 0.03760951864125345,
+              "phone_health_check": 0.4087769129044063,
+              "save_note": 0.1463857319551164,
+              "search_local_files": 0.020998959454429058,
+              "search_notes": 0.15324491778551527
+            },
+            "confidence": 0.3348740270174571
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28929.1069169999
+    },
+    {
+      "id": "pr_save_note_test_002",
+      "state": "Note the delivery code: DEL-2026-XYZ",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08695164302359608,
+        "get_battery_info": 0.049542679320318,
+        "get_device_info": 0.1667254857302293,
+        "get_media_info": 0.008945291084581307,
+        "get_storage_info": 0.06942515921401995,
+        "phone_health_check": 0.4340607009634773,
+        "save_note": 0.053761372764519894,
+        "search_local_files": 0.024023871291016036,
+        "search_notes": 0.10656379660824214
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08695164302359608,
+              "get_battery_info": 0.049542679320318,
+              "get_device_info": 0.1667254857302293,
+              "get_media_info": 0.008945291084581307,
+              "get_storage_info": 0.06942515921401995,
+              "phone_health_check": 0.4340607009634773,
+              "save_note": 0.053761372764519894,
+              "search_local_files": 0.024023871291016036,
+              "search_notes": 0.10656379660824214
+            },
+            "confidence": 0.363318288583912
+          }
+        },
+        "usage": {
+          "input_tokens": 411,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 24746.858040999996
+    },
+    {
+      "id": "pr_save_note_test_003",
+      "state": "Remember the next service is due at 85,000km",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0676307342340943,
+        "get_battery_info": 0.050955128376463356,
+        "get_device_info": 0.12993597581616542,
+        "get_media_info": 0.005547995968823341,
+        "get_storage_info": 0.08128495679670455,
+        "phone_health_check": 0.4448322243607302,
+        "save_note": 0.09387691540749321,
+        "search_local_files": 0.021301254991715257,
+        "search_notes": 0.1046348140478105
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0676307342340943,
+              "get_battery_info": 0.050955128376463356,
+              "get_device_info": 0.12993597581616542,
+              "get_media_info": 0.005547995968823341,
+              "get_storage_info": 0.08128495679670455,
+              "phone_health_check": 0.4448322243607302,
+              "save_note": 0.09387691540749321,
+              "search_local_files": 0.021301254991715257,
+              "search_notes": 0.1046348140478105
+            },
+            "confidence": 0.3754362524058215
+          }
+        },
+        "usage": {
+          "input_tokens": 413,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29937.836375000188
+    },
+    {
+      "id": "pr_save_note_test_004",
+      "state": "Remember to call mom this weekend",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.10399841542684143,
+        "get_battery_info": 0.03552243332056179,
+        "get_device_info": 0.10264883068142583,
+        "get_media_info": 0.007448268435631462,
+        "get_storage_info": 0.04224794666818924,
+        "phone_health_check": 0.38072899578365427,
+        "save_note": 0.14350312540908386,
+        "search_local_files": 0.021096089954419774,
+        "search_notes": 0.16280589432019243
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.10399841542684143,
+              "get_battery_info": 0.03552243332056179,
+              "get_device_info": 0.10264883068142583,
+              "get_media_info": 0.007448268435631462,
+              "get_storage_info": 0.04224794666818924,
+              "phone_health_check": 0.38072899578365427,
+              "save_note": 0.14350312540908386,
+              "search_local_files": 0.021096089954419774,
+              "search_notes": 0.16280589432019243
+            },
+            "confidence": 0.3033201202566111
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28652.930042000207
+    },
+    {
+      "id": "pr_save_note_test_005",
+      "state": "Remember this information",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.09472564867373709,
+        "get_battery_info": 0.060603434217550635,
+        "get_device_info": 0.1483531858024913,
+        "get_media_info": 0.00993026132804434,
+        "get_storage_info": 0.07070749920622764,
+        "phone_health_check": 0.397253213841494,
+        "save_note": 0.07434490811153303,
+        "search_local_files": 0.023629541580389782,
+        "search_notes": 0.12045230723853237
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.09472564867373709,
+              "get_battery_info": 0.060603434217550635,
+              "get_device_info": 0.1483531858024913,
+              "get_media_info": 0.00993026132804434,
+              "get_storage_info": 0.07070749920622764,
+              "phone_health_check": 0.397253213841494,
+              "save_note": 0.07434490811153303,
+              "search_local_files": 0.023629541580389782,
+              "search_notes": 0.12045230723853237
+            },
+            "confidence": 0.3219098655716808
+          }
+        },
+        "usage": {
+          "input_tokens": 401,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29355.69233299975
+    },
+    {
+      "id": "pr_save_note_test_006",
+      "state": "Note: product launch is on the 25th",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08165296030796736,
+        "get_battery_info": 0.0494411778798029,
+        "get_device_info": 0.16747288582136852,
+        "get_media_info": 0.009412106608309528,
+        "get_storage_info": 0.06479409686188257,
+        "phone_health_check": 0.44135061657625657,
+        "save_note": 0.0662916890130691,
+        "search_local_files": 0.02280483182759975,
+        "search_notes": 0.09677963510374367
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08165296030796736,
+              "get_battery_info": 0.0494411778798029,
+              "get_device_info": 0.16747288582136852,
+              "get_media_info": 0.009412106608309528,
+              "get_storage_info": 0.06479409686188257,
+              "phone_health_check": 0.44135061657625657,
+              "save_note": 0.0662916890130691,
+              "search_local_files": 0.02280483182759975,
+              "search_notes": 0.09677963510374367
+            },
+            "confidence": 0.37151944364828865
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 30205.05679200005
+    },
+    {
+      "id": "pr_save_note_test_007",
+      "state": "Note that the API key is abc123xyz",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.12150734849964424,
+        "get_battery_info": 0.06286875914107036,
+        "get_device_info": 0.18742273313952887,
+        "get_media_info": 0.01010441837967212,
+        "get_storage_info": 0.06889865419966974,
+        "phone_health_check": 0.3989690584606682,
+        "save_note": 0.04342399193472129,
+        "search_local_files": 0.02141105624879315,
+        "search_notes": 0.08539397999623201
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.12150734849964424,
+              "get_battery_info": 0.06286875914107036,
+              "get_device_info": 0.18742273313952887,
+              "get_media_info": 0.01010441837967212,
+              "get_storage_info": 0.06889865419966974,
+              "phone_health_check": 0.3989690584606682,
+              "save_note": 0.04342399193472129,
+              "search_local_files": 0.02141105624879315,
+              "search_notes": 0.08539397999623201
+            },
+            "confidence": 0.32384019076825177
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 30109.4223340001
+    },
+    {
+      "id": "pr_save_note_test_008",
+      "state": "Save this to my notes",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.08508263625173824,
+        "get_battery_info": 0.04481481459218908,
+        "get_device_info": 0.12388083938556856,
+        "get_media_info": 0.007378780311841374,
+        "get_storage_info": 0.07344767382395774,
+        "phone_health_check": 0.35199471258077064,
+        "save_note": 0.17467572072862542,
+        "search_local_files": 0.029519793542848966,
+        "search_notes": 0.10920502878246005
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08508263625173824,
+              "get_battery_info": 0.04481481459218908,
+              "get_device_info": 0.12388083938556856,
+              "get_media_info": 0.007378780311841374,
+              "get_storage_info": 0.07344767382395774,
+              "phone_health_check": 0.35199471258077064,
+              "save_note": 0.17467572072862542,
+              "search_local_files": 0.029519793542848966,
+              "search_notes": 0.10920502878246005
+            },
+            "confidence": 0.270994051653367
+          }
+        },
+        "usage": {
+          "input_tokens": 403,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 28720.827999999983
+    },
+    {
+      "id": "pr_save_note_test_009",
+      "state": "Note the locksmith number: 0212 555 9000",
+      "gold": "save_note",
+      "chosen": "phone_health_check",
+      "correct": false,
+      "probs": {
+        "answer": 0.0885232823273954,
+        "get_battery_info": 0.040461669224075125,
+        "get_device_info": 0.1872340444975768,
+        "get_media_info": 0.00630763475501529,
+        "get_storage_info": 0.05083505063069944,
+        "phone_health_check": 0.42191549222237623,
+        "save_note": 0.06159768671409165,
+        "search_local_files": 0.020587966283931978,
+        "search_notes": 0.12253717334483817
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0885232823273954,
+              "get_battery_info": 0.040461669224075125,
+              "get_device_info": 0.1872340444975768,
+              "get_media_info": 0.00630763475501529,
+              "get_storage_info": 0.05083505063069944,
+              "phone_health_check": 0.42191549222237623,
+              "save_note": 0.06159768671409165,
+              "search_local_files": 0.020587966283931978,
+              "search_notes": 0.12253717334483817
+            },
+            "confidence": 0.3496549287501733
+          }
+        },
+        "usage": {
+          "input_tokens": 417,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 30034.29833300015
+    },
+    {
+      "id": "pr_phone_health_check_test_000",
+      "state": "Run a complete check on my device",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.08098138704151374,
+        "get_battery_info": 0.08970657027587464,
+        "get_device_info": 0.21265822096575537,
+        "get_media_info": 0.010666146748139094,
+        "get_storage_info": 0.07652148175631483,
+        "phone_health_check": 0.4143351456318913,
+        "save_note": 0.03529599191402283,
+        "search_local_files": 0.018539766865082113,
+        "search_notes": 0.061295288801406035
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08098138704151374,
+              "get_battery_info": 0.08970657027587464,
+              "get_device_info": 0.21265822096575537,
+              "get_media_info": 0.010666146748139094,
+              "get_storage_info": 0.07652148175631483,
+              "phone_health_check": 0.4143351456318913,
+              "save_note": 0.03529599191402283,
+              "search_local_files": 0.018539766865082113,
+              "search_notes": 0.061295288801406035
+            },
+            "confidence": 0.3411270388358777
+          }
+        },
+        "usage": {
+          "input_tokens": 405,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29143.391916999917
+    },
+    {
+      "id": "pr_phone_health_check_test_001",
+      "state": "Give me a complete status before I head out",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.08813257954526812,
+        "get_battery_info": 0.07923335229675228,
+        "get_device_info": 0.14900769055434915,
+        "get_media_info": 0.00916917321410764,
+        "get_storage_info": 0.07040593441906984,
+        "phone_health_check": 0.4176297346155377,
+        "save_note": 0.06287551757270027,
+        "search_local_files": 0.025276147103042816,
+        "search_notes": 0.09826987067917191
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08813257954526812,
+              "get_battery_info": 0.07923335229675228,
+              "get_device_info": 0.14900769055434915,
+              "get_media_info": 0.00916917321410764,
+              "get_storage_info": 0.07040593441906984,
+              "phone_health_check": 0.4176297346155377,
+              "save_note": 0.06287551757270027,
+              "search_local_files": 0.025276147103042816,
+              "search_notes": 0.09826987067917191
+            },
+            "confidence": 0.34483345144247995
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 24706.98579100008
+    },
+    {
+      "id": "pr_phone_health_check_test_002",
+      "state": "All-in-one phone status: battery, storage, device ID",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.08028676250619005,
+        "get_battery_info": 0.13188936078584929,
+        "get_device_info": 0.2362167838346496,
+        "get_media_info": 0.013895563023635458,
+        "get_storage_info": 0.1429281097006895,
+        "phone_health_check": 0.29927111471394646,
+        "save_note": 0.03344546289840277,
+        "search_local_files": 0.01589531972119187,
+        "search_notes": 0.04617152281544495
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.08028676250619005,
+              "get_battery_info": 0.13188936078584929,
+              "get_device_info": 0.2362167838346496,
+              "get_media_info": 0.013895563023635458,
+              "get_storage_info": 0.1429281097006895,
+              "phone_health_check": 0.29927111471394646,
+              "save_note": 0.03344546289840277,
+              "search_local_files": 0.01589531972119187,
+              "search_notes": 0.04617152281544495
+            },
+            "confidence": 0.2116800040531898
+          }
+        },
+        "usage": {
+          "input_tokens": 410,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29984.393291999822
+    },
+    {
+      "id": "pr_phone_health_check_test_003",
+      "state": "What is the overall status of this device?",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.07819257165847557,
+        "get_battery_info": 0.06954741201335984,
+        "get_device_info": 0.1753119808879447,
+        "get_media_info": 0.009087465078967379,
+        "get_storage_info": 0.06997557467710991,
+        "phone_health_check": 0.4934517477509688,
+        "save_note": 0.03152296359951671,
+        "search_local_files": 0.015672705292703072,
+        "search_notes": 0.057237579040954153
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07819257165847557,
+              "get_battery_info": 0.06954741201335984,
+              "get_device_info": 0.1753119808879447,
+              "get_media_info": 0.009087465078967379,
+              "get_storage_info": 0.06997557467710991,
+              "phone_health_check": 0.4934517477509688,
+              "save_note": 0.03152296359951671,
+              "search_local_files": 0.015672705292703072,
+              "search_notes": 0.057237579040954153
+            },
+            "confidence": 0.4301332162198399
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29293.26537499992
+    },
+    {
+      "id": "pr_phone_health_check_test_004",
+      "state": "Show me storage and device summary",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.07025365524862902,
+        "get_battery_info": 0.07942495478789277,
+        "get_device_info": 0.18677465861542883,
+        "get_media_info": 0.00739752159062496,
+        "get_storage_info": 0.22340276727784952,
+        "phone_health_check": 0.31495982130347183,
+        "save_note": 0.040902993668711245,
+        "search_local_files": 0.017571699989162026,
+        "search_notes": 0.05931192751822978
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.07025365524862902,
+              "get_battery_info": 0.07942495478789277,
+              "get_device_info": 0.18677465861542883,
+              "get_media_info": 0.00739752159062496,
+              "get_storage_info": 0.22340276727784952,
+              "phone_health_check": 0.31495982130347183,
+              "save_note": 0.040902993668711245,
+              "search_local_files": 0.017571699989162026,
+              "search_notes": 0.05931192751822978
+            },
+            "confidence": 0.22932979896640582
+          }
+        },
+        "usage": {
+          "input_tokens": 404,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29038.025500000003
+    },
+    {
+      "id": "pr_phone_health_check_test_005",
+      "state": "How much battery and how much space do I have?",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.06717234521860521,
+        "get_battery_info": 0.17347972013444918,
+        "get_device_info": 0.15230420428178856,
+        "get_media_info": 0.005828031887333501,
+        "get_storage_info": 0.17282675658998684,
+        "phone_health_check": 0.3208772155851813,
+        "save_note": 0.03579629509870269,
+        "search_local_files": 0.0139685715197693,
+        "search_notes": 0.057746859684183305
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06717234521860521,
+              "get_battery_info": 0.17347972013444918,
+              "get_device_info": 0.15230420428178856,
+              "get_media_info": 0.005828031887333501,
+              "get_storage_info": 0.17282675658998684,
+              "phone_health_check": 0.3208772155851813,
+              "save_note": 0.03579629509870269,
+              "search_local_files": 0.0139685715197693,
+              "search_notes": 0.057746859684183305
+            },
+            "confidence": 0.23598686753332895
+          }
+        },
+        "usage": {
+          "input_tokens": 409,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29430.871749999824
+    },
+    {
+      "id": "pr_phone_health_check_test_006",
+      "state": "Can my phone handle a local LLM workload?",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.0940412604739428,
+        "get_battery_info": 0.057823214324640645,
+        "get_device_info": 0.15741959319041665,
+        "get_media_info": 0.004473737191224247,
+        "get_storage_info": 0.1039292455629604,
+        "phone_health_check": 0.4652823832810697,
+        "save_note": 0.041374071472875626,
+        "search_local_files": 0.01915563677767984,
+        "search_notes": 0.056500857725190055
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0940412604739428,
+              "get_battery_info": 0.057823214324640645,
+              "get_device_info": 0.15741959319041665,
+              "get_media_info": 0.004473737191224247,
+              "get_storage_info": 0.1039292455629604,
+              "phone_health_check": 0.4652823832810697,
+              "save_note": 0.041374071472875626,
+              "search_local_files": 0.01915563677767984,
+              "search_notes": 0.056500857725190055
+            },
+            "confidence": 0.3984426811912034
+          }
+        },
+        "usage": {
+          "input_tokens": 408,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29111.962749999748
+    },
+    {
+      "id": "pr_phone_health_check_test_007",
+      "state": "Storage capacity and battery check for a trip",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.05427517285921182,
+        "get_battery_info": 0.15296238758360373,
+        "get_device_info": 0.12562076512559248,
+        "get_media_info": 0.006051444550364424,
+        "get_storage_info": 0.2037902882891673,
+        "phone_health_check": 0.33711081322355896,
+        "save_note": 0.043449867400315714,
+        "search_local_files": 0.016739190981219395,
+        "search_notes": 0.060000069986966234
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.05427517285921182,
+              "get_battery_info": 0.15296238758360373,
+              "get_device_info": 0.12562076512559248,
+              "get_media_info": 0.006051444550364424,
+              "get_storage_info": 0.2037902882891673,
+              "phone_health_check": 0.33711081322355896,
+              "save_note": 0.043449867400315714,
+              "search_local_files": 0.016739190981219395,
+              "search_notes": 0.060000069986966234
+            },
+            "confidence": 0.25424966487650386
+          }
+        },
+        "usage": {
+          "input_tokens": 406,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29905.540541999926
+    },
+    {
+      "id": "pr_phone_health_check_test_008",
+      "state": "Check device performance: battery level and disk space",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.06042334691444522,
+        "get_battery_info": 0.17433121887279338,
+        "get_device_info": 0.13997700405065713,
+        "get_media_info": 0.008367831420799384,
+        "get_storage_info": 0.22829156841095477,
+        "phone_health_check": 0.31279026075124605,
+        "save_note": 0.026129221313973123,
+        "search_local_files": 0.012914493063035234,
+        "search_notes": 0.03677505520209587
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.06042334691444522,
+              "get_battery_info": 0.17433121887279338,
+              "get_device_info": 0.13997700405065713,
+              "get_media_info": 0.008367831420799384,
+              "get_storage_info": 0.22829156841095477,
+              "phone_health_check": 0.31279026075124605,
+              "save_note": 0.026129221313973123,
+              "search_local_files": 0.012914493063035234,
+              "search_notes": 0.03677505520209587
+            },
+            "confidence": 0.22688904334515184
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29316.995000000134
+    },
+    {
+      "id": "pr_phone_health_check_test_009",
+      "state": "How are my battery and device specs doing?",
+      "gold": "phone_health_check",
+      "chosen": "phone_health_check",
+      "correct": true,
+      "probs": {
+        "answer": 0.0594534187081709,
+        "get_battery_info": 0.19683492572442887,
+        "get_device_info": 0.17849997833235107,
+        "get_media_info": 0.006412793038102424,
+        "get_storage_info": 0.056338054611107635,
+        "phone_health_check": 0.4279063966895441,
+        "save_note": 0.02613667719305401,
+        "search_local_files": 0.01011415505211902,
+        "search_notes": 0.038303600651121865
+      },
+      "response": {
+        "model": "/sdcard/Download/models/reflex-1-Q4_K_M.gguf",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "choice": "phone_health_check",
+            "probabilities": {
+              "answer": 0.0594534187081709,
+              "get_battery_info": 0.19683492572442887,
+              "get_device_info": 0.17849997833235107,
+              "get_media_info": 0.006412793038102424,
+              "get_storage_info": 0.056338054611107635,
+              "phone_health_check": 0.4279063966895441,
+              "save_note": 0.02613667719305401,
+              "search_local_files": 0.01011415505211902,
+              "search_notes": 0.038303600651121865
+            },
+            "confidence": 0.35639469627573717
+          }
+        },
+        "usage": {
+          "input_tokens": 407,
+          "output_tokens": 0
+        }
+      },
+      "latencyMs": 29503.46929100033
+    }
+  ],
+  "correct": 18,
+  "accuracy": 0.2,
+  "meanLatencyMs": 28062.672378666663,
+  "perRoute": {
+    "answer": {
+      "correct": 0,
+      "total": 10,
+      "accuracy": 0.0
+    },
+    "get_battery_info": {
+      "correct": 0,
+      "total": 10,
+      "accuracy": 0.0
+    },
+    "get_device_info": {
+      "correct": 1,
+      "total": 10,
+      "accuracy": 0.1
+    },
+    "get_media_info": {
+      "correct": 3,
+      "total": 10,
+      "accuracy": 0.3
+    },
+    "get_storage_info": {
+      "correct": 4,
+      "total": 10,
+      "accuracy": 0.4
+    },
+    "phone_health_check": {
+      "correct": 10,
+      "total": 10,
+      "accuracy": 1.0
+    },
+    "save_note": {
+      "correct": 0,
+      "total": 10,
+      "accuracy": 0.0
+    },
+    "search_local_files": {
+      "correct": 0,
+      "total": 10,
+      "accuracy": 0.0
+    },
+    "search_notes": {
+      "correct": 0,
+      "total": 10,
+      "accuracy": 0.0
+    }
+  }
+}
