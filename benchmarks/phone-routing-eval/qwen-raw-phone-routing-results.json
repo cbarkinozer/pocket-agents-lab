@@ -1,0 +1,1774 @@
+{
+  "dataset": "phone_routing_v1",
+  "split": "test",
+  "model": "Qwen3.5-0.8B-Q4_K_M",
+  "treatment": "raw",
+  "mode_note": "no chat template, GBNF grammar \u2014 matched comparison baseline for retrained reflex-1",
+  "modelSha256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+  "runtimeRevision": "f0c41e016-b11443",
+  "test_sha256": "ed41b456f4c7eee7b6311df19bd16f39f594016dbc9b47ffd398906ac6315dec",
+  "total": 90,
+  "complete": true,
+  "cases": [
+    {
+      "id": "pr_answer_test_000",
+      "state": "How do I convert miles to kilometers?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 30.9,
+        "thermalStatus": 0,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12999008300000003,
+      "chosen": "get_storage_info",
+      "correct": false,
+      "latencyMs": 34491.963083,
+      "after": {
+        "temperatureC": 30.9,
+        "thermalStatus": 0,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_001",
+      "state": "How does a vaccine work?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 30.9,
+        "thermalStatus": 0,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11204999999999643,
+      "chosen": "answer",
+      "correct": true,
+      "latencyMs": 38160.708249999996,
+      "after": {
+        "temperatureC": 30.9,
+        "thermalStatus": 0,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_002",
+      "state": "What time is it?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 30.9,
+        "thermalStatus": 0,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1415562920000042,
+      "chosen": "answer",
+      "correct": true,
+      "latencyMs": 36789.5475,
+      "after": {
+        "temperatureC": 30.9,
+        "thermalStatus": 0,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_003",
+      "state": "Compose a two-sentence product description",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 30.9,
+        "thermalStatus": 0,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12796504199999958,
+      "chosen": "save_note",
+      "correct": false,
+      "latencyMs": 41243.469082999996,
+      "after": {
+        "temperatureC": 31.2,
+        "thermalStatus": 0,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_004",
+      "state": "What is 7 multiplied by 8?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 31.2,
+        "thermalStatus": 0,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11769404200001077,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 37590.46416699999,
+      "after": {
+        "temperatureC": 31.3,
+        "thermalStatus": 0,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_005",
+      "state": "What is a haiku exactly?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 31.3,
+        "thermalStatus": 0,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12024579200001995,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 39040.29570900002,
+      "after": {
+        "temperatureC": 31.4,
+        "thermalStatus": 0,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_006",
+      "state": "How do you pronounce 'Worcestershire'?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 31.4,
+        "thermalStatus": 0,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12203250000001731,
+      "chosen": "answer",
+      "correct": true,
+      "latencyMs": 42496.410542000005,
+      "after": {
+        "temperatureC": 31.7,
+        "thermalStatus": 0,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_007",
+      "state": "What is machine learning?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 31.8,
+        "thermalStatus": 0,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12427791599998272,
+      "chosen": "answer",
+      "correct": true,
+      "latencyMs": 34480.55158300002,
+      "after": {
+        "temperatureC": 32.0,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_008",
+      "state": "What is the atomic number of carbon?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 32.0,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.13000670899998568,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 36034.264667,
+      "after": {
+        "temperatureC": 32.2,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_answer_test_009",
+      "state": "What are the primary colors?",
+      "gold": "answer",
+      "before": {
+        "temperatureC": 32.2,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12835329099999626,
+      "chosen": "get_storage_info",
+      "correct": false,
+      "latencyMs": 36481.95987500003,
+      "after": {
+        "temperatureC": 32.4,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_000",
+      "state": "How long will my battery last at this rate?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 32.4,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.135120416999996,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 36970.99066700002,
+      "after": {
+        "temperatureC": 32.6,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_001",
+      "state": "Is my battery too low to record a video?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 32.6,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.13182037499996113,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 36696.67175000001,
+      "after": {
+        "temperatureC": 33.0,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_002",
+      "state": "How much battery have I used today?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 33.0,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12722816599995213,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 36591.119874999946,
+      "after": {
+        "temperatureC": 33.1,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_003",
+      "state": "What is my battery health percentage?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 33.1,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1327667499999734,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 37439.262542000055,
+      "after": {
+        "temperatureC": 33.3,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_004",
+      "state": "Is my battery still healthy?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 33.3,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.14141404199995122,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 37340.74045800003,
+      "after": {
+        "temperatureC": 33.6,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_005",
+      "state": "What app is consuming the most battery?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 40.73426770900005,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 35280.44466699998,
+      "after": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_006",
+      "state": "Am I plugged in?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 33.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.13274024999998346,
+      "chosen": "answer",
+      "correct": false,
+      "latencyMs": 36016.392792000035,
+      "after": {
+        "temperatureC": 34.0,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_007",
+      "state": "Has my battery degraded?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 34.0,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12904087499998695,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 37242.41737500006,
+      "after": {
+        "temperatureC": 34.1,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_008",
+      "state": "Will the battery last until I get home?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 34.4,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 40.70524445800004,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 35452.90525000007,
+      "after": {
+        "temperatureC": 34.4,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_battery_info_test_009",
+      "state": "Is my battery above 30%?",
+      "gold": "get_battery_info",
+      "before": {
+        "temperatureC": 34.4,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12180404099990483,
+      "chosen": "get_battery_info",
+      "correct": true,
+      "latencyMs": 37654.45049999994,
+      "after": {
+        "temperatureC": 34.5,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_000",
+      "state": "How old is this device model?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 34.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 50.911029375,
+      "chosen": "get_device_info",
+      "correct": true,
+      "latencyMs": 35501.28354100002,
+      "after": {
+        "temperatureC": 34.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_001",
+      "state": "Is this phone officially supported by the manufacturer?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 34.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1299951669999473,
+      "chosen": "get_device_info",
+      "correct": true,
+      "latencyMs": 37134.32054199996,
+      "after": {
+        "temperatureC": 34.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_002",
+      "state": "What is the last official Android version for this phone?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 34.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 40.73747012499996,
+      "chosen": "get_device_info",
+      "correct": true,
+      "latencyMs": 34891.076415999916,
+      "after": {
+        "temperatureC": 34.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_003",
+      "state": "What is the hardware revision number?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 34.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1287665830000151,
+      "chosen": "get_device_info",
+      "correct": true,
+      "latencyMs": 36796.71512499999,
+      "after": {
+        "temperatureC": 35.0,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_004",
+      "state": "What is the exact Android patch date on this phone?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 35.1,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 50.911110750000034,
+      "chosen": "get_device_info",
+      "correct": true,
+      "latencyMs": 35413.80675000005,
+      "after": {
+        "temperatureC": 35.0,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_005",
+      "state": "What carrier bands does this phone support?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 35.0,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.13695325000003322,
+      "chosen": "get_device_info",
+      "correct": true,
+      "latencyMs": 36912.40204099995,
+      "after": {
+        "temperatureC": 35.1,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_006",
+      "state": "What kernel is running on this device?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 35.2,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 61.04681675000006,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 34402.95541599994,
+      "after": {
+        "temperatureC": 35.2,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_007",
+      "state": "What is the full device fingerprint?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 35.2,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1239277500001208,
+      "chosen": "get_device_info",
+      "correct": true,
+      "latencyMs": 39608.914958000016,
+      "after": {
+        "temperatureC": 35.2,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_008",
+      "state": "Is this device end-of-life?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 35.4,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 50.79790145799984,
+      "chosen": "answer",
+      "correct": false,
+      "latencyMs": 34528.69508399999,
+      "after": {
+        "temperatureC": 35.3,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_device_info_test_009",
+      "state": "What OS version does this phone have?",
+      "gold": "get_device_info",
+      "before": {
+        "temperatureC": 35.3,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11351241600004869,
+      "chosen": "get_device_info",
+      "correct": true,
+      "latencyMs": 42950.782249999975,
+      "after": {
+        "temperatureC": 35.4,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_000",
+      "state": "Can my phone handle more data without slowdown?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.942321125000035,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 34860.689583000065,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_001",
+      "state": "Can I cache this streaming content offline?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11648920800007545,
+      "chosen": "get_storage_info",
+      "correct": true,
+      "latencyMs": 36855.24062500008,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_002",
+      "state": "Tell me my storage numbers",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.6,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.919768875000045,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 38600.51025000007,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_003",
+      "state": "How much combined storage do I have?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.09292349999986982,
+      "chosen": "get_storage_info",
+      "correct": true,
+      "latencyMs": 37839.49320800002,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_004",
+      "state": "How close am I to running out of disk space?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.6,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 50.816872458000034,
+      "chosen": "get_storage_info",
+      "correct": true,
+      "latencyMs": 35013.997625,
+      "after": {
+        "temperatureC": 35.6,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_005",
+      "state": "Can I install this 1.5GB update?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.6,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11045070899990606,
+      "chosen": "save_note",
+      "correct": false,
+      "latencyMs": 37406.49641699997,
+      "after": {
+        "temperatureC": 35.6,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_006",
+      "state": "Can I download a 1.2GB file?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 71.09198316699985,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 34836.14104100002,
+      "after": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_007",
+      "state": "Is my storage fragmented?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.5,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11502412499999082,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 43293.939249999996,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_008",
+      "state": "How full is my phone's storage?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.978760792,
+      "chosen": "get_storage_info",
+      "correct": true,
+      "latencyMs": 35586.88399999983,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_storage_info_test_009",
+      "state": "Is there room for a system update?",
+      "gold": "get_storage_info",
+      "before": {
+        "temperatureC": 35.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11566320900010396,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 36710.812750000056,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_000",
+      "state": "How far am I through the podcast?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.9646285419999,
+      "chosen": "get_media_info",
+      "correct": true,
+      "latencyMs": 35270.4254170003,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_001",
+      "state": "Is this track DRM protected?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11384679100001449,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 36561.409417000046,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_002",
+      "state": "What track am I listening to?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.96474912500025,
+      "chosen": "get_media_info",
+      "correct": true,
+      "latencyMs": 35174.66295799977,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_003",
+      "state": "Is music paused or playing?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.7,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1139759170000616,
+      "chosen": "get_media_info",
+      "correct": true,
+      "latencyMs": 37378.4726660001,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_004",
+      "state": "Media info please",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 71.10661399999981,
+      "chosen": "get_media_info",
+      "correct": true,
+      "latencyMs": 34486.13733399998,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_005",
+      "state": "Is the player active right now?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11507124999980078,
+      "chosen": "get_media_info",
+      "correct": true,
+      "latencyMs": 37061.03408299987,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_006",
+      "state": "Is the music too loud according to my current volume?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.988587499999994,
+      "chosen": "get_media_info",
+      "correct": true,
+      "latencyMs": 35253.04787499999,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_007",
+      "state": "What is the podcast title?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.13016212499996982,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 36578.14525000003,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_008",
+      "state": "What is the total length of this track?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.9799142920001,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 35350.59866699976,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_get_media_info_test_009",
+      "state": "What video is playing?",
+      "gold": "get_media_info",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1141471249998176,
+      "chosen": "get_media_info",
+      "correct": true,
+      "latencyMs": 36605.94745800017,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_000",
+      "state": "Find text files on my device",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 71.11829712499957,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 35096.5322080001,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_001",
+      "state": "Search for a document called budget_2026",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11779287499985003,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 37148.34412500022,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_002",
+      "state": "Search for a file called budget_q4.xlsx",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.99111408299996,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 35386.623667000094,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_003",
+      "state": "Find the audio recording I made",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11704004199964402,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 37124.62295799969,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_004",
+      "state": "Look for any files that contain my name",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.98813120900013,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 35782.362542000104,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_005",
+      "state": "Search my downloaded folder for the application form",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11577283399992666,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 37098.395833000264,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_006",
+      "state": "Find my file named contract.docx",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.988826332999906,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 35922.49979200005,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_007",
+      "state": "Search for Markdown files I've saved",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11548050000010335,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 37133.033375000196,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_008",
+      "state": "Find any SQLite database files",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.986849083999914,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 35223.05804200005,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_local_files_test_009",
+      "state": "I need to find a document on my device",
+      "gold": "search_local_files",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11062154199998986,
+      "chosen": "search_local_files",
+      "correct": true,
+      "latencyMs": 37371.62608300014,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_000",
+      "state": "Find the note I made about the software license",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 71.12286629100026,
+      "chosen": "search_notes",
+      "correct": true,
+      "latencyMs": 36193.70962500034,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_001",
+      "state": "What was the PIN I wrote down?",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11312745899977017,
+      "chosen": "search_notes",
+      "correct": true,
+      "latencyMs": 40730.17887500009,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_002",
+      "state": "Find the order number I saved",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.98355395899989,
+      "chosen": "search_notes",
+      "correct": true,
+      "latencyMs": 35426.0179580001,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_003",
+      "state": "What address did I note down?",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1405134579999867,
+      "chosen": "save_note",
+      "correct": false,
+      "latencyMs": 43134.9224999999,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_004",
+      "state": "What budget note do I have for the trip?",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.99224487499987,
+      "chosen": "save_note",
+      "correct": false,
+      "latencyMs": 37164.39962499999,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_005",
+      "state": "What have I noted?",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12121958399984578,
+      "chosen": "save_note",
+      "correct": false,
+      "latencyMs": 36743.776332999914,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_006",
+      "state": "Find the packing list I made",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.9928813749998,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 35330.62208399997,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_007",
+      "state": "What do I need to buy at the store?",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11324287500019636,
+      "chosen": "answer",
+      "correct": false,
+      "latencyMs": 36811.55187500008,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_008",
+      "state": "When is my dentist appointment?",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.97448295799995,
+      "chosen": "answer",
+      "correct": false,
+      "latencyMs": 34618.5058330002,
+      "after": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_search_notes_test_009",
+      "state": "What information did I save?",
+      "gold": "search_notes",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12360070799968526,
+      "chosen": "save_note",
+      "correct": false,
+      "latencyMs": 36968.72274999987,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_000",
+      "state": "Save this: my gym locker combo is 14-27-38",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 71.11418549999962,
+      "chosen": "save_note",
+      "correct": true,
+      "latencyMs": 35611.08150000018,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_001",
+      "state": "Remember to water the basil every two days",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11385566599983576,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 37126.62100000034,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_002",
+      "state": "Note the delivery code: DEL-2026-XYZ",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.975259916999676,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 35923.56433399982,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_003",
+      "state": "Remember the next service is due at 85,000km",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11512274999950023,
+      "chosen": "save_note",
+      "correct": true,
+      "latencyMs": 37569.82495800003,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_004",
+      "state": "Remember to call mom this weekend",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 71.12299125000027,
+      "chosen": "save_note",
+      "correct": true,
+      "latencyMs": 34242.85445899932,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_005",
+      "state": "Remember this information",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12085529199976008,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 36860.41608399955,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_006",
+      "state": "Note: product launch is on the 25th",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 50.83629554199979,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 35358.17216599935,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_007",
+      "state": "Note that the API key is abc123xyz",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11597341600008804,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 37785.1880420003,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_008",
+      "state": "Save this to my notes",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 71.11232520800058,
+      "chosen": "save_note",
+      "correct": true,
+      "latencyMs": 35014.52304200029,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_save_note_test_009",
+      "state": "Note the locksmith number: 0212 555 9000",
+      "gold": "save_note",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11799475000043458,
+      "chosen": "search_notes",
+      "correct": false,
+      "latencyMs": 38483.467291000125,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_000",
+      "state": "Run a complete check on my device",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.96171654199952,
+      "chosen": "phone_health_check",
+      "correct": true,
+      "latencyMs": 35693.093957999736,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_001",
+      "state": "Give me a complete status before I head out",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.12415604200032249,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 37120.85479199959,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_002",
+      "state": "All-in-one phone status: battery, storage, device ID",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.98229733300013,
+      "chosen": "get_device_info",
+      "correct": false,
+      "latencyMs": 35689.73008300054,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_003",
+      "state": "What is the overall status of this device?",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.1229271250003876,
+      "chosen": "answer",
+      "correct": false,
+      "latencyMs": 36304.90879199988,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_004",
+      "state": "Show me storage and device summary",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.9,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.995358000000124,
+      "chosen": "get_storage_info",
+      "correct": false,
+      "latencyMs": 35737.53145799947,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_005",
+      "state": "How much battery and how much space do I have?",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11430612500043935,
+      "chosen": "get_battery_info",
+      "correct": false,
+      "latencyMs": 37538.37837499941,
+      "after": {
+        "temperatureC": 35.7,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_006",
+      "state": "Can my phone handle a local LLM workload?",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 60.97453983299965,
+      "chosen": "search_local_files",
+      "correct": false,
+      "latencyMs": 37513.73283400062,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_007",
+      "state": "Storage capacity and battery check for a trip",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11308537500008242,
+      "chosen": "get_storage_info",
+      "correct": false,
+      "latencyMs": 38182.04933299967,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_008",
+      "state": "Check device performance: battery level and disk space",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 71.1262614999996,
+      "chosen": "get_battery_info",
+      "correct": false,
+      "latencyMs": 40222.3877080005,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      }
+    },
+    {
+      "id": "pr_phone_health_check_test_009",
+      "state": "How are my battery and device specs doing?",
+      "gold": "phone_health_check",
+      "before": {
+        "temperatureC": 35.8,
+        "thermalStatus": 1,
+        "usbPowered": true
+      },
+      "cooldownSeconds": 0.11781512499965174,
+      "chosen": "get_battery_info",
+      "correct": false,
+      "latencyMs": 37805.355167000016,
+      "after": {
+        "temperatureC": 35.8,
+        "thermalStatus": 2,
+        "usbPowered": true
+      }
+    }
+  ],
+  "correct": 50,
+  "accuracy": 0.5555555555555556,
+  "meanLatencyMs": 36828.37010878889,
+  "perRoute": {
+    "answer": {
+      "correct": 4,
+      "total": 10,
+      "accuracy": 0.4
+    },
+    "get_battery_info": {
+      "correct": 9,
+      "total": 10,
+      "accuracy": 0.9
+    },
+    "get_device_info": {
+      "correct": 8,
+      "total": 10,
+      "accuracy": 0.8
+    },
+    "get_media_info": {
+      "correct": 7,
+      "total": 10,
+      "accuracy": 0.7
+    },
+    "get_storage_info": {
+      "correct": 4,
+      "total": 10,
+      "accuracy": 0.4
+    },
+    "phone_health_check": {
+      "correct": 1,
+      "total": 10,
+      "accuracy": 0.1
+    },
+    "save_note": {
+      "correct": 4,
+      "total": 10,
+      "accuracy": 0.4
+    },
+    "search_local_files": {
+      "correct": 10,
+      "total": 10,
+      "accuracy": 1.0
+    },
+    "search_notes": {
+      "correct": 3,
+      "total": 10,
+      "accuracy": 0.3
+    }
+  }
+}
