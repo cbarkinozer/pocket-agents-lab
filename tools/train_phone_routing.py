@@ -10,10 +10,21 @@ Checkpoint loading strategy: RESUME (default when --reflex1-adapter is supplied)
 
 Validation split:
   --val-split-size rows (default 90, 10/route) are carved from the 900-row train
-  pool, stratified by route, using the training seed. The remaining rows are used
-  for training. Calibration rows are used only for probability calibration after
-  checkpoint selection; they are never used as the trainer's eval_dataset.
+  pool, stratified by ROUTE only (not by scenario family). After human review
+  assigns scenario families to the review sheet, re-split using carve_validation
+  with group_col="scenario_family" so that paraphrase variants stay together.
+  Until that review is complete, the current route-stratified split is used.
+  Calibration rows are used only for probability calibration after checkpoint
+  selection; they are never used as the trainer's eval_dataset.
   Test rows are never opened during training or smoke checks.
+
+Checkpoint selection metric:
+  eval_accuracy (accuracy on the validation split, computed by compute_decision_metrics).
+  For the balanced 9-class phone_routing_v1 validation set, accuracy equals
+  macro-F1. Both are logged; accuracy is used for checkpoint selection because
+  higher is better semantics are required for load_best_model_at_end.
+  If DecisionTrainer does not support compute_metrics, this will fail at smoke
+  time before any GPU costs are incurred — check unsloth version.
 
 W&B:
   Disabled for smoke runs. Pass --wandb-project to enable for actual training.
@@ -206,17 +217,8 @@ def check_label_mapping(route_names: list[str], model, tokenizer) -> None:
     print(f"  Label mapping: {n_routes} routes — head size check passed (or head not introspectable)")
 
 
-class FiniteLossCallback:
-    """Raise on NaN/Inf loss at step 1 to catch broken configs early."""
-
-    def on_log(self, args, state, control, logs=None, **kwargs):
-        if logs and state.global_step <= 2:
-            loss = logs.get("loss")
-            if loss is not None:
-                import math
-                if not math.isfinite(loss):
-                    raise ValueError(f"Non-finite loss at step {state.global_step}: {loss}")
-                print(f"  Step {state.global_step} loss: {loss:.4f} — finite ✓")
+# FiniteLossCallback is defined inside main() after TrainerCallback is imported.
+# Defining it here without the base class breaks trainer callback dispatch.
 
 
 # ─── main ─────────────────────────────────────────────────────────────────────
@@ -238,8 +240,37 @@ def main():
         print("ERROR: unsloth not found. Install with: pip install unsloth[colab-new]")
         sys.exit(1)
 
+    import math
+    import numpy as np
     from datasets import Dataset
     from transformers import TrainingArguments, TrainerCallback
+
+    def compute_decision_metrics(eval_pred):
+        """Return accuracy and macro-F1 for checkpoint selection and logging.
+
+        For the balanced 9-class phone_routing_v1 validation set, accuracy ≈
+        macro-F1. Both are reported; accuracy drives checkpoint selection
+        (greater_is_better=True, metric_for_best_model='eval_accuracy').
+        Requires sklearn; install with: pip install scikit-learn
+        """
+        from sklearn.metrics import f1_score
+        logits, label_ids = eval_pred.predictions, eval_pred.label_ids
+        predictions = logits.argmax(axis=-1) if logits.ndim == 2 else logits
+        accuracy  = float((predictions == label_ids).mean())
+        macro_f1  = float(f1_score(label_ids, predictions,
+                                   average="macro", zero_division=0))
+        return {"accuracy": accuracy, "macro_f1": macro_f1}
+
+    class FiniteLossCallback(TrainerCallback):
+        """Raise immediately on NaN/Inf loss at the first two steps."""
+        def on_log(self, args, state, control, logs=None, **kwargs):
+            if logs and state.global_step <= 2:
+                loss = logs.get("loss")
+                if loss is not None:
+                    if not math.isfinite(loss):
+                        raise ValueError(
+                            f"Non-finite loss at step {state.global_step}: {loss}")
+                    print(f"  Step {state.global_step} loss: {loss:.4f} — finite ✓")
 
     # ── data paths and hashes ────────────────────────────────────────────────
     train_path = args.data_dir / "train.jsonl"
@@ -428,6 +459,7 @@ def main():
         processing_class=tokenizer,
         train_dataset=train_items,
         eval_dataset=val_items,          # validation, NOT calibration
+        compute_metrics=compute_decision_metrics,
         args=TrainingArguments(
             per_device_train_batch_size=2 if args.smoke else args.batch_size,
             gradient_accumulation_steps=1 if args.smoke else args.grad_accum,
@@ -440,7 +472,8 @@ def main():
             eval_strategy="epoch",
             save_strategy="epoch",
             load_best_model_at_end=True,
-            metric_for_best_model="eval_loss",
+            metric_for_best_model="eval_accuracy",
+            greater_is_better=True,
             optim="adamw_8bit",
             weight_decay=0.01,
             lr_scheduler_type="cosine",
@@ -470,18 +503,41 @@ def main():
     print(f"  Calibration accuracy (pre-calibration):  {calib_eval.get('accuracy', '?'):.4f}")
     write_json(args.output_dir / "metrics_calib_pre.json", calib_eval)
 
-    # Temperature calibration: if FastDecisionModel supports calibrate(), use it.
-    # Otherwise record pre/post as the same (calibration config = temperature=1.0).
-    calib_config = {"temperature": 1.0, "method": "identity_fallback"}
+    # Temperature calibration: requires FastDecisionModel.calibrate().
+    # A missing or failed calibration is NOT a silent fallback — the candidate is
+    # explicitly marked uncalibrated and must not be used for final evaluation.
     calibrate_fn = getattr(FastDecisionModel, "calibrate", None)
-    if calibrate_fn is not None:
+    calibration_ok = False
+    if calibrate_fn is None:
+        print(
+            "\n  ERROR: FastDecisionModel.calibrate() is not available in this unsloth version.\n"
+            "  The checkpoint is NOT calibrated. Do not report ECE/Brier or open the\n"
+            "  sealed test without completing calibration manually.\n"
+            "  Upgrade unsloth or implement temperature scaling via tools/calibrate_adapter.py."
+        )
+        calib_config = {
+            "calibrated": False,
+            "method": "NOT_CALIBRATED",
+            "reason": "FastDecisionModel.calibrate() not found in installed unsloth",
+            "temperature": 1.0,
+        }
+    else:
         try:
             calib_config = calibrate_fn(model, tokenizer, calib_items)
+            calib_config["calibrated"] = True
+            calibration_ok = True
             print(f"  Calibration config: {calib_config}")
         except Exception as e:
-            print(f"  WARNING: calibrate() failed ({e}). Saving temperature=1.0 as fallback.")
-    else:
-        print("  FastDecisionModel.calibrate() not available — recording temperature=1.0")
+            print(
+                f"\n  ERROR: calibrate() raised {type(e).__name__}: {e}\n"
+                "  The checkpoint is NOT calibrated. Do not open the sealed test."
+            )
+            calib_config = {
+                "calibrated": False,
+                "method": "NOT_CALIBRATED",
+                "reason": f"calibrate() raised {type(e).__name__}: {e}",
+                "temperature": 1.0,
+            }
 
     write_json(args.output_dir / "calibration_config.json", calib_config)
 
@@ -531,6 +587,9 @@ def main():
             "calib_pre":  calib_eval,
         },
         "calibration_config": calib_config,
+        "calibration_ok": calibration_ok,
+        "checkpoint_selection_metric": "eval_accuracy (greater is better)",
+        "val_split_strategy": "route-stratified (family-stratified after human review)",
     }
     write_json(args.output_dir / "run-manifest.json", manifest)
 
@@ -541,6 +600,7 @@ def main():
     print(f"  Validation before: {before_val.get('accuracy', 0):.4f}")
     print(f"  Validation after:  {after_val.get('accuracy', 0):.4f}")
     print(f"  Calibration:       {calib_eval.get('accuracy', 0):.4f}")
+    print(f"  Calibrated:        {'YES' if calibration_ok else 'NO — do not open sealed test'}")
     print(f"")
     print(f"  Test is SEALED. Run evaluate_phone_routing_model.py after")
     print(f"  candidate selection to open it.")
