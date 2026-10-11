@@ -55,11 +55,10 @@ Before-retrain eval: benchmarks/phone-routing-eval/run-reflex1-before-retrain.py
 - Qwen raw on dev suite (50-case): 33/50 (66%), 36.5s
   → different test set; not directly comparable to the 18/90 result
 
-- [ ] **4a — Run Qwen raw on the same 90-case phone routing test (BEFORE training)**
-      Script: benchmarks/phone-routing-eval/run-qwen-raw-phone-routing.py
-      This produces the matched comparison baseline. The win condition is:
-      retrained reflex-1 accuracy on test.jsonl > Qwen raw accuracy on test.jsonl,
-      measured on the same 90 cases on the same A32 hardware.
+- [x] **4a — Qwen raw on 90-case phone routing test ✅ DONE**
+      Result: 50/90 (55.6%), mean 36.8s — benchmarks/phone-routing-eval/qwen-raw-phone-routing-results.json
+      Notable: search_local_files 10/10, battery 9/10, phone_health_check 1/10.
+      Win condition: retrained reflex-1 > 50/90 on same test at lower A32 latency.
 
 - [ ] **4b — Retrain Clef head on phone_routing_v1 data:**
         cd ReflexModels && python3 /path/to/pocket-agents-lab/tools/train_phone_routing.py \
