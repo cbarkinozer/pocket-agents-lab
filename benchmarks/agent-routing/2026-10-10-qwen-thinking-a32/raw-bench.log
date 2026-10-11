@@ -1,0 +1,236 @@
+Cooling: {'temperatureC': 36.0, 'thermalStatus': 3, 'pssKb': 710704, 'usbPowered': True}
+Cooling: {'temperatureC': 36.0, 'thermalStatus': 3, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 3, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 3, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710704, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.3, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.3, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710700, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.3, 'thermalStatus': 2, 'pssKb': 710695, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.2, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710700, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710702, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710703, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710704, 'usbPowered': True}
+Cooling: {'temperatureC': 36.1, 'thermalStatus': 2, 'pssKb': 710704, 'usbPowered': True}
+Cooling: {'temperatureC': 36.0, 'thermalStatus': 2, 'pssKb': 710705, 'usbPowered': True}
+storage-01 tool:get_storage_info 35207 {'temperatureC': 36.0, 'thermalStatus': 1, 'pssKb': 814592, 'usbPowered': True}
+storage-02 tool:get_storage_info 36992 {'temperatureC': 35.8, 'thermalStatus': 2, 'pssKb': 814884, 'usbPowered': True}
+Cooling: {'temperatureC': 35.8, 'thermalStatus': 2, 'pssKb': 814884, 'usbPowered': True}
+Cooling: {'temperatureC': 35.9, 'thermalStatus': 2, 'pssKb': 814885, 'usbPowered': True}
+Cooling: {'temperatureC': 35.9, 'thermalStatus': 2, 'pssKb': 814884, 'usbPowered': True}
+Cooling: {'temperatureC': 35.9, 'thermalStatus': 2, 'pssKb': 814884, 'usbPowered': True}
+Cooling: {'temperatureC': 35.9, 'thermalStatus': 2, 'pssKb': 814884, 'usbPowered': True}
+Cooling: {'temperatureC': 35.9, 'thermalStatus': 2, 'pssKb': 814884, 'usbPowered': True}
+storage-03 tool:get_storage_info 35527 {'temperatureC': 35.8, 'thermalStatus': 1, 'pssKb': 815152, 'usbPowered': True}
+storage-04 tool:get_storage_info 37217 {'temperatureC': 35.7, 'thermalStatus': 2, 'pssKb': 815396, 'usbPowered': True}
+Cooling: {'temperatureC': 35.7, 'thermalStatus': 2, 'pssKb': 815396, 'usbPowered': True}
+Cooling: {'temperatureC': 35.8, 'thermalStatus': 2, 'pssKb': 815396, 'usbPowered': True}
+Cooling: {'temperatureC': 35.8, 'thermalStatus': 2, 'pssKb': 815397, 'usbPowered': True}
+Cooling: {'temperatureC': 35.8, 'thermalStatus': 2, 'pssKb': 815396, 'usbPowered': True}
+Cooling: {'temperatureC': 35.8, 'thermalStatus': 2, 'pssKb': 815396, 'usbPowered': True}
+Cooling: {'temperatureC': 35.8, 'thermalStatus': 2, 'pssKb': 815396, 'usbPowered': True}
+Cooling: {'temperatureC': 35.7, 'thermalStatus': 2, 'pssKb': 815396, 'usbPowered': True}
+storage-05 answer 35506 {'temperatureC': 35.6, 'thermalStatus': 1, 'pssKb': 815660, 'usbPowered': True}
+storage-06 tool:get_storage_info 36569 {'temperatureC': 35.6, 'thermalStatus': 2, 'pssKb': 815900, 'usbPowered': True}
+Cooling: {'temperatureC': 35.6, 'thermalStatus': 2, 'pssKb': 815900, 'usbPowered': True}
+Cooling: {'temperatureC': 35.6, 'thermalStatus': 2, 'pssKb': 815900, 'usbPowered': True}
+Cooling: {'temperatureC': 35.6, 'thermalStatus': 2, 'pssKb': 815900, 'usbPowered': True}
+Cooling: {'temperatureC': 35.6, 'thermalStatus': 2, 'pssKb': 815898, 'usbPowered': True}
+Cooling: {'temperatureC': 35.6, 'thermalStatus': 2, 'pssKb': 815901, 'usbPowered': True}
+storage-07 tool:get_storage_info 35912 {'temperatureC': 35.4, 'thermalStatus': 1, 'pssKb': 816138, 'usbPowered': True}
+storage-08 tool:get_storage_info 37655 {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816348, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816348, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816349, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816348, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816348, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816348, 'usbPowered': True}
+storage-09 tool:get_storage_info 35457 {'temperatureC': 35.4, 'thermalStatus': 1, 'pssKb': 816348, 'usbPowered': True}
+storage-10 tool:search_local_files 39931 {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816356, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816356, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816356, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816357, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816356, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816356, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+device-01 tool:get_device_info 38148 {'temperatureC': 35.4, 'thermalStatus': 1, 'pssKb': 816368, 'usbPowered': True}
+device-02 tool:get_device_info 37200 {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816368, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816366, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816368, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816368, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816368, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816368, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816368, 'usbPowered': True}
+device-03 tool:get_device_info 35735 {'temperatureC': 35.4, 'thermalStatus': 1, 'pssKb': 816380, 'usbPowered': True}
+device-04 answer 36535 {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816389, 'usbPowered': True}
+Cooling: {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816388, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816388, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816388, 'usbPowered': True}
+Cooling: {'temperatureC': 35.5, 'thermalStatus': 2, 'pssKb': 816388, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816389, 'usbPowered': True}
+device-05 tool:get_device_info 35338 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816392, 'usbPowered': True}
+device-06 tool:get_device_info 36618 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816400, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816400, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816401, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816400, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816401, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816400, 'usbPowered': True}
+device-07 tool:get_device_info 37641 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816404, 'usbPowered': True}
+device-08 tool:get_device_info 36950 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816404, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816404, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816402, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816404, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816402, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816404, 'usbPowered': True}
+device-09 tool:get_device_info 35573 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816412, 'usbPowered': True}
+device-10 tool:get_device_info 37067 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816413, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+battery-01 tool:get_battery_info 35576 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816418, 'usbPowered': True}
+battery-02 tool:get_battery_info 36824 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816424, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816424, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816424, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816424, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816424, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816425, 'usbPowered': True}
+battery-03 tool:get_battery_info 35431 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816416, 'usbPowered': True}
+battery-04 tool:get_battery_info 36215 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816413, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816412, 'usbPowered': True}
+battery-05 tool:get_battery_info 35563 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816440, 'usbPowered': True}
+battery-06 tool:get_storage_info 37196 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816436, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816436, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816436, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816436, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816436, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816436, 'usbPowered': True}
+battery-07 tool:get_battery_info 35637 {'temperatureC': 35.2, 'thermalStatus': 1, 'pssKb': 816436, 'usbPowered': True}
+battery-08 tool:get_battery_info 40071 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816439, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816440, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816441, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816441, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816441, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816441, 'usbPowered': True}
+battery-09 tool:get_battery_info 35206 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816441, 'usbPowered': True}
+battery-10 tool:get_battery_info 37093 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816433, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816433, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816433, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816433, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816433, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816433, 'usbPowered': True}
+answer-01 answer 34726 {'temperatureC': 35.2, 'thermalStatus': 1, 'pssKb': 816425, 'usbPowered': True}
+answer-02 tool:search_notes 36792 {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816425, 'usbPowered': True}
+Cooling: {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816425, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816426, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816425, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816425, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816425, 'usbPowered': True}
+answer-03 answer 35337 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816425, 'usbPowered': True}
+answer-04 answer 36111 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816421, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816421, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816421, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816421, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816421, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816421, 'usbPowered': True}
+answer-05 tool:get_device_info 35235 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816415, 'usbPowered': True}
+answer-06 answer 37207 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816414, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816413, 'usbPowered': True}
+Cooling: {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816411, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816411, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816413, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816413, 'usbPowered': True}
+answer-07 answer 34774 {'temperatureC': 35.2, 'thermalStatus': 1, 'pssKb': 816406, 'usbPowered': True}
+answer-08 tool:search_notes 36290 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816397, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816397, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816397, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816398, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816398, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816397, 'usbPowered': True}
+answer-09 answer 35362 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816381, 'usbPowered': True}
+answer-10 answer 37602 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+Cooling: {'temperatureC': 35.4, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+health-01 workflow:phone_health_check 35661 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816362, 'usbPowered': True}
+health-02 workflow:phone_health_check 35847 {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+Cooling: {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+health-03 tool:search_notes 37026 {'temperatureC': 35.3, 'thermalStatus': 1, 'pssKb': 816357, 'usbPowered': True}
+health-04 tool:get_storage_info 36876 {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816353, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816354, 'usbPowered': True}
+health-05 answer 35827 {'temperatureC': 35.2, 'thermalStatus': 1, 'pssKb': 816351, 'usbPowered': True}
+health-06 tool:search_notes 37139 {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816365, 'usbPowered': True}
+Cooling: {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816366, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816365, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816366, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816365, 'usbPowered': True}
+Cooling: {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816365, 'usbPowered': True}
+health-07 tool:search_notes 36581 {'temperatureC': 35.2, 'thermalStatus': 1, 'pssKb': 816369, 'usbPowered': True}
+health-08 tool:get_device_info 40030 {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816368, 'usbPowered': True}
+Cooling: {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816369, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816369, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816370, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816369, 'usbPowered': True}
+Cooling: {'temperatureC': 35.3, 'thermalStatus': 2, 'pssKb': 816369, 'usbPowered': True}
+health-09 answer 36022 {'temperatureC': 35.2, 'thermalStatus': 1, 'pssKb': 816369, 'usbPowered': True}
+health-10 tool:get_device_info 36831 {'temperatureC': 35.2, 'thermalStatus': 2, 'pssKb': 816373, 'usbPowered': True}
+{
+  "suite": "tool-routing-3-tools-v5",
+  "treatment": "raw",
+  "label": "Qwen3.5-0.8B-Q4_K_M-raw",
+  "enableThinking": null,
+  "rawModeNote": "Uses /v1/completions without chat template, replicating JNI [[POCKET_GRAMMAR_ROUTE]] raw-completion path",
+  "modelSha256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+  "runtimeRevision": "f0c41e016-b11443",
+  "inferenceDevice": "Android",
+  "transport": "ADB forwarded localhost HTTP",
+  "finalAnswersTested": false,
+  "maxTemperatureC": 38,
+  "maxThermalStatus": 1,
+  "caseTimeoutSeconds": 300,
+  "context": 2048,
+  "harnessSha256": "81e3dc06f32e1ac0e0ad1aaad0b9e99bab7f1ea173997a103aa39fd868878063",
+  "complete": true,
+  "correct": 35,
+  "rawCorrect": 33,
+  "total": 50,
+  "meanLatencyMs": 36497.309909200005,
+  "medianLatencyMs": 36412.528541999905
+}

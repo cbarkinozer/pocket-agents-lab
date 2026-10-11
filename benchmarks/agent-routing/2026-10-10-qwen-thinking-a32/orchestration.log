@@ -14,3 +14,11 @@ Server ready pid=27380
 Running thinking-off benchmark → thinking-off-results.json
 ============================================================
 
+Server stopped
+
+===== THINKING COMPARISON SUMMARY =====
+  thinking=ON : 0/50 (0.0%) mean=11.0s
+  thinking=OFF: 10/50 (20.0%) mean=65.7s
+Previous thinking=OFF run (Oct 10): 10/50 (20%) mean=64.8s
+Historical JNI (Sep 11):            41/50 (82%) mean=53.0s
+Done.
