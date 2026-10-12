@@ -36,6 +36,8 @@ import sys
 import time
 from pathlib import Path
 
+from decision_training_utils import decision_trainer_class, enable_existing_adapter_and_head, check_build_report
+
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__,
@@ -148,17 +150,8 @@ def main():
         sys.exit(1)
 
     import math
-    import numpy as np
     from datasets import Dataset
     from transformers import TrainingArguments, TrainerCallback
-
-    def compute_decision_metrics(eval_pred):
-        from sklearn.metrics import f1_score
-        logits, label_ids = eval_pred.predictions, eval_pred.label_ids
-        predictions = logits.argmax(axis=-1) if logits.ndim == 2 else logits
-        accuracy = float((predictions == label_ids).mean())
-        macro_f1 = float(f1_score(label_ids, predictions, average="macro", zero_division=0))
-        return {"accuracy": accuracy, "macro_f1": macro_f1}
 
     class FiniteLossCallback(TrainerCallback):
         def on_log(self, args, state, control, logs=None, **kwargs):
@@ -217,12 +210,7 @@ def main():
         model, tokenizer = FastDecisionModel.from_pretrained(
             model_name=str(args.reflex1_adapter),
             max_seq_length=2048, dtype=None, load_in_4bit=True)
-        n_enabled = 0
-        for name, param in model.named_parameters():
-            if any(k in name for k in ("lora_A", "lora_B", "lora_embedding_A",
-                                        "lora_embedding_B", "joint_head")):
-                param.requires_grad_(True)
-                n_enabled += 1
+        n_enabled = enable_existing_adapter_and_head(model)
         checkpoint_source = str(args.reflex1_adapter)
         print(f"RESUME: enabled gradients on {n_enabled} tensors")
     elif args.reflex1_adapter and args.adapter_strategy == "merge":
@@ -247,19 +235,28 @@ def main():
     # ── build items ──────────────────────────────────────────────────────────
     train_items, tr_report = FastDecisionModel.build_dataset(
         Dataset.from_list(combined_train), tokenizer, model)
-    val_items, _   = FastDecisionModel.build_dataset(Dataset.from_list(combined_val), tokenizer, model)
-    calib_items, _ = FastDecisionModel.build_dataset(Dataset.from_list(combined_calib), tokenizer, model)
+    val_items, val_report   = FastDecisionModel.build_dataset(Dataset.from_list(combined_val), tokenizer, model)
+    calib_items, calib_report = FastDecisionModel.build_dataset(Dataset.from_list(combined_calib), tokenizer, model)
 
     # Separate phone val items for per-domain logging
-    phone_val_items, _   = FastDecisionModel.build_dataset(Dataset.from_list(phone_val_raw), tokenizer, model)
-    general_val_items, _ = FastDecisionModel.build_dataset(Dataset.from_list(general_val_raw), tokenizer, model)
+    phone_val_items, phone_val_report = FastDecisionModel.build_dataset(Dataset.from_list(phone_val_raw), tokenizer, model)
+    general_val_items, general_val_report = FastDecisionModel.build_dataset(Dataset.from_list(general_val_raw), tokenizer, model)
 
     print(f"Items: {len(train_items)} train / {len(val_items)} combined val "
           f"(skipped {tr_report.get('skipped', 0)})")
 
+    check_build_report(train_items, tr_report, "train")
+    check_build_report(val_items, val_report, "validation")
+    check_build_report(calib_items, calib_report, "calibration")
+    check_build_report(phone_val_items, phone_val_report, "phone validation")
+    check_build_report(general_val_items, general_val_report, "general validation")
+
     if args.smoke:
         train_items = train_items[:32]
         val_items   = val_items[:16]
+        calib_items = calib_items[:16]
+        phone_val_items = phone_val_items[:16]
+        general_val_items = general_val_items[:16]
 
     # ── baseline ─────────────────────────────────────────────────────────────
     before_val = FastDecisionModel.evaluate(model, tokenizer, val_items)
@@ -288,12 +285,12 @@ def main():
 
     # ── train ─────────────────────────────────────────────────────────────────
     effective_batch = args.batch_size * args.grad_accum
-    trainer = DecisionTrainer(
+    RoutingDecisionTrainer = decision_trainer_class(DecisionTrainer, FastDecisionModel)
+    trainer = RoutingDecisionTrainer(
         model=model,
         processing_class=tokenizer,
         train_dataset=train_items,
         eval_dataset=val_items,
-        compute_metrics=compute_decision_metrics,
         args=TrainingArguments(
             per_device_train_batch_size=2 if args.smoke else args.batch_size,
             gradient_accumulation_steps=1 if args.smoke else args.grad_accum,
@@ -303,8 +300,10 @@ def main():
             fp16=not is_bfloat16_supported(),
             bf16=is_bfloat16_supported(),
             logging_steps=1,
-            eval_strategy="epoch",
-            save_strategy="epoch",
+            eval_strategy="steps",
+            eval_steps=2 if args.smoke else 20,
+            save_strategy="steps",
+            save_steps=2 if args.smoke else 20,
             load_best_model_at_end=True,
             metric_for_best_model="eval_accuracy",
             greater_is_better=True,

@@ -19,7 +19,7 @@ Validation split:
   Test rows are never opened during training or smoke checks.
 
 Checkpoint selection metric:
-  eval_accuracy (accuracy on the validation split, computed by compute_decision_metrics).
+  eval_accuracy (native FastDecisionModel.evaluate on the validation split).
   For the balanced 9-class phone_routing_v1 validation set, accuracy equals
   macro-F1. Both are logged; accuracy is used for checkpoint selection because
   higher is better semantics are required for load_best_model_at_end.
@@ -49,6 +49,8 @@ import random
 import sys
 import time
 from pathlib import Path
+
+from decision_training_utils import decision_trainer_class, enable_existing_adapter_and_head, check_build_report
 
 
 # ─── argument parsing ─────────────────────────────────────────────────────────
@@ -199,22 +201,10 @@ def check_split_isolation(
 
 
 def check_label_mapping(route_names: list[str], model, tokenizer) -> None:
-    n_routes = len(route_names)
-    # Verify the model has the right number of output classes
-    # FastDecisionModel exposes this via the joint_head config
-    head = getattr(model, "joint_head", None) or getattr(model, "_joint_head", None)
-    if head is not None:
-        out_features = None
-        for attr in ("out_features", "num_labels", "num_classes"):
-            if hasattr(head, attr):
-                out_features = getattr(head, attr)
-                break
-        if out_features is not None and out_features != n_routes:
-            raise ValueError(
-                f"Label mapping check FAILED: model head has {out_features} outputs "
-                f"but dataset has {n_routes} routes."
-            )
-    print(f"  Label mapping: {n_routes} routes — head size check passed (or head not introspectable)")
+    # Clef scores arbitrary supplied options; its head is not a nine-class layer.
+    if len(route_names) != 9 or getattr(model, "head", None) is None:
+        raise ValueError("Expected nine phone routes and a loaded Clef head")
+    print(f"  Schema: {len(route_names)} routes; dynamic-option Clef head present")
 
 
 # FiniteLossCallback is defined inside main() after TrainerCallback is imported.
@@ -241,25 +231,8 @@ def main():
         sys.exit(1)
 
     import math
-    import numpy as np
     from datasets import Dataset
     from transformers import TrainingArguments, TrainerCallback
-
-    def compute_decision_metrics(eval_pred):
-        """Return accuracy and macro-F1 for checkpoint selection and logging.
-
-        For the balanced 9-class phone_routing_v1 validation set, accuracy ≈
-        macro-F1. Both are reported; accuracy drives checkpoint selection
-        (greater_is_better=True, metric_for_best_model='eval_accuracy').
-        Requires sklearn; install with: pip install scikit-learn
-        """
-        from sklearn.metrics import f1_score
-        logits, label_ids = eval_pred.predictions, eval_pred.label_ids
-        predictions = logits.argmax(axis=-1) if logits.ndim == 2 else logits
-        accuracy  = float((predictions == label_ids).mean())
-        macro_f1  = float(f1_score(label_ids, predictions,
-                                   average="macro", zero_division=0))
-        return {"accuracy": accuracy, "macro_f1": macro_f1}
 
     class FiniteLossCallback(TrainerCallback):
         """Raise immediately on NaN/Inf loss at the first two steps."""
@@ -345,13 +318,7 @@ def main():
             load_in_4bit=True,
         )
         # Enable gradients on the existing LoRA parameters without adding a new adapter
-        n_enabled = 0
-        for name, param in model.named_parameters():
-            if any(k in name for k in ("lora_A", "lora_B", "lora_embedding_A",
-                                        "lora_embedding_B", "joint_head")):
-                param.requires_grad_(True)
-                n_enabled += 1
-        print(f"  Enabled gradients on {n_enabled} LoRA/head parameter tensors")
+        n_enabled = enable_existing_adapter_and_head(model)
         checkpoint_source = str(args.reflex1_adapter)
 
     elif args.reflex1_adapter and args.adapter_strategy == "merge":
@@ -406,8 +373,8 @@ def main():
     # ── build training items ──────────────────────────────────────────────────
     print(f"\nBuilding training items…")
     train_items, train_report = FastDecisionModel.build_dataset(train_dataset, tokenizer, model)
-    val_items, _              = FastDecisionModel.build_dataset(val_dataset,   tokenizer, model)
-    calib_items, _            = FastDecisionModel.build_dataset(calib_dataset, tokenizer, model)
+    val_items, val_report              = FastDecisionModel.build_dataset(val_dataset,   tokenizer, model)
+    calib_items, calib_report            = FastDecisionModel.build_dataset(calib_dataset, tokenizer, model)
 
     skipped = train_report.get("skipped", 0)
     print(f"  Train items: {len(train_items)} (skipped {skipped})")
@@ -417,10 +384,15 @@ def main():
     # ── split isolation check ─────────────────────────────────────────────────
     check_split_isolation(train_raw, val_raw, "train/val")
 
+    check_build_report(train_items, train_report, "train")
+    check_build_report(val_items, val_report, "validation")
+    check_build_report(calib_items, calib_report, "calibration")
+
     # ── smoke truncation ──────────────────────────────────────────────────────
     if args.smoke:
         train_items = train_items[:32]
         val_items   = val_items[:16]
+        calib_items = calib_items[:16]
         print(f"\nSmoke mode: truncated to {len(train_items)} train / {len(val_items)} val items")
 
     # ── baseline eval on validation ───────────────────────────────────────────
@@ -454,12 +426,12 @@ def main():
 
     effective_batch = args.batch_size * args.grad_accum
 
-    trainer = DecisionTrainer(
+    RoutingDecisionTrainer = decision_trainer_class(DecisionTrainer, FastDecisionModel)
+    trainer = RoutingDecisionTrainer(
         model=model,
         processing_class=tokenizer,
         train_dataset=train_items,
         eval_dataset=val_items,          # validation, NOT calibration
-        compute_metrics=compute_decision_metrics,
         args=TrainingArguments(
             per_device_train_batch_size=2 if args.smoke else args.batch_size,
             gradient_accumulation_steps=1 if args.smoke else args.grad_accum,
@@ -469,8 +441,10 @@ def main():
             fp16=not is_bfloat16_supported(),
             bf16=is_bfloat16_supported(),
             logging_steps=1,
-            eval_strategy="epoch",
-            save_strategy="epoch",
+            eval_strategy="steps",
+            eval_steps=2 if args.smoke else 20,
+            save_strategy="steps",
+            save_steps=2 if args.smoke else 20,
             load_best_model_at_end=True,
             metric_for_best_model="eval_accuracy",
             greater_is_better=True,
