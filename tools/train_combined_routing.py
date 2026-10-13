@@ -31,6 +31,7 @@ import argparse
 import collections
 import hashlib
 import json
+import math
 import random
 import sys
 import time
@@ -51,12 +52,14 @@ def parse_args():
     p.add_argument("--reflex1-adapter-sha256", type=str, default=None)
     p.add_argument("--adapter-strategy", choices=["resume", "merge"], default="resume")
     p.add_argument("--base-model",       type=str, default="unsloth/Qwen3.5-0.8B")
+    p.add_argument("--max-seq-length", type=int, default=4096,
+                   help="Sequence limit; 150-option intent schemas need more than 2048 tokens")
     p.add_argument("--phone-weight",     type=float, default=1.0,
                    help="Relative sampling weight for phone data (default 1.0)")
     p.add_argument("--general-weight",   type=float, default=1.0,
                    help="Relative sampling weight for general data (default 1.0)")
     p.add_argument("--phone-val-split",  type=int, default=90,
-                   help="Phone val rows to carve from train (default 90, 10/route)")
+                   help="Fallback phone val rows to carve if validation.jsonl is absent")
     p.add_argument("--max-steps",        type=int, default=60)
     p.add_argument("--batch-size",       type=int, default=8)
     p.add_argument("--grad-accum",       type=int, default=4)
@@ -107,22 +110,52 @@ def weighted_mix(phone_rows: list[dict], general_rows: list[dict],
                  seed: int) -> tuple[list[dict], dict]:
     """Mix phone and general rows with relative weights.
 
-    The larger source (by weight-scaled size) is kept in full;
-    the smaller is sampled to match the desired ratio.
+    Sample without replacement at the requested source ratio. The limiting
+    source is kept in full and the larger source is downsampled.
     """
+    if phone_weight <= 0 or general_weight <= 0:
+        raise ValueError("Source weights must be positive")
+    if not phone_rows or not general_rows:
+        raise ValueError("Both training sources must contain rows")
     rng = random.Random(seed)
-    phone_target  = round(len(phone_rows) * phone_weight)
-    general_target = round(len(general_rows) * general_weight)
-    max_target = max(phone_target, general_target)
-    phone_scale   = max_target / phone_target   if phone_target > 0 else 0
-    general_scale = max_target / general_target if general_target > 0 else 0
-    phone_take   = min(len(phone_rows),   round(len(phone_rows) * min(phone_scale, 1.0)))
-    general_take = min(len(general_rows), round(len(general_rows) * min(general_scale, 1.0)))
-    sampled_phone   = rng.sample(phone_rows, phone_take)
-    sampled_general = rng.sample(general_rows, general_take)
+    scale = min(len(phone_rows) / phone_weight, len(general_rows) / general_weight)
+    phone_take = min(len(phone_rows), max(1, round(scale * phone_weight)))
+    general_take = min(len(general_rows), max(1, round(scale * general_weight)))
+
+    def balanced_take(rows: list[dict], count: int) -> list[dict]:
+        groups: dict[str, list[dict]] = collections.defaultdict(list)
+        for row in rows:
+            groups[row["route__label"]].append(row)
+        if count < len(groups):
+            raise ValueError(f"Sampling {count} rows would omit some of {len(groups)} labels")
+        labels = sorted(groups)
+        rng.shuffle(labels)
+        for group in groups.values():
+            rng.shuffle(group)
+        selected = []
+        while len(selected) < count:
+            for label in labels:
+                if groups[label] and len(selected) < count:
+                    selected.append(groups[label].pop())
+        return selected
+
+    sampled_phone = balanced_take(phone_rows, phone_take)
+    by_source: dict[str, list[dict]] = collections.defaultdict(list)
+    for row in general_rows:
+        by_source[row["source"]].append(row)
+    quotas = {source: math.floor(general_take * len(rows) / len(general_rows))
+              for source, rows in by_source.items()}
+    for source in sorted(by_source, key=lambda s: (
+            -(general_take * len(by_source[s]) / len(general_rows) - quotas[s]), s)):
+        if sum(quotas.values()) == general_take:
+            break
+        quotas[source] += 1
+    sampled_general = [row for source in sorted(by_source)
+                       for row in balanced_take(by_source[source], quotas[source])]
     combined = sampled_phone + sampled_general
     rng.shuffle(combined)
     actual = {"phone": phone_take, "general": general_take,
+              "general_per_source": quotas,
               "phone_weight": phone_weight, "general_weight": general_weight}
     return combined, actual
 
@@ -165,13 +198,24 @@ def main():
     # ── load phone data ───────────────────────────────────────────────────────
     phone_train_raw = load_jsonl(args.phone_data_dir / "train.jsonl")
     phone_calib_raw = load_jsonl(args.phone_data_dir / "calibration.jsonl")
-    phone_train_raw, phone_val_raw = carve_validation(
-        phone_train_raw, args.phone_val_split, args.seed)
+    phone_val_path = args.phone_data_dir / "validation.jsonl"
+    if phone_val_path.exists():
+        phone_val_raw = load_jsonl(phone_val_path)
+        split_method = "explicit"
+    else:
+        phone_train_raw, phone_val_raw = carve_validation(
+            phone_train_raw, args.phone_val_split, args.seed)
+        split_method = "carved"
+    phone_ids = [{r["id"] for r in rows} for rows in
+                 (phone_train_raw, phone_val_raw, phone_calib_raw)]
+    if not phone_val_raw or any(phone_ids[a] & phone_ids[b] for a, b in
+                                ((0, 1), (0, 2), (1, 2))):
+        raise ValueError("Phone train/validation/calibration IDs overlap or validation is empty")
 
     phone_train_sha = file_sha256(args.phone_data_dir / "train.jsonl")
     phone_calib_sha = file_sha256(args.phone_data_dir / "calibration.jsonl")
     phone_test_sha  = file_sha256(args.phone_data_dir / "test.jsonl")
-    print(f"Phone:   {len(phone_train_raw)} train / {len(phone_val_raw)} val (carved)")
+    print(f"Phone:   {len(phone_train_raw)} train / {len(phone_val_raw)} val ({split_method})")
 
     # ── load general data ─────────────────────────────────────────────────────
     general_train_raw = load_jsonl(args.general_data_dir / "train.jsonl")
@@ -209,14 +253,14 @@ def main():
     if args.reflex1_adapter and args.adapter_strategy == "resume":
         model, tokenizer = FastDecisionModel.from_pretrained(
             model_name=str(args.reflex1_adapter),
-            max_seq_length=2048, dtype=None, load_in_4bit=True)
+            max_seq_length=args.max_seq_length, dtype=None, load_in_4bit=True)
         n_enabled = enable_existing_adapter_and_head(model)
         checkpoint_source = str(args.reflex1_adapter)
         print(f"RESUME: enabled gradients on {n_enabled} tensors")
     elif args.reflex1_adapter and args.adapter_strategy == "merge":
         from peft import PeftModel
         model, tokenizer = FastDecisionModel.from_pretrained(
-            model_name=args.base_model, max_seq_length=2048, dtype=None, load_in_4bit=True)
+            model_name=args.base_model, max_seq_length=args.max_seq_length, dtype=None, load_in_4bit=True)
         model = PeftModel.from_pretrained(model, str(args.reflex1_adapter)).merge_and_unload()
         model = FastDecisionModel.get_peft_model(
             model, r=args.lora_r, lora_alpha=args.lora_alpha, lora_dropout=0,
@@ -224,7 +268,7 @@ def main():
         checkpoint_source = f"merged:{args.base_model}+{args.reflex1_adapter}"
     else:
         model, tokenizer = FastDecisionModel.from_pretrained(
-            model_name=args.base_model, max_seq_length=2048, dtype=None, load_in_4bit=True)
+            model_name=args.base_model, max_seq_length=args.max_seq_length, dtype=None, load_in_4bit=True)
         model = FastDecisionModel.get_peft_model(
             model, r=args.lora_r, lora_alpha=args.lora_alpha, lora_dropout=0,
             use_gradient_checkpointing="unsloth", random_state=args.seed)
@@ -286,7 +330,28 @@ def main():
     # ── train ─────────────────────────────────────────────────────────────────
     effective_batch = args.batch_size * args.grad_accum
     RoutingDecisionTrainer = decision_trainer_class(DecisionTrainer, FastDecisionModel)
-    trainer = RoutingDecisionTrainer(
+    class BalancedDomainTrainer(RoutingDecisionTrainer):
+        def evaluate(self, eval_dataset=None, ignore_keys=None, metric_key_prefix="eval", **kwargs):
+            phone_metrics = FastDecisionModel.evaluate(
+                self.model, self.processing_class, phone_val_items,
+                batch_size=self.args.per_device_eval_batch_size)
+            general_metrics = FastDecisionModel.evaluate(
+                self.model, self.processing_class, general_val_items,
+                batch_size=self.args.per_device_eval_batch_size)
+            if "accuracy" not in phone_metrics or "accuracy" not in general_metrics:
+                raise ValueError("Native per-domain validation returned no accuracy")
+            result = {
+                f"{metric_key_prefix}_accuracy":
+                    (phone_metrics["accuracy"] + general_metrics["accuracy"]) / 2,
+                f"{metric_key_prefix}_phone_accuracy": phone_metrics["accuracy"],
+                f"{metric_key_prefix}_general_accuracy": general_metrics["accuracy"],
+            }
+            self.log(result)
+            self.control = self.callback_handler.on_evaluate(
+                self.args, self.state, self.control, result)
+            return result
+
+    trainer = BalancedDomainTrainer(
         model=model,
         processing_class=tokenizer,
         train_dataset=train_items,
@@ -370,6 +435,8 @@ def main():
         "adapter_strategy": args.adapter_strategy if args.reflex1_adapter else "scratch",
         "reflex1_adapter_sha256": reflex1_adapter_sha,
         "phone_train_sha256": phone_train_sha,
+        "phone_val_source_sha256": file_sha256(phone_val_path) if phone_val_path.exists() else None,
+        "phone_val_split_method": split_method,
         "phone_calib_sha256": phone_calib_sha,
         "phone_test_sha256": phone_test_sha,
         "general_train_sha256": general_train_sha,
@@ -394,7 +461,7 @@ def main():
         },
         "calibration_config": calib_config,
         "calibration_ok": calibration_ok,
-        "checkpoint_selection_metric": "eval_accuracy on combined val (greater is better)",
+        "checkpoint_selection_metric": "equal mean of phone and general validation accuracy (greater is better)",
         "retention_note": "Phone val accuracy is the primary phone retention signal. "
                           "General val accuracy is the general retention signal. "
                           "Benchmark test scores are for final reporting only.",

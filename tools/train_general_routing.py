@@ -49,6 +49,8 @@ def parse_args():
     p.add_argument("--reflex1-adapter-sha256", type=str, default=None)
     p.add_argument("--adapter-strategy", choices=["resume", "merge"], default="resume")
     p.add_argument("--base-model",  type=str, default="unsloth/Qwen3.5-0.8B")
+    p.add_argument("--max-seq-length", type=int, default=4096,
+                   help="Sequence limit; 150-option intent schemas need more than 2048 tokens")
     p.add_argument("--max-steps",   type=int, default=60)
     p.add_argument("--batch-size",  type=int, default=8)
     p.add_argument("--grad-accum",  type=int, default=4)
@@ -155,7 +157,7 @@ def main():
     if args.reflex1_adapter and args.adapter_strategy == "resume":
         model, tokenizer = FastDecisionModel.from_pretrained(
             model_name=str(args.reflex1_adapter),
-            max_seq_length=2048, dtype=None, load_in_4bit=True,
+            max_seq_length=args.max_seq_length, dtype=None, load_in_4bit=True,
         )
         n_enabled = enable_existing_adapter_and_head(model)
         checkpoint_source = str(args.reflex1_adapter)
@@ -164,7 +166,7 @@ def main():
     elif args.reflex1_adapter and args.adapter_strategy == "merge":
         from peft import PeftModel
         model, tokenizer = FastDecisionModel.from_pretrained(
-            model_name=args.base_model, max_seq_length=2048, dtype=None, load_in_4bit=True)
+            model_name=args.base_model, max_seq_length=args.max_seq_length, dtype=None, load_in_4bit=True)
         model = PeftModel.from_pretrained(model, str(args.reflex1_adapter))
         model = model.merge_and_unload()
         model = FastDecisionModel.get_peft_model(
@@ -174,7 +176,7 @@ def main():
 
     else:
         model, tokenizer = FastDecisionModel.from_pretrained(
-            model_name=args.base_model, max_seq_length=2048, dtype=None, load_in_4bit=True)
+            model_name=args.base_model, max_seq_length=args.max_seq_length, dtype=None, load_in_4bit=True)
         model = FastDecisionModel.get_peft_model(
             model, r=args.lora_r, lora_alpha=args.lora_alpha, lora_dropout=0,
             use_gradient_checkpointing="unsloth", random_state=args.seed)

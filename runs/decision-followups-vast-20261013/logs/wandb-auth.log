@@ -1,0 +1,2 @@
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: c-barkinozer to https://api.wandb.ai. Use `wandb login --relogin` to force relogin

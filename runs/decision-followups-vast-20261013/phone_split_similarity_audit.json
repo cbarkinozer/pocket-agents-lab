@@ -1,0 +1,628 @@
+{
+  "counts": {
+    "train": 781,
+    "validation": 90,
+    "calibration": 90,
+    "test": 88
+  },
+  "comparisons": {
+    "validation": {
+      "normalized_exact_pairs": [],
+      "high_similarity_pair_count": 2,
+      "same_route_scenario_high_similarity_count": 2,
+      "high_similarity_pairs_first_30": [
+        [
+          "pr_get_battery_info_train_062",
+          "pr_get_battery_info_train_043",
+          0.667,
+          0.875
+        ],
+        [
+          "pr_get_storage_info_train_026",
+          "pr_get_storage_info_train_058",
+          0.429,
+          0.88
+        ]
+      ],
+      "nearest_top_20": [
+        {
+          "id": "pr_get_storage_info_train_026",
+          "state": "What are my storage stats?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_storage_info_train_058",
+          "nearest_state": "What is my storage status?",
+          "nearest_label": "get_storage_info",
+          "score": 0.88
+        },
+        {
+          "id": "pr_get_battery_info_train_062",
+          "state": "Is the battery temperature safe?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_battery_info_train_043",
+          "nearest_state": "Is the battery temperature normal?",
+          "nearest_label": "get_battery_info",
+          "score": 0.875
+        },
+        {
+          "id": "pr_get_storage_info_train_049",
+          "state": "Is this a 64GB or 128GB phone?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_device_info_train_013",
+          "nearest_state": "Is this a 4GB or 6GB RAM phone?",
+          "nearest_label": "get_device_info",
+          "score": 0.847
+        },
+        {
+          "id": "pr_search_local_files_train_051",
+          "state": "Search for any log files on my device",
+          "label": "search_local_files",
+          "nearest_id": "pr_search_local_files_train_030",
+          "nearest_state": "Search for EPUB files on my device",
+          "nearest_label": "search_local_files",
+          "score": 0.845
+        },
+        {
+          "id": "pr_get_device_info_train_046",
+          "state": "Does this phone support Wi-Fi 6?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_041",
+          "nearest_state": "Does this phone support 5G?",
+          "nearest_label": "get_device_info",
+          "score": 0.842
+        },
+        {
+          "id": "pr_search_notes_train_053",
+          "state": "Search my saved notes",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_093",
+          "nearest_state": "Check my saved notes",
+          "nearest_label": "search_notes",
+          "score": 0.829
+        },
+        {
+          "id": "pr_get_battery_info_train_074",
+          "state": "How is my battery holding up?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_storage_info_train_088",
+          "nearest_state": "How is my storage holding up?",
+          "nearest_label": "get_storage_info",
+          "score": 0.821
+        },
+        {
+          "id": "pr_get_media_info_train_096",
+          "state": "What is the current song?",
+          "label": "get_media_info",
+          "nearest_id": "pr_get_media_info_train_072",
+          "nearest_state": "What is the current media?",
+          "nearest_label": "get_media_info",
+          "score": 0.816
+        },
+        {
+          "id": "pr_answer_train_001",
+          "state": "What is the difference between RAM and storage?",
+          "label": "answer",
+          "nearest_id": "pr_answer_train_007",
+          "nearest_state": "What is the difference between a meteor and a meteorite?",
+          "nearest_label": "answer",
+          "score": 0.812
+        },
+        {
+          "id": "pr_search_local_files_train_026",
+          "state": "Can you locate a document I have?",
+          "label": "search_local_files",
+          "nearest_id": "pr_search_local_files_train_059",
+          "nearest_state": "Locate a document I saved",
+          "nearest_label": "search_local_files",
+          "score": 0.807
+        },
+        {
+          "id": "pr_answer_train_011",
+          "state": "What is the Higgs boson?",
+          "label": "answer",
+          "nearest_id": "pr_get_media_info_train_015",
+          "nearest_state": "What is this song?",
+          "nearest_label": "get_media_info",
+          "score": 0.8
+        },
+        {
+          "id": "pr_search_local_files_train_076",
+          "state": "Search my files for 'insurance policy'",
+          "label": "search_local_files",
+          "nearest_id": "pr_search_local_files_train_003",
+          "nearest_state": "Search my files for 'visa application'",
+          "nearest_label": "search_local_files",
+          "score": 0.778
+        },
+        {
+          "id": "pr_get_storage_info_train_041",
+          "state": "How much room is left on my phone?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_device_info_train_079",
+          "nearest_state": "How much RAM is on this phone?",
+          "nearest_label": "get_device_info",
+          "score": 0.774
+        },
+        {
+          "id": "pr_get_media_info_train_009",
+          "state": "Identify the current song",
+          "label": "get_media_info",
+          "nearest_id": "pr_get_media_info_train_055",
+          "nearest_state": "Identify the current audio track",
+          "nearest_label": "get_media_info",
+          "score": 0.772
+        },
+        {
+          "id": "pr_get_battery_info_train_018",
+          "state": "How much battery life do I have left?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_storage_info_train_040",
+          "nearest_state": "How much storage space do I have left?",
+          "nearest_label": "get_storage_info",
+          "score": 0.767
+        },
+        {
+          "id": "pr_get_storage_info_train_056",
+          "state": "Show me my storage status",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_storage_info_train_058",
+          "nearest_state": "What is my storage status?",
+          "nearest_label": "get_storage_info",
+          "score": 0.76
+        },
+        {
+          "id": "pr_search_notes_train_044",
+          "state": "What curtain size did I note?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_036",
+          "nearest_state": "What bus route did I note?",
+          "nearest_label": "search_notes",
+          "score": 0.755
+        },
+        {
+          "id": "pr_get_media_info_train_006",
+          "state": "Who is performing this song?",
+          "label": "get_media_info",
+          "nearest_id": "pr_get_media_info_train_036",
+          "nearest_state": "Who is performing what I'm hearing?",
+          "nearest_label": "get_media_info",
+          "score": 0.754
+        },
+        {
+          "id": "pr_get_device_info_train_064",
+          "state": "Does this phone have a headphone jack?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_028",
+          "nearest_state": "Does this phone have NFC?",
+          "nearest_label": "get_device_info",
+          "score": 0.754
+        },
+        {
+          "id": "pr_get_device_info_train_027",
+          "state": "Is this phone 64-bit?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_030",
+          "nearest_state": "Is this phone rooted?",
+          "nearest_label": "get_device_info",
+          "score": 0.75
+        }
+      ],
+      "nearest_score_buckets": {
+        ">=0.8": 11,
+        ">=0.7": 27,
+        "<0.7": 52
+      }
+    },
+    "calibration": {
+      "normalized_exact_pairs": [],
+      "high_similarity_pair_count": 2,
+      "same_route_scenario_high_similarity_count": 1,
+      "high_similarity_pairs_first_30": [
+        [
+          "pr_get_device_info_calibration_005",
+          "pr_get_device_info_train_020",
+          0.625,
+          0.871
+        ],
+        [
+          "pr_get_device_info_calibration_005",
+          "pr_get_device_info_train_074",
+          0.625,
+          0.852
+        ]
+      ],
+      "nearest_top_20": [
+        {
+          "id": "pr_get_device_info_calibration_005",
+          "state": "What FCC ID does this phone have?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_020",
+          "nearest_state": "What IMEI does this phone have?",
+          "nearest_label": "get_device_info",
+          "score": 0.871
+        },
+        {
+          "id": "pr_save_note_calibration_002",
+          "state": "Remember this location for later",
+          "label": "save_note",
+          "nearest_id": "pr_save_note_train_050",
+          "nearest_state": "Remember this URL for later",
+          "nearest_label": "save_note",
+          "score": 0.847
+        },
+        {
+          "id": "pr_get_device_info_calibration_008",
+          "state": "What display size does this phone have?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_020",
+          "nearest_state": "What IMEI does this phone have?",
+          "nearest_label": "get_device_info",
+          "score": 0.824
+        },
+        {
+          "id": "pr_search_notes_calibration_000",
+          "state": "What did I save about the train schedule?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_086",
+          "nearest_state": "What did I save about the Airbnb check-in?",
+          "nearest_label": "search_notes",
+          "score": 0.815
+        },
+        {
+          "id": "pr_get_device_info_calibration_003",
+          "state": "What is the release year of this phone?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_066",
+          "nearest_state": "What is the ABI of this phone?",
+          "nearest_label": "get_device_info",
+          "score": 0.806
+        },
+        {
+          "id": "pr_search_notes_calibration_003",
+          "state": "What is in my notes?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_066",
+          "nearest_state": "What lock code is in my notes?",
+          "nearest_label": "search_notes",
+          "score": 0.792
+        },
+        {
+          "id": "pr_get_storage_info_calibration_009",
+          "state": "Is my internal storage nearly full?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_storage_info_train_029",
+          "nearest_state": "Is my internal storage critically low?",
+          "nearest_label": "get_storage_info",
+          "score": 0.789
+        },
+        {
+          "id": "pr_get_device_info_calibration_002",
+          "state": "What is the exact product name of this phone?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_098",
+          "nearest_state": "What is the model number of this phone?",
+          "nearest_label": "get_device_info",
+          "score": 0.78
+        },
+        {
+          "id": "pr_get_battery_info_calibration_009",
+          "state": "Is my phone discharging faster than usual?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_battery_info_train_078",
+          "nearest_state": "Is my phone charging faster on this adapter?",
+          "nearest_label": "get_battery_info",
+          "score": 0.762
+        },
+        {
+          "id": "pr_search_notes_calibration_007",
+          "state": "What did I save about Thursday's event?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_019",
+          "nearest_state": "What did I save about the project?",
+          "nearest_label": "search_notes",
+          "score": 0.761
+        },
+        {
+          "id": "pr_get_battery_info_calibration_000",
+          "state": "Is my battery in good health?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_battery_info_train_050",
+          "nearest_state": "Is my battery getting hot?",
+          "nearest_label": "get_battery_info",
+          "score": 0.755
+        },
+        {
+          "id": "pr_phone_health_check_calibration_008",
+          "state": "Is my phone prepared for an intensive ML task?",
+          "label": "phone_health_check",
+          "nearest_id": "pr_phone_health_check_train_062",
+          "nearest_state": "Is my phone prepared for heavy use today?",
+          "nearest_label": "phone_health_check",
+          "score": 0.753
+        },
+        {
+          "id": "pr_get_battery_info_calibration_002",
+          "state": "Is the battery temperature within safe range?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_battery_info_train_043",
+          "nearest_state": "Is the battery temperature normal?",
+          "nearest_label": "get_battery_info",
+          "score": 0.753
+        },
+        {
+          "id": "pr_phone_health_check_calibration_002",
+          "state": "How is my phone doing overall?",
+          "label": "phone_health_check",
+          "nearest_id": "pr_phone_health_check_train_067",
+          "nearest_state": "Is my phone performing well overall?",
+          "nearest_label": "phone_health_check",
+          "score": 0.75
+        },
+        {
+          "id": "pr_search_notes_calibration_009",
+          "state": "What did I note about the interview?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_098",
+          "nearest_state": "What did I note about the party planning?",
+          "nearest_label": "search_notes",
+          "score": 0.747
+        },
+        {
+          "id": "pr_get_storage_info_calibration_004",
+          "state": "How much of my storage is left?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_storage_info_train_090",
+          "nearest_state": "How much storage is available?",
+          "nearest_label": "get_storage_info",
+          "score": 0.746
+        },
+        {
+          "id": "pr_get_storage_info_calibration_006",
+          "state": "How many GB of space do I have free?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_device_info_train_055",
+          "nearest_state": "How many gigabytes of RAM do I have?",
+          "nearest_label": "get_device_info",
+          "score": 0.743
+        },
+        {
+          "id": "pr_search_notes_calibration_006",
+          "state": "Find the cooking temperature I noted",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_069",
+          "nearest_state": "Find the contractor's quote I noted",
+          "nearest_label": "search_notes",
+          "score": 0.732
+        },
+        {
+          "id": "pr_search_notes_calibration_002",
+          "state": "What travel tip did I save?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_048",
+          "nearest_state": "What ideas did I save?",
+          "nearest_label": "search_notes",
+          "score": 0.723
+        },
+        {
+          "id": "pr_get_media_info_calibration_002",
+          "state": "What ringtone is set on this phone?",
+          "label": "get_media_info",
+          "nearest_id": "pr_get_device_info_train_012",
+          "nearest_state": "What hardware is in this phone?",
+          "nearest_label": "get_device_info",
+          "score": 0.719
+        }
+      ],
+      "nearest_score_buckets": {
+        "<0.7": 62,
+        ">=0.7": 23,
+        ">=0.8": 5
+      }
+    },
+    "test": {
+      "normalized_exact_pairs": [],
+      "high_similarity_pair_count": 2,
+      "same_route_scenario_high_similarity_count": 2,
+      "high_similarity_pairs_first_30": [
+        [
+          "pr_get_media_info_test_009",
+          "pr_get_media_info_train_047",
+          0.6,
+          0.864
+        ],
+        [
+          "pr_save_note_test_008",
+          "pr_save_note_train_030",
+          0.667,
+          0.878
+        ]
+      ],
+      "nearest_top_20": [
+        {
+          "id": "pr_save_note_test_008",
+          "state": "Save this to my notes",
+          "label": "save_note",
+          "nearest_id": "pr_save_note_train_030",
+          "nearest_state": "Add this to my notes",
+          "nearest_label": "save_note",
+          "score": 0.878
+        },
+        {
+          "id": "pr_get_media_info_test_009",
+          "state": "What video is playing?",
+          "label": "get_media_info",
+          "nearest_id": "pr_get_media_info_train_047",
+          "nearest_state": "What episode is playing?",
+          "nearest_label": "get_media_info",
+          "score": 0.864
+        },
+        {
+          "id": "pr_get_device_info_test_009",
+          "state": "What OS version does this phone have?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_020",
+          "nearest_state": "What IMEI does this phone have?",
+          "nearest_label": "get_device_info",
+          "score": 0.848
+        },
+        {
+          "id": "pr_search_notes_test_009",
+          "state": "What information did I save?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_023",
+          "nearest_state": "What saved information do I have?",
+          "nearest_label": "search_notes",
+          "score": 0.814
+        },
+        {
+          "id": "pr_get_battery_info_test_009",
+          "state": "Is my battery above 30%?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_battery_info_train_033",
+          "nearest_state": "Is my battery above 50 percent?",
+          "nearest_label": "get_battery_info",
+          "score": 0.808
+        },
+        {
+          "id": "pr_get_media_info_test_004",
+          "state": "Media info please",
+          "label": "get_media_info",
+          "nearest_id": "pr_get_device_info_train_008",
+          "nearest_state": "Device info please",
+          "nearest_label": "get_device_info",
+          "score": 0.8
+        },
+        {
+          "id": "pr_search_notes_test_003",
+          "state": "What address did I note down?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_014",
+          "nearest_state": "What tasks did I write down?",
+          "nearest_label": "search_notes",
+          "score": 0.8
+        },
+        {
+          "id": "pr_phone_health_check_test_003",
+          "state": "What is the overall status of this device?",
+          "label": "phone_health_check",
+          "nearest_id": "pr_get_device_info_train_096",
+          "nearest_state": "What is the brand of this device?",
+          "nearest_label": "get_device_info",
+          "score": 0.795
+        },
+        {
+          "id": "pr_get_device_info_test_005",
+          "state": "What carrier bands does this phone support?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_044",
+          "nearest_state": "What CPU architecture does this phone support?",
+          "nearest_label": "get_device_info",
+          "score": 0.782
+        },
+        {
+          "id": "pr_get_battery_info_test_008",
+          "state": "Will the battery last until I get home?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_battery_info_train_080",
+          "nearest_state": "Will my battery last until tonight?",
+          "nearest_label": "get_battery_info",
+          "score": 0.778
+        },
+        {
+          "id": "pr_get_battery_info_test_003",
+          "state": "What is my battery health percentage?",
+          "label": "get_battery_info",
+          "nearest_id": "pr_get_battery_info_train_049",
+          "nearest_state": "What is my battery percentage right now?",
+          "nearest_label": "get_battery_info",
+          "score": 0.773
+        },
+        {
+          "id": "pr_get_storage_info_test_003",
+          "state": "How much combined storage do I have?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_battery_info_train_013",
+          "nearest_state": "How much charge do I have?",
+          "nearest_label": "get_battery_info",
+          "score": 0.767
+        },
+        {
+          "id": "pr_search_notes_test_006",
+          "state": "Find the packing list I made",
+          "label": "search_notes",
+          "nearest_id": "pr_search_local_files_train_056",
+          "nearest_state": "Find the backup file I made",
+          "nearest_label": "search_local_files",
+          "score": 0.764
+        },
+        {
+          "id": "pr_get_media_info_test_008",
+          "state": "What is the total length of this track?",
+          "label": "get_media_info",
+          "nearest_id": "pr_get_device_info_train_077",
+          "nearest_state": "What is the total memory of this device?",
+          "nearest_label": "get_device_info",
+          "score": 0.753
+        },
+        {
+          "id": "pr_get_storage_info_test_008",
+          "state": "How full is my phone's storage?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_storage_info_train_060",
+          "nearest_state": "Is my phone's storage okay?",
+          "nearest_label": "get_storage_info",
+          "score": 0.75
+        },
+        {
+          "id": "pr_search_notes_test_001",
+          "state": "What was the PIN I wrote down?",
+          "label": "search_notes",
+          "nearest_id": "pr_search_notes_train_014",
+          "nearest_state": "What tasks did I write down?",
+          "nearest_label": "search_notes",
+          "score": 0.75
+        },
+        {
+          "id": "pr_get_storage_info_test_007",
+          "state": "Is my storage fragmented?",
+          "label": "get_storage_info",
+          "nearest_id": "pr_get_storage_info_train_027",
+          "nearest_state": "Is my storage almost exhausted?",
+          "nearest_label": "get_storage_info",
+          "score": 0.741
+        },
+        {
+          "id": "pr_phone_health_check_test_001",
+          "state": "Give me a complete status before I head out",
+          "label": "phone_health_check",
+          "nearest_id": "pr_phone_health_check_train_016",
+          "nearest_state": "Give me a complete phone status report",
+          "nearest_label": "phone_health_check",
+          "score": 0.741
+        },
+        {
+          "id": "pr_get_device_info_test_006",
+          "state": "What kernel is running on this device?",
+          "label": "get_device_info",
+          "nearest_id": "pr_get_device_info_train_032",
+          "nearest_state": "What system is running on this phone?",
+          "nearest_label": "get_device_info",
+          "score": 0.74
+        },
+        {
+          "id": "pr_phone_health_check_test_004",
+          "state": "Show me storage and device summary",
+          "label": "phone_health_check",
+          "nearest_id": "pr_phone_health_check_train_089",
+          "nearest_state": "Show me battery, storage, and device info",
+          "nearest_label": "phone_health_check",
+          "score": 0.74
+        }
+      ],
+      "nearest_score_buckets": {
+        "<0.7": 55,
+        ">=0.7": 26,
+        ">=0.8": 7
+      }
+    }
+  }
+}

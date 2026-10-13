@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fine-tune the Clef decision head on phone routing using phone_routing_v1 data.
+"""Fine-tune the Clef decision head on phone routing using v1 or reviewed v2 data.
 
 Checkpoint loading strategy: RESUME (default when --reflex1-adapter is supplied).
   FastDecisionModel.from_pretrained(reflex1_checkpoint_path) loads the backbone,
@@ -9,20 +9,19 @@ Checkpoint loading strategy: RESUME (default when --reflex1-adapter is supplied)
   backbone, run with --adapter-strategy merge (requires GPU RAM for merge).
 
 Validation split:
-  --val-split-size rows (default 90, 10/route) are carved from the 900-row train
-  pool, stratified by ROUTE only (not by scenario family). After human review
-  assigns scenario families to the review sheet, re-split using carve_validation
-  with group_col="scenario_family" so that paraphrase variants stay together.
-  Until that review is complete, the current route-stratified split is used.
+  A data directory with validation.jsonl uses that explicit split and checks
+  IDs and template groups against training/calibration. Reviewed v2 data should
+  use this path. Frozen v1 data without validation.jsonl falls back to a
+  route-stratified --val-split-size carve, which is not template-group safe.
   Calibration rows are used only for probability calibration after checkpoint
   selection; they are never used as the trainer's eval_dataset.
   Test rows are never opened during training or smoke checks.
 
 Checkpoint selection metric:
   eval_accuracy (native FastDecisionModel.evaluate on the validation split).
-  For the balanced 9-class phone_routing_v1 validation set, accuracy equals
-  macro-F1. Both are logged; accuracy is used for checkpoint selection because
-  higher is better semantics are required for load_best_model_at_end.
+  Accuracy is used for checkpoint selection because higher is better semantics
+  are required for load_best_model_at_end. Balanced classes do not make accuracy
+  equal macro-F1; compute macro-F1 separately for the final comparison.
   If DecisionTrainer does not support compute_metrics, this will fail at smoke
   time before any GPU costs are incurred — check unsloth version.
 
@@ -247,6 +246,7 @@ def main():
 
     # ── data paths and hashes ────────────────────────────────────────────────
     train_path = args.data_dir / "train.jsonl"
+    explicit_val_path = args.data_dir / "validation.jsonl"
     calib_path = args.data_dir / "calibration.jsonl"
     test_path  = args.data_dir / "test.jsonl"
 
@@ -278,7 +278,7 @@ def main():
 
     # ── load raw JSONL ───────────────────────────────────────────────────────
     def load_jsonl(path: Path) -> list[dict]:
-        return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+        return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
     train_raw = load_jsonl(train_path)
     calib_raw = load_jsonl(calib_path)
@@ -287,8 +287,24 @@ def main():
     print(f"\nRaw counts: {len(train_raw)} train, {len(calib_raw)} calibration")
 
     # ── carve validation from train pool ───────────────────────────────────
-    keep_raw, val_raw = carve_validation(train_raw, args.val_split_size, args.seed)
-    print(f"Validation carve (seed={args.seed}): {len(val_raw)} val, {len(keep_raw)} train remaining")
+    if explicit_val_path.exists():
+        keep_raw, val_raw = train_raw, load_jsonl(explicit_val_path)
+        if not val_raw or {r["id"] for r in keep_raw} & {r["id"] for r in val_raw}:
+            raise ValueError("Explicit validation must be nonempty and disjoint from training IDs")
+        if {r["id"] for r in calib_raw} & ({r["id"] for r in keep_raw} | {r["id"] for r in val_raw}):
+            raise ValueError("Calibration IDs overlap training or validation")
+        group_path = args.data_dir / "template-groups.json"
+        if group_path.exists():
+            group_ids = json.loads(group_path.read_text(encoding="utf-8"))
+            group_sets = [{group_ids[r["id"]] for r in rows} for rows in (keep_raw, val_raw, calib_raw)]
+            if any(group_sets[i] & group_sets[j] for i, j in ((0, 1), (0, 2), (1, 2))):
+                raise ValueError("Template group overlaps training, validation, or calibration")
+        val_split_strategy = "explicit grouped validation.jsonl"
+        print(f"Explicit validation: {len(val_raw)} val, {len(keep_raw)} train")
+    else:
+        keep_raw, val_raw = carve_validation(train_raw, args.val_split_size, args.seed)
+        val_split_strategy = "route-stratified carve (not template-group safe)"
+        print(f"Validation carve (seed={args.seed}): {len(val_raw)} val, {len(keep_raw)} train remaining")
 
     # verify route balance in carve
     val_routes = collections.Counter(r["route__label"] for r in val_raw)
@@ -298,7 +314,7 @@ def main():
 
     # write val manifest
     val_manifest_path = args.output_dir / "val-manifest.jsonl"
-    val_manifest_path.write_text("\n".join(json.dumps(r) for r in val_raw) + "\n")
+    val_manifest_path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in val_raw) + "\n", encoding="utf-8")
     val_sha = file_sha256(val_manifest_path)
     print(f"  Val manifest: {val_manifest_path}  sha256={val_sha[:16]}…")
 
@@ -563,7 +579,7 @@ def main():
         "calibration_config": calib_config,
         "calibration_ok": calibration_ok,
         "checkpoint_selection_metric": "eval_accuracy (greater is better)",
-        "val_split_strategy": "route-stratified (family-stratified after human review)",
+        "val_split_strategy": val_split_strategy,
     }
     write_json(args.output_dir / "run-manifest.json", manifest)
 
