@@ -1,5 +1,7 @@
 # Reflex-1 application integration
 
+Future architecture work: [shared backbone, two output modes, and memory/latency experiment plan](reflex-shared-backbone-plan.md).
+
 The app detects GGUF `general.architecture=clef` and loads it through the packaged, CPU-only llama.cpp Decision API server. Regular GGUFs continue through JNI. The app sends the frozen MOBILE_ROUTING9 choice schema to `127.0.0.1:8092/v1/systemone`, maps all nine choices into existing AgentBackend tools/workflows, and never samples text for route selection.
 
 ## Using it

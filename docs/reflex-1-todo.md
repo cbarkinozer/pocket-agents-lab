@@ -1,5 +1,7 @@
 # reflex-1 next steps
 
+Future architecture work: [shared backbone, two output modes, and memory/latency experiment plan](reflex-shared-backbone-plan.md).
+
 **2026-10-17 update:** the released combined model is integrated through an app-owned decision server with sequential text-model swapping. See [current application setup and validation](reflex-1-app-integration.md). The older checklist below is retained as development history; it does not describe current training or release status.
 
 Last updated: 2026-10-11. Working HTTP baseline: Qwen raw 66% on dev suite.
