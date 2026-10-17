@@ -621,7 +621,7 @@ private fun PocketAgentsScreen() {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-        Text("Pocket Agents Lab", style = MaterialTheme.typography.headlineSmall)
+        Text(context.applicationInfo.loadLabel(context.packageManager).toString(), style = MaterialTheme.typography.headlineSmall)
 
         if (currentPage == AppPage.TESTS) {
         Text(

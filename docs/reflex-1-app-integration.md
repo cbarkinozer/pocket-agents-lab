@@ -34,7 +34,7 @@ JNI shared libraries use `libpocket-*` names to keep their dependencies separate
 
 If the submodule worktree is incomplete or has unrelated changes, `-PllamaSourceDir=/absolute/path/to/complete/source` selects an isolated source tree without changing it. Record the actual source revision used. This integration was built from an isolated archive of the existing submodule HEAD `aa94f2086147cd4bfbcff818ce998dffce5fcb39`; the pre-existing modified submodule was left untouched.
 
-`-PreflexTrial=true` builds **Pocket Agents Lab Reflex** as `com.pocketagentslab.reflex`, allowing installation beside a differently signed app without deleting its data. Normal builds retain the original application ID.
+`-PreflexTrial=true` builds **Reflex Agent Lab** as `com.pocketagentslab.reflex`, allowing installation beside a differently signed app without deleting its data. Normal builds retain the original application ID.
 
 ## Validation
 
@@ -44,4 +44,6 @@ These checks validate integration behavior, not a new accuracy/latency benchmark
 
 ## Completed A32 check (2026-10-17)
 
-104 JVM tests and the real sequential-swap instrumentation test passed. A visible Tiny Agent battery request returned the live phone reading. [Smoke logs, APK/model hashes and exact configuration](../benchmarks/reflex-app-integration/2026-10-17/README.md). The trial APK is installed as Pocket Agents Lab Reflex; the original app was not replaced.
+104 JVM tests and the real sequential-swap instrumentation test passed. A visible Tiny Agent battery request returned the live phone reading. [Smoke logs, APK/model hashes and exact configuration](../benchmarks/reflex-app-integration/2026-10-17/README.md). The trial APK is installed as Reflex Agent Lab; the original app was not replaced.
+
+Launcher clarification (2026-10-18): the trial app is named Reflex Agent Lab so it is distinguishable from the original Pocket Agents Lab icon, whose JNI-only loader cannot open Clef. Loading errors observed in PID 15985 belonged to the original package com.pocketagentslab, not the integrated com.pocketagentslab.reflex build.

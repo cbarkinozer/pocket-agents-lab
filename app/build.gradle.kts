@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.pocketagentslab"
         if (reflexTrial) applicationIdSuffix = ".reflex"
-        manifestPlaceholders["appLabel"] = if (reflexTrial) "Pocket Agents Lab Reflex" else "Pocket Agents Lab"
+        manifestPlaceholders["appLabel"] = if (reflexTrial) "Reflex Agent Lab" else "Pocket Agents Lab"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
