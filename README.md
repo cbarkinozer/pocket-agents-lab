@@ -16,6 +16,8 @@ The project is intentionally PoC-driven.
 
 We will build many small experiments, measure what works, discard what does not, and gradually discover how capable a fully local mobile agent can become.
 
+**Reflex-1 routing integration:** the app now loads Clef decision GGUFs through a packaged on-device runtime and can swap sequentially to a regular text model for final answers. See [setup, build and validation](docs/reflex-1-app-integration.md).
+
 The canonical layered and iterative plan is maintained in [`docs/roadmap.md`](docs/roadmap.md). Each layer advances to a measurable MVP, then development moves across the stack and returns where evidence shows the highest-value improvement.
 
 ---

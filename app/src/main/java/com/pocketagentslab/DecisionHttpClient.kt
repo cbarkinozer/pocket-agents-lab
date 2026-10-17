@@ -16,9 +16,8 @@ import java.net.URL
  *    (The Clef GGUF has no vocabulary logits — it cannot serve chat completions.)
  *  - Port-forward with adb forward tcp:8091 tcp:8091 before the first call.
  *
- * Note: This class is a code seam. The app has not been rebuilt with it wired into
- * [AgentBackend]; it is not yet active in production. Wire it in via the [AgentBackend]
- * constructor's [decisionSelector] parameter after validating routing accuracy.
+ * Used by ReflexInferenceEngine after starting its packaged on-device runtime.
+ * Requests stay on loopback. The selector never generates prose or tool arguments.
  *
  * @param baseUrl  Server base URL, e.g. "http://127.0.0.1:8091"
  * @param timeoutMs Connection and read timeout per request (default 45 000 ms)
@@ -32,7 +31,7 @@ internal class DecisionHttpClient(
      * Routes [userPrompt] via /v1/systemone and returns an [AgentSelection].
      *
      * @throws IOException if the HTTP call fails or times out — caller should
-     *   fall back to the grammar-based generator path.
+     *   report the failure without pretending the decision GGUF can generate text.
      * @throws IllegalStateException if the response is structurally invalid or
      *   returns an unrecognised route — treat as a routing failure.
      */
@@ -71,7 +70,7 @@ internal class DecisionHttpClient(
         }
     }
 
-    private fun buildRequestBody(state: String): String =
+    internal fun buildRequestBody(state: String): String =
         JSONObject()
             .put("model", "reflex-1")
             .put("state", state)
@@ -79,7 +78,7 @@ internal class DecisionHttpClient(
             .put("questions", PHONE_ROUTING_QUESTIONS)
             .toString()
 
-    private fun parseChoice(responseBody: String): String {
+    internal fun parseChoice(responseBody: String): String {
         val root = JSONObject(responseBody)
         val answers = root.optJSONObject("answers")
             ?: error("Response missing 'answers' field")
@@ -107,26 +106,25 @@ internal class DecisionHttpClient(
                 error("Unrecognised route from decision model: $choice")
         }
 
-        // Questions structure matches phone_routing_v1 training contract (manifest.json).
-        // Do not change these strings without retraining the model.
-        private val PHONE_ROUTING_QUESTIONS: JSONObject = JSONObject("""
-            {
-              "route": {
-                "type": "choice",
-                "instructions": "Select exactly one Android agent route by the meaning of the request. Use live phone tools only for current phone facts. Use phone_health_check for overall condition or two or more live categories. Otherwise answer without a tool.",
-                "criteria": {
-                  "answer": "Writing, jokes, arithmetic, definitions, general knowledge, or unclear requests. No live phone data needed.",
-                  "get_device_info": "Current phone model, manufacturer, Android version, CPU ABI or physical RAM.",
-                  "get_battery_info": "Live battery level, charging status, temperature, heat or need to cool down.",
-                  "get_storage_info": "Live internal disk space, used/free/total storage, capacity to save files or models.",
-                  "get_media_info": "Currently playing song or video metadata.",
-                  "search_local_files": "Find a filename or phrase in previously authorized local files.",
-                  "search_notes": "Recall or find information previously saved to notes.",
-                  "save_note": "Explicitly remember or save information for later.",
-                  "phone_health_check": "Overall phone health, condition, AI workload readiness, check everything, or two or more live categories together."
-                }
-              }
-            }
+        // Frozen MOBILE_ROUTING9 schema used to train and evaluate the released model.
+        internal val PHONE_ROUTING_QUESTIONS: JSONObject = JSONObject("""
+{
+  "route": {
+    "type": "choice",
+    "instructions": "Select exactly one route by the user's intended task. Route requests by meaning, including plausible future phone capabilities. Use phone_health_check for overall phone condition or requests spanning multiple live-data categories. Use answer for ordinary responses or when no stable tool intent can be inferred.",
+    "criteria": {
+      "answer": "General knowledge, arithmetic, writing, conversation, or a request requiring clarification because no stable tool intent is clear.",
+      "get_device_info": "Identify this device or inspect its OS, hardware specifications, capabilities, ratings, or certifications.",
+      "get_battery_info": "Inspect this phone's battery level, charging, temperature, health, usage, or runtime estimates.",
+      "get_storage_info": "Inspect this phone's storage space, usage, capacity, or internal or external storage status.",
+      "get_media_info": "Inspect current or recent media playback, metadata, availability, or playback settings.",
+      "search_local_files": "Find files on this device by name, type, content, time, location, or provenance.",
+      "search_notes": "Retrieve information or a note previously saved in the notes system.",
+      "save_note": "Store new information in the notes system when the user explicitly asks to save or remember it.",
+      "phone_health_check": "Inspect the phone's overall condition or readiness, or combine two or more live phone-data categories."
+    }
+  }
+}
         """.trimIndent())
     }
 }

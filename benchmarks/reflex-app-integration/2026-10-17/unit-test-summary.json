@@ -1,0 +1,90 @@
+[
+  {
+    "name": "com.pocketagentslab.ExternalAppActionsTest",
+    "tests": "3",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.003"
+  },
+  {
+    "name": "com.pocketagentslab.DocumentRetrievalTest",
+    "tests": "2",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.005"
+  },
+  {
+    "name": "com.pocketagentslab.GgufArchitectureTest",
+    "tests": "2",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.002"
+  },
+  {
+    "name": "com.pocketagentslab.RuntimeTelemetryTest",
+    "tests": "3",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.001"
+  },
+  {
+    "name": "com.pocketagentslab.WakePhraseTest",
+    "tests": "3",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.0"
+  },
+  {
+    "name": "com.pocketagentslab.DecisionHttpClientTest",
+    "tests": "8",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.01"
+  },
+  {
+    "name": "com.pocketagentslab.PocketNotesTest",
+    "tests": "10",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.002"
+  },
+  {
+    "name": "com.pocketagentslab.AgentBackendTest",
+    "tests": "49",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.058"
+  },
+  {
+    "name": "com.pocketagentslab.LocalFileSearchTest",
+    "tests": "2",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.0"
+  },
+  {
+    "name": "com.pocketagentslab.ClockActionsTest",
+    "tests": "7",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.003"
+  },
+  {
+    "name": "com.pocketagentslab.PhoneHealthEvaluationTest",
+    "tests": "15",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.002"
+  }
+]

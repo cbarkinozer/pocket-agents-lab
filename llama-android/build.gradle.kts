@@ -3,6 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+val llamaSourceDir = providers.gradleProperty("llamaSourceDir")
+    .getOrElse(file("../third_party/llama.cpp").absolutePath)
+
 android {
     namespace = "com.arm.aichat"
     compileSdk = 34
@@ -17,6 +20,7 @@ android {
             cmake {
                 arguments += listOf(
                     "-DCMAKE_BUILD_TYPE=Release",
+                    "-DLLAMA_SRC=$llamaSourceDir",
                     "-DBUILD_SHARED_LIBS=ON",
                     "-DLLAMA_BUILD_APP=OFF",
                     "-DLLAMA_BUILD_COMMON=ON",
@@ -32,7 +36,7 @@ android {
     }
 
     sourceSets["main"].java.srcDir(
-        "../third_party/llama.cpp/examples/llama.android/lib/src/main/java",
+        "$llamaSourceDir/examples/llama.android/lib/src/main/java",
     )
 
     externalNativeBuild {

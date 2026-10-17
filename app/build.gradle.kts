@@ -3,12 +3,16 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+val reflexTrial = providers.gradleProperty("reflexTrial").orNull == "true"
+
 android {
     namespace = "com.pocketagentslab"
     compileSdk = 34
 
     defaultConfig {
         applicationId = "com.pocketagentslab"
+        if (reflexTrial) applicationIdSuffix = ".reflex"
+        manifestPlaceholders["appLabel"] = if (reflexTrial) "Pocket Agents Lab Reflex" else "Pocket Agents Lab"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
@@ -17,6 +21,10 @@ android {
         ndk {
             abiFilters += "arm64-v8a"
         }
+    }
+
+    packaging {
+        jniLibs.useLegacyPackaging = true
     }
 
     buildFeatures {
@@ -54,4 +62,13 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     testImplementation("org.json:json:20240303")
     debugImplementation("androidx.compose.ui:ui-tooling")
+}
+
+// Avoid producing an APK that accepts Clef but cannot start its decision runtime.
+tasks.matching { it.name.matches(Regex("merge.*JniLibFolders")) }.configureEach {
+    doFirst {
+        check(file("src/main/jniLibs/arm64-v8a/libreflex-server.so").isFile) {
+            "Prepare pinned decision binaries: python3 tools/prepare_reflex_android_runtime.py --runtime-dir /path/to/llama-b11443"
+        }
+    }
 }

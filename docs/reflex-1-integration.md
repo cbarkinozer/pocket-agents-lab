@@ -1,5 +1,7 @@
 # reflex-1 on the Galaxy A32
 
+**App integration update (2026-10-17):** see [the application integration guide](reflex-1-app-integration.md) for the implemented packaged runtime, exact release schema, sequential text-model swapping and build/device checks. The sections below preserve the earlier benchmark/design context.
+
 The first experiment replaces route selection with a Clef decision head. It
 does not replace the final language-model answer. The existing 50 development
 cases test routing only, without executing tools or generating final answers.
@@ -18,8 +20,7 @@ cases test routing only, without executing tools or generating final answers.
   relevance-filtered accuracy separately. ADB transports requests to a server
   running on the phone; the Mac does no model inference.
 
-The Kotlin selector is an integration seam, not an installed native decision
-implementation. The current app has not been rebuilt or switched to reflex-1.
+The Kotlin selector is now used by ReflexInferenceEngine for Clef GGUFs; the application integration guide records the current behavior. The decision-only export itself still cannot generate text.
 
 ## One backbone with two output paths
 

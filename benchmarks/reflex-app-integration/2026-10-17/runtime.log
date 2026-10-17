@@ -1,0 +1,21 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.016.832 I srv  llama_server: initializing ...
+0.00.016.922 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.018.002 W srv  llama_server: security: no API key is set and CORS allows all origins (see https://github.com/ggml-org/llama.cpp/pull/25655)
+0.00.020.411 I srv    load_model: loading model '/data/user/0/com.pocketagentslab.reflex/files/models/reflex-1-combined-Q4_K_M.gguf'
+0.01.572.015 I decision model reads the embeddings output, enabling embedding mode
+0.01.572.113 W embeddings enabled: setting n_batch = n_ubatch = 512
+0.01.575.061 W llama_init_from_model: model default pooling_type is [-1], but [0] was specified
+0.01.600.425 I cmn          init: llama threadpool init, n_threads = 4
+0.01.600.998 W init: embeddings required but some input tokens were not marked as outputs -> overriding
+0.01.728.913 I srv          init: decision model type: clef
+0.01.728.943 W srv    load_model: speculative decoding not supported by this context
+0.01.728.949 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 2048, kv_unified = 'false'
+0.01.745.327 I srv  llama_server: model loaded
+0.01.745.352 I srv  llama_server: listening on http://127.0.0.1:8092
+0.01.964.344 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.01.964.413 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.26.462.245 I slot      release: id  0 | task 0 | stop processing: n_tokens = 448, truncated = 0
+0.26.467.538 I srv    operator(): operator(): cleaning up before exit...

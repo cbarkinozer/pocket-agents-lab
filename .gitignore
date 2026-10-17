@@ -5,3 +5,6 @@ local.properties
 **/.cxx/
 **/__pycache__/
 *.iml
+
+# Prepared by tools/prepare_reflex_android_runtime.py from pinned Android runtime.
+app/src/main/jniLibs/

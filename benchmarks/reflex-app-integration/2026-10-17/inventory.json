@@ -1,0 +1,47 @@
+[
+  {
+    "path": "README.md",
+    "bytes": 1975,
+    "sha256": "2cfa6111d3144ecabece783b7612304ab9c40658125210d262c42b8836427dd9"
+  },
+  {
+    "path": "build.log",
+    "bytes": 3922,
+    "sha256": "4ce42f0071ebb07182c109f12d7385a56aa2ae83ff3c428bc1acbd936be0e52a"
+  },
+  {
+    "path": "device-model-sha256.txt",
+    "bytes": 213,
+    "sha256": "c52da66c28c740019bbea38bd550b6664f398b9a8096f09f780d14b48bce46ee"
+  },
+  {
+    "path": "device-smoke.json",
+    "bytes": 634,
+    "sha256": "2389f6385bbefd1e0c89f2b37a82f53d2cd5ebe62968b71d8059dfbd67fc6a71"
+  },
+  {
+    "path": "device-smoke.log",
+    "bytes": 74,
+    "sha256": "c5ce8ed54d5b4ddc3fb3c618e37e25df078b3fe5371b39769561e4ac11b03485"
+  },
+  {
+    "path": "report.json",
+    "bytes": 2144,
+    "sha256": "25fe457bfc9dd10875b7d5feefacd2bc70817c9f5d9aa2ab34d8a6512bb20556"
+  },
+  {
+    "path": "runtime.log",
+    "bytes": 1765,
+    "sha256": "ce72b2df637c4e69131769e26b9519f056ca5bda6213be3df8b7e4ba1730c9bf"
+  },
+  {
+    "path": "test-harness-correction.log",
+    "bytes": 3118,
+    "sha256": "eefcd600cc194cd49767b845de9f7ee7c2e93debf8b7c0e1e51368b8764405d7"
+  },
+  {
+    "path": "unit-test-summary.json",
+    "bytes": 1784,
+    "sha256": "42e06992253c4d19e96bb4c52a44e961143e11de405a72679dc6ef4d8f923705"
+  }
+]

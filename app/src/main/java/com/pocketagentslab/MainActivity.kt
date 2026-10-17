@@ -172,7 +172,7 @@ private fun PocketAgentsScreen() {
     var wakeListeningPhase by remember { mutableStateOf(WakeListeningPhase.WAITING_FOR_WAKE) }
     var queuedWakeCommand by remember { mutableStateOf<String?>(null) }
     var speechStatus by remember { mutableStateOf("Tap the microphone to dictate a prompt") }
-    val engine = remember { AiChat.getInferenceEngine(context.applicationContext) }
+    val engine = remember { ReflexInferenceEngine(context.applicationContext, AiChat.getInferenceEngine(context.applicationContext)) }
     val speechRecognizer = remember {
         if (Build.VERSION.SDK_INT >= 31 && SpeechRecognizer.isOnDeviceRecognitionAvailable(context)) {
             SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
@@ -310,6 +310,7 @@ private fun PocketAgentsScreen() {
         onDispose {
             speechRecognizer.destroy()
             acknowledgementTone.release()
+            engine.close()
         }
     }
 
@@ -358,6 +359,22 @@ private fun PocketAgentsScreen() {
             selectedName = selectedModels.first().name
             modelStatus = "Selected ${selectedModels.size} model(s) in displayed order"
             isModelLoaded = false
+        }
+    }
+    var textModelName by remember { mutableStateOf(modelPreferences.getString("chat_model_path", null)?.let { File(it).name } ?: "None") }
+    val textModelPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) scope.launch {
+            isBusy = true
+            try {
+                val file = withContext(Dispatchers.IO) { copyModelToPrivateStorage(context, uri, displayName(context, uri)) }
+                engine.chooseTextModel(file)
+                textModelName = file.name
+                modelStatus = "Text model saved for sequential answer generation"
+            } catch (error: Throwable) {
+                modelStatus = "Text model selection failed: ${error.message}"
+            } finally {
+                isBusy = false
+            }
         }
     }
     val documentPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -530,7 +547,7 @@ private fun PocketAgentsScreen() {
                 showAgentCompletionNotification(context, output)
                 metrics = "${agentRoutingMode.name.lowercase(Locale.ROOT)} | ${result.route} | " +
                     "valid JSON: yes | ${generationMs} ms | " +
-                    "%.2f exposed pieces/s | PSS %.1f MB".format(
+                    "%.2f exposed pieces/s | App-only PSS %.1f MB".format(
                         Locale.US, piecesPerSecond, pssAfterKb / 1024.0,
                     )
                 Log.i(
@@ -830,6 +847,11 @@ private fun PocketAgentsScreen() {
         HorizontalDivider()
         Text("Tiny Agent", style = MaterialTheme.typography.titleLarge)
         Text("Ask about this device, battery health, storage, or request a phone health check with practical suggestions. Everything runs locally.")
+        Text("Reflex-1 handles routing. An optional text model generates answers; models are loaded one at a time. Without it, phone tools return factual summaries.")
+        Text("Text model: $textModelName")
+        Button(onClick = { textModelPicker.launch(arrayOf("application/octet-stream", "*/*")) }, enabled = !controlsBusy) {
+            Text("Choose text model")
+        }
         Text("Model", style = MaterialTheme.typography.titleSmall)
         Text(if (isModelLoaded) "$selectedName • Ready" else modelStatus)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -1027,7 +1049,7 @@ private fun PocketAgentsScreen() {
                         showAgentCompletionNotification(context, result.answer)
                         metrics = "${agentRoutingMode.name.lowercase(Locale.ROOT)} | ${result.route} | " +
                             "valid JSON: yes | ${generationMs} ms | " +
-                            "%.2f exposed pieces/s | PSS %.1f MB".format(
+                            "%.2f exposed pieces/s | App-only PSS %.1f MB".format(
                             Locale.US,
                             piecesPerSecond,
                             pssAfterKb / 1024.0,
@@ -1823,6 +1845,8 @@ private fun createAgentBackend(
         beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
         onProgress = onProgress,
         allowDeviceActions = true,
+        decisionSelector = (engine as? ReflexInferenceEngine)?.selector(),
+        generateFinalAnswers = (engine as? ReflexInferenceEngine)?.let { !it.isDecisionModel || it.hasTextModel } ?: true,
         routingMode = routingMode,
         actionResolver = { action, request ->
             if (action == LAUNCH_APP) resolveInstalledAppProposal(context, request)
@@ -1849,6 +1873,10 @@ private fun resolveInstalledAppProposal(context: Context, request: String): Devi
 }
 
 private suspend fun prepareFreshAgent(engine: InferenceEngine, modelPath: String) {
+    if (engine is ReflexInferenceEngine && engine.isDecisionModel) {
+        engine.prepareRouting()
+        return
+    }
     when (val state = engine.state.value) {
         is InferenceEngine.State.ModelReady ->
             withContext(Dispatchers.IO) { ConversationReset.reset() }
@@ -2026,6 +2054,7 @@ private suspend fun runAgentTests(
                 }
             },
             tools = ReadOnlyToolExecutor { _, _ -> error("Evaluation must not execute tools") },
+            decisionSelector = (engine as? ReflexInferenceEngine)?.selector(),
             beforeRepair = { withContext(Dispatchers.IO) { ConversationReset.reset() } },
             routingMode = AgentRoutingMode.RESEARCH,
         )
@@ -2039,6 +2068,7 @@ private suspend fun runAgentTests(
         val pssBeforeKb = Debug.getPss()
         val runtimeBefore = captureRuntimeMemorySnapshot()
         val temperatureBeforeC = getBatteryInfo(context).getDouble("temperatureC")
+        val selectionStarted = SystemClock.elapsedRealtime()
         try {
             val selection = withTimeout(AGENT_EVAL_CASE_TIMEOUT_MS) {
                 backend.select(case.prompt)
@@ -2061,11 +2091,14 @@ private suspend fun runAgentTests(
             errorType = classifyAgentEvaluationError(error)
             Log.w(TAG_AGENT, "Test failed for: ${case.prompt}", error)
         }
+        val selectionElapsedMs = SystemClock.elapsedRealtime() - selectionStarted
         if (repairAttempted) repairAttempts++
         val pssAfterKb = Debug.getPss()
         val runtimeAfter = captureRuntimeMemorySnapshot()
         val temperatureAfterC = getBatteryInfo(context).getDouble("temperatureC")
-        val latencyMs = generations.sumOf(TimedGeneration::latencyMs)
+        val latencyMs = if ((engine as? ReflexInferenceEngine)?.isDecisionModel == true) {
+            selectionElapsedMs
+        } else generations.sumOf(TimedGeneration::latencyMs)
         val pieces = generations.sumOf(TimedGeneration::pieces)
         val ttftMs = generations.firstOrNull()?.ttftMs
         val rate = if (latencyMs > 0) pieces * 1000.0 / latencyMs else 0.0
@@ -2079,6 +2112,8 @@ private suspend fun runAgentTests(
             JSONObject()
                 .put("id", case.id)
                 .put("taskCategory", agentTestCategory(case))
+                .put("routingBackend", if ((engine as? ReflexInferenceEngine)?.isDecisionModel == true) "reflex-systemone" else "jni-grammar")
+                .put("pssScope", "app process only; excludes separate decision runtime")
                 .put("prompt", case.prompt)
                 .put("expectedRoute", expectedRoute(case))
                 .put("actualRoute", when {

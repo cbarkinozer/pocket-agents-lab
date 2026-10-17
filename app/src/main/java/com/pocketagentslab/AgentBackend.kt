@@ -79,6 +79,7 @@ internal class AgentBackend(
     private val allowDeviceActions: Boolean = false,
     private val routingMode: AgentRoutingMode = AgentRoutingMode.PRODUCT,
     private val decisionSelector: AgentDecisionSelector? = null,
+    private val generateFinalAnswers: Boolean = true,
     private val actionResolver: (String, String) -> DeviceActionProposal? = { action, request ->
         buildDeviceActionProposal(action, request)
     },
@@ -206,6 +207,13 @@ internal class AgentBackend(
                     ).also { onProgress(AgentProgress(1.0f, "Complete")) }
                 }
                 onProgress(AgentProgress(0.70f, "Generating a local answer…"))
+                if (!generateFinalAnswers) {
+                    return AgentRunResult(
+                        answer = "Reflex-1 selected a direct answer. Choose a text model to generate a response.",
+                        route = "answer:text-model-required",
+                        generatedPieces = selection.generatedPieces,
+                    ).also { onProgress(AgentProgress(1.0f, "Routing complete")) }
+                }
                 val generated = generator.generate(buildDirectAnswerPrompt(userPrompt), AGENT_ANSWER_TOKENS)
                 return AgentRunResult(
                     answer = parseFinalAnswer(generated.text),
@@ -266,7 +274,7 @@ internal class AgentBackend(
         val toolName = requireNotNull(decision.toolName)
         onProgress(AgentProgress(0.45f, "Reading ${toolName.toDisplayName()}…"))
         val toolResult = tools.execute(toolName, userPrompt)
-        if (toolName == "search_notes" || toolName == "get_battery_info" || toolName == "get_media_info") {
+        if (!generateFinalAnswers || toolName == "search_notes" || toolName == "get_battery_info" || toolName == "get_media_info") {
             return AgentRunResult(
                 answer = deterministicToolAnswer(toolName, toolResult),
                 route = buildString {
@@ -309,6 +317,14 @@ internal class AgentBackend(
         val storage = tools.execute("get_storage_info", userPrompt)
         onProgress(AgentProgress(0.60f, "Evaluating health thresholds in Kotlin…"))
         val diagnosis = evaluatePhoneHealth(device, battery, storage)
+        if (!generateFinalAnswers) {
+            return AgentRunResult(
+                answer = deterministicHealthAnswer(diagnosis),
+                route = "workflow:$PHONE_HEALTH_CHECK (deterministic result)",
+                generatedPieces = selection.generatedPieces,
+                diagnosis = diagnosis.toString(),
+            ).also { onProgress(AgentProgress(1.0f, "Health check complete")) }
+        }
         onProgress(AgentProgress(0.72f, "Generating suggestions with the local model…"))
         val generated = generator.generate(
             buildHealthExplanationPrompt(userPrompt, diagnosis),
