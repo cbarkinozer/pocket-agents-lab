@@ -1,0 +1,97 @@
+{
+  "run_id": 1792263467671,
+  "queue_complete": true,
+  "suites": {
+    "reflex-1-beta": {
+      "correct": 19,
+      "total": 50,
+      "accuracy": 0.38,
+      "mean_latency_seconds": 28.39798,
+      "median_latency_seconds": 28.9055,
+      "p95_nearest_rank_seconds": 31.943,
+      "request_errors": 0,
+      "route_counts": {
+        "tool:get_storage_info": 8,
+        "workflow:phone_health_check": 41,
+        "answer": 1
+      },
+      "categories": {
+        "single_tool_storage": {
+          "correct": 8,
+          "total": 10
+        },
+        "single_tool_device": {
+          "correct": 0,
+          "total": 10
+        },
+        "single_tool_battery": {
+          "correct": 0,
+          "total": 10
+        },
+        "no_tool_direct_answer": {
+          "correct": 1,
+          "total": 10
+        },
+        "multi_tool_workflow": {
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "temperature_start_c": 29.6,
+      "temperature_max_c": 34,
+      "file": "reflex-1-Q4_K_M.gguf",
+      "app_pss_max_mib": 127.3779296875,
+      "ram_caveat": "Reflex app PSS excludes model-serving process; not a model-memory comparison."
+    },
+    "Qwen3.5-0.8B": {
+      "correct": 41,
+      "total": 50,
+      "accuracy": 0.82,
+      "mean_latency_seconds": 50.0426,
+      "median_latency_seconds": 49.387,
+      "p95_nearest_rank_seconds": 53.651,
+      "request_errors": 0,
+      "route_counts": {
+        "tool:get_storage_info": 12,
+        "answer": 13,
+        "tool:get_device_info": 11,
+        "tool:get_battery_info": 10,
+        "workflow:phone_health_check": 4
+      },
+      "categories": {
+        "single_tool_storage": {
+          "correct": 9,
+          "total": 10
+        },
+        "single_tool_device": {
+          "correct": 9,
+          "total": 10
+        },
+        "single_tool_battery": {
+          "correct": 10,
+          "total": 10
+        },
+        "no_tool_direct_answer": {
+          "correct": 9,
+          "total": 10
+        },
+        "multi_tool_workflow": {
+          "correct": 4,
+          "total": 10
+        }
+      },
+      "temperature_start_c": 34,
+      "temperature_max_c": 34.4,
+      "file": "Qwen3.5-0.8B-Q4_K_M.gguf",
+      "app_pss_max_mib": 796.189453125,
+      "ram_caveat": "Reflex app PSS excludes model-serving process; not a model-memory comparison."
+    }
+  },
+  "identity": {
+    "selected_beta_sha256": "8480ccc295ac7379106f33ad76c978da5d9e8da0785e827786fe9d17f5a5beb5",
+    "released_combined_sha256": "abfea5f878331206f65e4117157984e14803b093b634c0ed52513c0723ef0699",
+    "released_combined_present_on_device": true,
+    "released_combined_evaluated_in_this_queue": false
+  },
+  "metadata_caveat": "The app result header has a stale hard-coded llamaCppCommit/buildFlags field. Per-case routingBackend identifies HTTP versus JNI; use the integration build provenance for actual runtime revisions."
+}
