@@ -1,0 +1,1 @@
+Agent misread the user as requesting a new run; stopped it on correction. Zero completed cases; excluded from all results. Empty app artifacts backed up here before removing only these agent-created files from the phone. The rolling runtime.log was overwritten when the accidental server started; the user-completed JSON/CSV/queue files are preserved intact.

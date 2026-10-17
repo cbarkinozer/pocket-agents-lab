@@ -85,13 +85,97 @@
       "file": "Qwen3.5-0.8B-Q4_K_M.gguf",
       "app_pss_max_mib": 796.189453125,
       "ram_caveat": "Reflex app PSS excludes model-serving process; not a model-memory comparison."
+    },
+    "Reflex-1 combined": {
+      "run_id": 1792273819214,
+      "correct": 49,
+      "total": 50,
+      "accuracy": 0.98,
+      "mean_latency_seconds": 28.03126,
+      "median_latency_seconds": 28.197,
+      "p95_nearest_rank_seconds": 32.254,
+      "request_errors": 0,
+      "categories": {
+        "single_tool_storage": {
+          "correct": 9,
+          "total": 10
+        },
+        "single_tool_device": {
+          "correct": 10,
+          "total": 10
+        },
+        "single_tool_battery": {
+          "correct": 10,
+          "total": 10
+        },
+        "no_tool_direct_answer": {
+          "correct": 10,
+          "total": 10
+        },
+        "multi_tool_workflow": {
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "temperature_start_c": 27.2,
+      "temperature_max_c": 33.6,
+      "wrong_cases": [
+        {
+          "id": "storage-07",
+          "taskCategory": "single_tool_storage",
+          "routingBackend": "reflex-systemone",
+          "pssScope": "app process only; excludes separate decision runtime",
+          "prompt": "Check available space, not battery level.",
+          "expectedRoute": "tool:get_storage_info",
+          "actualRoute": "workflow:phone_health_check",
+          "correct": false,
+          "expectedTool": "get_storage_info",
+          "actualTool": null,
+          "expectedWorkflow": null,
+          "actualWorkflow": "phone_health_check",
+          "finalSchemaAccepted": true,
+          "strictSchemaOnFirstAttempt": true,
+          "schemaNormalized": false,
+          "repairAttempted": false,
+          "generationAttempts": [],
+          "errorType": null,
+          "latencyMs": 29402,
+          "ttftMs": null,
+          "generatedPieces": 0,
+          "exposedPiecesPerSecond": 0,
+          "pssBeforeKb": 241078,
+          "pssAfterKb": 241186,
+          "rssBeforeKb": 328084,
+          "rssAfterKb": 328196,
+          "filePssBeforeKb": null,
+          "filePssAfterKb": null,
+          "swapPssBeforeKb": 115,
+          "swapPssAfterKb": 115,
+          "minorFaultsDelta": 39,
+          "majorFaultsDelta": 0,
+          "readBytesDelta": 0,
+          "temperatureBeforeC": 27.6,
+          "temperatureAfterC": 27.7
+        }
+      ]
     }
   },
   "identity": {
     "selected_beta_sha256": "8480ccc295ac7379106f33ad76c978da5d9e8da0785e827786fe9d17f5a5beb5",
     "released_combined_sha256": "abfea5f878331206f65e4117157984e14803b093b634c0ed52513c0723ef0699",
     "released_combined_present_on_device": true,
-    "released_combined_evaluated_in_this_queue": false
+    "released_combined_evaluated_in_this_queue": false,
+    "released_combined_evaluated_in_separate_run": 1792273819214
   },
-  "metadata_caveat": "The app result header has a stale hard-coded llamaCppCommit/buildFlags field. Per-case routingBackend identifies HTTP versus JNI; use the integration build provenance for actual runtime revisions."
+  "metadata_caveat": "The app result header has a stale hard-coded llamaCppCommit/buildFlags field. Per-case routingBackend identifies HTTP versus JNI; use the integration build provenance for actual runtime revisions.",
+  "combined_vs_qwen": {
+    "same_case_ids_prompts_expected_routes": true,
+    "accuracy_difference_percentage_points": 16,
+    "lower_mean_latency_percent": 43.98520460567597,
+    "qwen_mean_latency_divided_by_reflex": 1.7852426184195787,
+    "reflex_only_correct": 9,
+    "qwen_only_correct": 1,
+    "exact_paired_mcnemar_p": 0.021484375,
+    "limitations": "50 development cases; different start temperatures and sequential runs; routing only; no valid combined-RAM/energy comparison."
+  }
 }

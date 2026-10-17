@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "runId": 1792273819214,
+  "suite": "tool-routing-3-tools-v5",
+  "state": "completed",
+  "cancelled": false,
+  "selectedModels": [
+    "reflex-1-combined-Q4_K_M.gguf"
+  ],
+  "outcomes": [
+    {
+      "model": "reflex-1-combined-Q4_K_M.gguf",
+      "status": "completed",
+      "loadMs": 2169,
+      "artifactStem": "agent-routing-1792273819214-reflex-1-combined-Q4_K_M"
+    }
+  ]
+}
