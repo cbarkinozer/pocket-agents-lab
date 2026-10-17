@@ -1,0 +1,39 @@
+{
+  "complete": true,
+  "purpose": "functional integration smoke; not an accuracy benchmark",
+  "events": [
+    {
+      "stage": "decision-model-loaded",
+      "elapsedMs": 1807
+    },
+    {
+      "stage": "storage-route-returned",
+      "elapsedMs": 30017
+    },
+    {
+      "stage": "text-generated-with-decision-process-stopped",
+      "elapsedMs": 37421
+    },
+    {
+      "stage": "grammar-and-reset-safe-after-jni-unload",
+      "elapsedMs": 39685
+    },
+    {
+      "stage": "battery-route-after-text-unloaded",
+      "elapsedMs": 65492
+    },
+    {
+      "stage": "second-text-answer-generated",
+      "elapsedMs": 73194
+    },
+    {
+      "stage": "grammar-and-reset-safe-after-full-cleanup",
+      "elapsedMs": 73441
+    }
+  ],
+  "firstRoute": "get_storage_info",
+  "textAnswer": "Hello! How can I help you today?",
+  "secondTextAnswer": "Goodbye, I'll see you around the next time.",
+  "secondRoute": "get_battery_info",
+  "sequentialModelStateAssertionsPassed": true
+}

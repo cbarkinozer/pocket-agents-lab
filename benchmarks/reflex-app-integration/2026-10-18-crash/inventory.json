@@ -1,0 +1,32 @@
+[
+  {
+    "path": "README.md",
+    "bytes": 1364,
+    "sha256": "e7c1d2fa31d09f9601f1e35025ec0258eb3fe2a5e9dbca11ad5908afd7669ed2"
+  },
+  {
+    "path": "build.log",
+    "bytes": 6199,
+    "sha256": "380ce5a6431adc8f6421c1a41decbd3a024093d40e7e2e9de24e94ad6eecb806"
+  },
+  {
+    "path": "crash.log",
+    "bytes": 17625,
+    "sha256": "6608576b64be68b932eb00c4cd2e54962282955b8cb04d92789020d17f7b17f9"
+  },
+  {
+    "path": "device-regression.json",
+    "bytes": 980,
+    "sha256": "5311e613105d4523b19af3074f42cb5d0864708e699027fd5b169c571765d2e1"
+  },
+  {
+    "path": "device-regression.log",
+    "bytes": 74,
+    "sha256": "5612d34486a32ab3659c7ce5c048df0c50753329d022b6987a963e3553ac7f96"
+  },
+  {
+    "path": "report.json",
+    "bytes": 1248,
+    "sha256": "76a3e2b8bfea65e0c7b9ab4154dc0c9b1e81bb8dc7cbfd26df63d876a3bb5090"
+  }
+]

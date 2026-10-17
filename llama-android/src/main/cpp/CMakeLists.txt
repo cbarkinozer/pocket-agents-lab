@@ -87,6 +87,24 @@ string(REPLACE
     AI_CHAT_SOURCE
     "${AI_CHAT_SOURCE}"
 )
+# The upstream unload frees native objects but leaves dangling globals. Our
+# grammar/reset helpers can be called while only the separate Clef server is
+# loaded, so an unloaded JNI model must be represented by null pointers.
+string(REPLACE
+    "common_sampler_free(g_sampler);"
+    "common_sampler_free(g_sampler); g_sampler = nullptr;"
+    AI_CHAT_SOURCE "${AI_CHAT_SOURCE}"
+)
+string(REPLACE
+    "llama_free(g_context);"
+    "llama_free(g_context); g_context = nullptr;"
+    AI_CHAT_SOURCE "${AI_CHAT_SOURCE}"
+)
+string(REPLACE
+    "llama_model_free(g_model);"
+    "llama_model_free(g_model); g_model = nullptr;"
+    AI_CHAT_SOURCE "${AI_CHAT_SOURCE}"
+)
 # The upstream sample shifts a full context indefinitely. Hybrid recurrent
 # models (observed with Qwen3.5) can abort inside llama_memory_hybrid::seq_add.
 # Stop generation at the boundary; Kotlin performs one fresh-context repair.

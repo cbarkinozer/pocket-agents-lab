@@ -47,3 +47,9 @@ These checks validate integration behavior, not a new accuracy/latency benchmark
 104 JVM tests and the real sequential-swap instrumentation test passed. A visible Tiny Agent battery request returned the live phone reading. [Smoke logs, APK/model hashes and exact configuration](../benchmarks/reflex-app-integration/2026-10-17/README.md). The trial APK is installed as Reflex Agent Lab; the original app was not replaced.
 
 Launcher clarification (2026-10-18): the trial app is named Reflex Agent Lab so it is distinguishable from the original Pocket Agents Lab icon, whose JNI-only loader cannot open Clef. Loading errors observed in PID 15985 belonged to the original package com.pocketagentslab, not the integrated com.pocketagentslab.reflex build.
+
+## Native unload regression fixed (2026-10-18)
+
+A repeated interactive request exposed a native double free in RoutingGrammar.setModeNative: the upstream JNI unload freed its sampler/context/model without clearing the global pointers. After text → decision switching, the final-answer generator's grammar setup could see the freed model pointer and free the old sampler again. Routing-only benchmarks did not exercise this path.
+
+The generated JNI binding now clears all three pointers immediately after freeing them. Grammar and conversation-reset helpers therefore safely do nothing while no JNI model is loaded. The device regression test explicitly calls those helpers after unloading, generates two text answers across decision/text swaps, and calls them again after full cleanup. See the crash/fix record under benchmarks/reflex-app-integration/2026-10-18-crash/. This change does not alter model weights or the completed routing benchmark.
