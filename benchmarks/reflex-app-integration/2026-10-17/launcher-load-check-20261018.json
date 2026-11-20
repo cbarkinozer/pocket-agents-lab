@@ -1,0 +1,11 @@
+{
+  "cause": "Failed load log came from original com.pocketagentslab PID 15985, using the old loader",
+  "resolution": "Rename side-by-side trial to Reflex Agent Lab and launch correct package",
+  "package": "com.pocketagentslab.reflex",
+  "visible_ready_status": [
+    "reflex-1-combined-Q4_K_M.gguf \u2022 Ready"
+  ],
+  "apk_sha256": "403f34f8b7014f1370e2a927a27b3fbbcd136ca9341020b22c0c7ad5954936f4",
+  "existing_app_data_preserved": true,
+  "verification": "Clicked Load Model on Agent page; combined Clef server loaded and UI reached Ready. No benchmark or inference run started."
+}

@@ -1,0 +1,77 @@
+{
+  "runtime": "llama.cpp Android ARM64 b11443",
+  "revision": "f0c41e0168dfd4b5ef72b21d1a311b24cc7a894a",
+  "files_before_android_strip": [
+    {
+      "path": "libreflex-server.so",
+      "bytes": 7192,
+      "sha256": "db82377125f69e87c06b402bba1af072e2a4c4cc9945946e4d6378cc213a84d7"
+    },
+    {
+      "path": "libllama-server-impl.so",
+      "bytes": 62615816,
+      "sha256": "067ddf037540476eff509d9b6f75169f849a9459c4cab0546c6cc61a7d304730"
+    },
+    {
+      "path": "libllama-common.so",
+      "bytes": 84557496,
+      "sha256": "2b1157358529c6e05eee4d555e570725a933314c5b022138b074c5316ddd74b0"
+    },
+    {
+      "path": "libmtmd.so",
+      "bytes": 16904016,
+      "sha256": "ed59edc4f3762115c878a7caf0be9f4bd0d67cae11410a04048e124849d12e3f"
+    },
+    {
+      "path": "libllama.so",
+      "bytes": 34899288,
+      "sha256": "0a1a6cdaa5889f613244e03a87fb4232a0ce9dae49b023de0759a28976026d82"
+    },
+    {
+      "path": "libggml.so",
+      "bytes": 4936176,
+      "sha256": "5d691359976e55a3af9c294cd422a2475ddbc283a7083a58cfbc877c4fe3e51d"
+    },
+    {
+      "path": "libggml-base.so",
+      "bytes": 8212664,
+      "sha256": "c06a85e41e0ad6b8abef3963d9d76bbb8ff7ad6d3a51a2e625d953b70dfbc285"
+    },
+    {
+      "path": "libggml-cpu-android_armv8.0_1.so",
+      "bytes": 4910992,
+      "sha256": "c55abebfdb8084c242c00a87d8b2f15f96766b2bab54b57588f6b6939e563221"
+    },
+    {
+      "path": "libggml-cpu-android_armv8.2_1.so",
+      "bytes": 5204520,
+      "sha256": "8c747036083b05021b826d2f615e6b50bba4fd6e055f5b23094566b775b37a52"
+    },
+    {
+      "path": "libggml-cpu-android_armv8.2_2.so",
+      "bytes": 5190160,
+      "sha256": "e2332b2d93a1f18c41799a545326086e3553ebd15b8cdc800473f6487763a62b"
+    },
+    {
+      "path": "libggml-cpu-android_armv8.6_1.so",
+      "bytes": 5300432,
+      "sha256": "98e32321f0d4a868644443b645e87d387366999fd64adc9ad14e8f0f31ce4fe6"
+    },
+    {
+      "path": "libggml-cpu-android_armv9.0_1.so",
+      "bytes": 5341384,
+      "sha256": "d055707698a79b897d14ace7eb4fd10ef4689edcd2e62e2f6ca23ea2a69521b7"
+    },
+    {
+      "path": "libggml-cpu-android_armv9.2_1.so",
+      "bytes": 5341392,
+      "sha256": "8a5a7cb442142c21437dbd4e88ce46402dd0ce9c711570aa01dca78667578e9e"
+    },
+    {
+      "path": "libggml-cpu-android_armv9.2_2.so",
+      "bytes": 5341488,
+      "sha256": "4d7777070480a397f3e79ada53cdbefc4c55c861b3f7dad98e8f3c65155c2633"
+    }
+  ],
+  "jni_isolation": "JNI targets use pocket- output names; decision server is a separate process with original library names."
+}

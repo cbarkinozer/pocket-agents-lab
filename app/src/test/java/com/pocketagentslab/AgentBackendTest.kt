@@ -11,6 +11,38 @@ import org.junit.Test
 
 class AgentBackendTest {
     @Test
+    fun decisionOnlyDirectAnswerReportsTextModelRequirementWithoutGenerating() = runBlocking {
+        val backend = AgentBackend(
+            generator = AgentGenerator { _, _ -> error("Decision-only mode must not generate text") },
+            tools = ReadOnlyToolExecutor { _, _ -> error("No tool expected") },
+            routingMode = AgentRoutingMode.RESEARCH,
+            decisionSelector = AgentDecisionSelector { AgentSelection(AgentDecision("answer", text = ""), 0) },
+            generateFinalAnswers = false,
+        )
+        val result = backend.run("Write an original poem about clouds")
+        assertEquals("answer:text-model-required", result.route)
+        assertTrue(result.answer.contains("text model"))
+    }
+
+    @Test
+    fun decisionOnlyStorageUsesToolResultWithoutCallingTextGenerator() = runBlocking {
+        val backend = AgentBackend(
+            generator = AgentGenerator { _, _ -> error("Decision-only mode must not generate text") },
+            tools = ReadOnlyToolExecutor { name, _ ->
+                assertEquals("get_storage_info", name)
+                """{"totalBytes":10000000000,"availableBytes":5000000000,"usedBytes":5000000000}"""
+            },
+            routingMode = AgentRoutingMode.RESEARCH,
+            decisionSelector = AgentDecisionSelector { AgentSelection(AgentDecision("tool", toolName = "get_storage_info"), 0) },
+            generateFinalAnswers = false,
+        )
+        val result = backend.run("Inspect storage")
+        assertTrue(result.route.contains("get_storage_info"))
+        assertTrue(result.route.contains("deterministic"))
+        assertEquals(0, result.generatedPieces)
+    }
+
+    @Test
     fun decisionHeadSelectsRouteAndFinalAnswerStillUsesGenerator() = runBlocking {
         val prompts = mutableListOf<String>()
         val backend = AgentBackend(

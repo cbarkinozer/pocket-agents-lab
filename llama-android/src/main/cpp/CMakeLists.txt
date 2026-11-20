@@ -6,12 +6,21 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(LLAMA_SRC "${CMAKE_CURRENT_LIST_DIR}/../../../../third_party/llama.cpp")
+if(NOT LLAMA_SRC)
+    set(LLAMA_SRC "${CMAKE_CURRENT_LIST_DIR}/../../../../third_party/llama.cpp")
+endif()
 set(OFFICIAL_BINDING "${LLAMA_SRC}/examples/llama.android/lib/src/main/cpp")
 
 # Use upstream's official JNI binding, reducing its default 8192-token context
 # to 1024 for the RAM-constrained Galaxy A32 proof of concept.
 file(READ "${OFFICIAL_BINDING}/ai_chat.cpp" AI_CHAT_SOURCE)
+# This JNI build links its CPU backend directly. Do not scan the APK directory:
+# it also contains backend plugins belonging to the separate decision server.
+string(REPLACE
+    "ggml_backend_load_all_from_path(path_to_backend);"
+    "/* CPU backend is linked directly; server plugins belong to another ABI. */"
+    AI_CHAT_SOURCE "${AI_CHAT_SOURCE}"
+)
 string(REPLACE
     "constexpr int   DEFAULT_CONTEXT_SIZE    = 8192;"
     "constexpr int   DEFAULT_CONTEXT_SIZE    = 1024;"
@@ -77,6 +86,24 @@ string(REPLACE
     "auto formatted = chat_format_single_no_thinking(\n            g_chat_templates.get(), chat_msgs, new_msg, role == ROLE_USER);"
     AI_CHAT_SOURCE
     "${AI_CHAT_SOURCE}"
+)
+# The upstream unload frees native objects but leaves dangling globals. Our
+# grammar/reset helpers can be called while only the separate Clef server is
+# loaded, so an unloaded JNI model must be represented by null pointers.
+string(REPLACE
+    "common_sampler_free(g_sampler);"
+    "common_sampler_free(g_sampler); g_sampler = nullptr;"
+    AI_CHAT_SOURCE "${AI_CHAT_SOURCE}"
+)
+string(REPLACE
+    "llama_free(g_context);"
+    "llama_free(g_context); g_context = nullptr;"
+    AI_CHAT_SOURCE "${AI_CHAT_SOURCE}"
+)
+string(REPLACE
+    "llama_model_free(g_model);"
+    "llama_model_free(g_model); g_model = nullptr;"
+    AI_CHAT_SOURCE "${AI_CHAT_SOURCE}"
 )
 # The upstream sample shifts a full context indefinitely. Hybrid recurrent
 # models (observed with Qwen3.5) can abort inside llama_memory_hybrid::seq_add.
@@ -753,6 +780,13 @@ set(GGML_SYSTEM_ARCH ARM)
 set(GGML_CPU_KLEIDIAI OFF)
 set(GGML_OPENMP OFF)
 add_subdirectory("${LLAMA_SRC}" build-llama)
+# JNI and the packaged decision server use different llama.cpp revisions.
+# Keep their ELF SONAMEs distinct; the server runs in a separate process.
+foreach(POCKET_TARGET llama llama-common ggml ggml-base ggml-cpu)
+    if(TARGET ${POCKET_TARGET})
+        set_target_properties(${POCKET_TARGET} PROPERTIES OUTPUT_NAME "pocket-${POCKET_TARGET}")
+    endif()
+endforeach()
 
 add_library(ai-chat SHARED "${GENERATED_BINDING}" expert_cache.cpp expert_index.cpp)
 target_include_directories(ai-chat PRIVATE

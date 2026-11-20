@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "runId": 1792263467671,
+  "suite": "tool-routing-3-tools-v5",
+  "state": "completed",
+  "cancelled": false,
+  "selectedModels": [
+    "reflex-1-Q4_K_M.gguf",
+    "Qwen3.5-0.8B-Q4_K_M.gguf"
+  ],
+  "outcomes": [
+    {
+      "model": "reflex-1-Q4_K_M.gguf",
+      "status": "completed",
+      "loadMs": 2385,
+      "artifactStem": "agent-routing-1792263467671-reflex-1-Q4_K_M"
+    },
+    {
+      "model": "Qwen3.5-0.8B-Q4_K_M.gguf",
+      "status": "completed",
+      "loadMs": 41129,
+      "artifactStem": "agent-routing-1792263467671-Qwen3.5-0.8B-Q4_K_M"
+    }
+  ]
+}

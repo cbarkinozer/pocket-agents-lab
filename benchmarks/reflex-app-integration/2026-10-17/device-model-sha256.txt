@@ -1,0 +1,2 @@
+abfea5f878331206f65e4117157984e14803b093b634c0ed52513c0723ef0699  files/models/reflex-1-combined-Q4_K_M.gguf
+bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517  files/models/Qwen3.5-0.8B-Q4_K_M.gguf

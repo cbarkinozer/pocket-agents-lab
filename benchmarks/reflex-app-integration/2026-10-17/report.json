@@ -1,0 +1,63 @@
+{
+  "scope": "Application integration functional smoke, not new benchmark scores",
+  "app_id": "com.pocketagentslab.reflex",
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 139544926,
+    "sha256": "05543d80a443039c0d1230a54acf1e41716dd45e46ff1e77052bdbdd9b9ef34a"
+  },
+  "unit_tests": {
+    "tests": 104,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "instrumentation": {
+    "tests": 1,
+    "failures": 0,
+    "duration_seconds": 61.549,
+    "sequential_model_state_assertions": true
+  },
+  "device": "Samsung Galaxy A32 SM-A325F R68T800LZ0H",
+  "runtime_revision": "f0c41e0168dfd4b5ef72b21d1a311b24cc7a894a",
+  "jni_source_revision": "aa94f2086147cd4bfbcff818ce998dffce5fcb39",
+  "build": {
+    "gradle": "8.4",
+    "agp": "8.3.0",
+    "kotlin": "1.9.24",
+    "jdk": "17.0.20.1",
+    "compile_sdk": 34,
+    "ndk": "26.3.11579264"
+  },
+  "runtime_flags": [
+    "CPU only",
+    "4 threads",
+    "4 batch threads",
+    "context 2048",
+    "no-repack",
+    "flash attention off",
+    "fit off",
+    "1 slot",
+    "loopback:8092"
+  ],
+  "wandb": "Not used: evaluation/smoke only",
+  "cost": {
+    "paid_compute": false,
+    "local_electricity": "not measured"
+  },
+  "original_app_preserved": true,
+  "submodule_worktree": "Pre-existing modification left untouched; isolated source used for build",
+  "known_limits": [
+    "Sequential decision/text model swaps, not shared backbone",
+    "Published routing accuracy is not an end-to-end assistant score",
+    "App PSS excludes server; no new memory/energy benchmark claimed",
+    "APK runtime binaries prepared outside Git from checksum-pinned release"
+  ],
+  "test_iteration": "Initial test-only return-type error fixed; passing final instrumentation log retained",
+  "visible_app_smoke": {
+    "prompt": "What is my battery percentage?",
+    "answer": "The battery is at 91.0% charge and 28.2\u00b0C. Android does not expose a reliable remaining-hours estimate here; actual battery life depends on current usage.",
+    "result": "Live battery tool answer displayed after Reflex routing",
+    "assertion": "No architecture loading exception"
+  }
+}

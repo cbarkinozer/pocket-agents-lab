@@ -1,0 +1,32 @@
+{
+  "defect": "Native double free/use-after-free after JNI unload",
+  "crash_time": "2026-10-18 02:12:14 Europe/Istanbul",
+  "crashed_package": "com.pocketagentslab.reflex",
+  "crashed_pid": 19228,
+  "native_frame": "Java_com_arm_aichat_RoutingGrammar_setModeNative+72",
+  "cause": "Upstream unload freed sampler/context/model but left global pointers non-null. Final-answer grammar preparation could free the dangling sampler again after text-to-decision switching.",
+  "fix": "Generated JNI binding sets g_sampler, g_context and g_model to nullptr immediately after their free calls.",
+  "regression": {
+    "passed": true,
+    "seconds": 73.504,
+    "routing_calls": 2,
+    "text_answers": 2,
+    "checks": [
+      "decision-model-loaded",
+      "storage-route-returned",
+      "text-generated-with-decision-process-stopped",
+      "grammar-and-reset-safe-after-jni-unload",
+      "battery-route-after-text-unloaded",
+      "second-text-answer-generated",
+      "grammar-and-reset-safe-after-full-cleanup"
+    ]
+  },
+  "unit_tests": {
+    "tests": 104,
+    "failures": 0,
+    "errors": 0
+  },
+  "apk_sha256": "9bdec138768b179d1f42a1288873782473b4c1ed422608e09541d7ec7df5d1ab",
+  "no_model_or_dataset_changes": true,
+  "no_benchmark_run": true
+}

@@ -1,0 +1,93 @@
+--------- beginning of crash
+10-18 02:12:14.416 19228 19228 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0 in tid 19228 (gentslab.reflex), pid 19228 (gentslab.reflex)
+10-18 02:12:15.464 19815 19815 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+10-18 02:12:15.464 19815 19815 F DEBUG   : Build fingerprint: 'samsung/a32tur/a32:13/TP1A.220624.014/A325FXXSCDYB2:user/release-keys'
+10-18 02:12:15.464 19815 19815 F DEBUG   : Revision: '4'
+10-18 02:12:15.464 19815 19815 F DEBUG   : ABI: 'arm64'
+10-18 02:12:15.464 19815 19815 F DEBUG   : Processor: '2'
+10-18 02:12:15.464 19815 19815 F DEBUG   : Timestamp: 2026-10-18 02:12:14.528489962+0300
+10-18 02:12:15.464 19815 19815 F DEBUG   : Process uptime: 453s
+10-18 02:12:15.464 19815 19815 F DEBUG   : Cmdline: com.pocketagentslab.reflex
+10-18 02:12:15.465 19815 19815 F DEBUG   : pid: 19228, tid: 19228, name: gentslab.reflex  >>> com.pocketagentslab.reflex <<<
+10-18 02:12:15.465 19815 19815 F DEBUG   : uid: 10248
+10-18 02:12:15.465 19815 19815 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0000000000000000
+10-18 02:12:15.465 19815 19815 F DEBUG   : Cause: null pointer dereference
+10-18 02:12:15.465 19815 19815 F DEBUG   :     x0  0000007e9bb41408  x1  0000000000000000  x2  0000000000000000  x3  0000000000000000
+10-18 02:12:15.465 19815 19815 F DEBUG   :     x4  0000007df6e16ab8  x5  ebab85c9c0312e49  x6  0000007fe9f803b0  x7  0000007df6459b90
+10-18 02:12:15.465 19815 19815 F DEBUG   :     x8  ebab85c9c0312e49  x9  0000007e863d8000  x10 0000007d40000000  x11 0000007e9bb41430
+10-18 02:12:15.465 19815 19815 F DEBUG   :     x12 0000007e9bb41480  x13 0404030308a2cb20  x14 0000000006a0ca20  x15 00000000ebad6a89
+10-18 02:12:15.465 19815 19815 F DEBUG   :     x16 0000007e863d8a60  x17 0000007e863c7f30  x18 0000007e9cb82000  x19 0000007e9bb41408
+10-18 02:12:15.465 19815 19815 F DEBUG   :     x20 0000007e9bb41408  x21 0000000000000000  x22 0000007e9bf7bf80  x23 0000007fe9f815e0
+10-18 02:12:15.465 19815 19815 F DEBUG   :     x24 0000007e9bf7bf80  x25 0000007df1936000  x26 0000007df1936000  x27 0000000000000008
+10-18 02:12:15.465 19815 19815 F DEBUG   :     x28 0000007fe9f814b0  x29 0000007fe9f80ff0
+10-18 02:12:15.465 19815 19815 F DEBUG   :     lr  0000007e86319da8  sp  0000007fe9f80fe0  pc  0000007e8633ddf4  pst 0000000060001000
+10-18 02:12:15.465 19815 19815 F DEBUG   : backtrace:
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #00 pc 0000000000073df4  /apex/com.android.runtime/lib64/bionic/libc.so (je_large_dalloc+52) (BuildId: 4d6e56b2321dd2889f771482b268b706)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #01 pc 000000000004fda4  /apex/com.android.runtime/lib64/bionic/libc.so (je_free+2116) (BuildId: 4d6e56b2321dd2889f771482b268b706)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #02 pc 00000000000141ac  /data/app/~~vcMuFB48Q6r_aqH-XHMx5w==/com.pocketagentslab.reflex-7RDCWdE4Vt-1NQF_CTZkoQ==/lib/arm64/libai-chat.so (Java_com_arm_aichat_RoutingGrammar_setModeNative+72) (BuildId: 115a1891c5c2640a90ed37677a37447d7ff057c1)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #03 pc 00000000002c23a0  /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+144) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #04 pc 00000000002ab260  /apex/com.android.art/lib64/libart.so (art_quick_invoke_static_stub+640) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #05 pc 000000000087a970  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+1884) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #06 pc 00000000006fce54  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+284) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #07 pc 00000000002fde48  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #08 pc 00000000000020fc  /data/app/~~vcMuFB48Q6r_aqH-XHMx5w==/com.pocketagentslab.reflex-7RDCWdE4Vt-1NQF_CTZkoQ==/base.apk (com.arm.aichat.RoutingGrammar.setMode+0)
+10-18 02:12:15.465 19815 19815 F DEBUG   :       #09 pc 000000000087ab14  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #10 pc 00000000006fcf7c  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+580) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #11 pc 00000000002fde48  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #12 pc 000000000002cf34  /data/app/~~vcMuFB48Q6r_aqH-XHMx5w==/com.pocketagentslab.reflex-7RDCWdE4Vt-1NQF_CTZkoQ==/base.apk (com.pocketagentslab.MainActivityKt$createAgentBackend$3.generate+0)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #13 pc 000000000087ab14  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #14 pc 00000000006fd380  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+1608) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #15 pc 00000000002fde48  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #16 pc 0000000000013318  /data/app/~~vcMuFB48Q6r_aqH-XHMx5w==/com.pocketagentslab.reflex-7RDCWdE4Vt-1NQF_CTZkoQ==/base.apk (com.pocketagentslab.AgentBackend.complete+0)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #17 pc 000000000087ab14  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #18 pc 00000000006fcf7c  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+580) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #19 pc 00000000002fde48  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #20 pc 0000000000014074  /data/app/~~vcMuFB48Q6r_aqH-XHMx5w==/com.pocketagentslab.reflex-7RDCWdE4Vt-1NQF_CTZkoQ==/base.apk (com.pocketagentslab.AgentBackend.run+0)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #21 pc 000000000087ab14  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #22 pc 00000000006fcf7c  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+580) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #23 pc 00000000002fde48  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #24 pc 000000000000fe80  /data/app/~~vcMuFB48Q6r_aqH-XHMx5w==/com.pocketagentslab.reflex-7RDCWdE4Vt-1NQF_CTZkoQ==/base.apk (com.pocketagentslab.AgentBackend$run$1.invokeSuspend+0)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #25 pc 00000000002fda80  /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238.llvm.8613519112829971472)+360) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #26 pc 00000000002fd404  /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+916) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #27 pc 00000000002c24d8  /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #28 pc 0000000002532e20  /memfd:jit-cache (deleted) (kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith+256)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #29 pc 000000000251a4f8  /memfd:jit-cache (deleted) (kotlinx.coroutines.DispatchedTask.run+1320)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #30 pc 000000000255edac  /memfd:jit-cache (deleted) (androidx.compose.ui.platform.AndroidUiDispatcher.performTrampolineDispatch+156)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #31 pc 00000000025a1524  /memfd:jit-cache (deleted) (androidx.compose.ui.platform.AndroidUiDispatcher.access$performTrampolineDispatch+116)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #32 pc 0000000002577a8c  /memfd:jit-cache (deleted) (androidx.compose.ui.platform.AndroidUiDispatcher$dispatchCallback$1.run+140)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #33 pc 00000000022842c0  /memfd:jit-cache (deleted) (android.os.Handler.handleCallback+144)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #34 pc 000000000208e7dc  /memfd:jit-cache (deleted) (android.os.Handler.dispatchMessage+140)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #35 pc 000000000208d658  /memfd:jit-cache (deleted) (android.os.Looper.loopOnce+1160)
+10-18 02:12:15.466 19815 19815 F DEBUG   :       #36 pc 000000000258405c  /memfd:jit-cache (deleted) (android.os.Looper.loop+572)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #37 pc 00000000002ab2f0  /apex/com.android.art/lib64/libart.so (art_quick_osr_stub+64) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #38 pc 00000000002303e0  /apex/com.android.art/lib64/libart.so (art::jit::Jit::MaybeDoOnStackReplacement(art::Thread*, art::ArtMethod*, unsigned int, int, art::JValue*)+668) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #39 pc 00000000006fdb2c  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+3572) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #40 pc 00000000002fde48  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #41 pc 00000000001fc85c  /system/framework/framework.jar (android.os.Looper.loop+0)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #42 pc 000000000087ab14  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #43 pc 00000000006fce54  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+284) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #44 pc 00000000002fde48  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #45 pc 00000000001c7610  /system/framework/framework.jar (android.app.ActivityThread.main+0)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #46 pc 00000000002fda80  /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238.llvm.8613519112829971472)+360) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #47 pc 00000000002fd404  /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+916) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #48 pc 00000000002c24d8  /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #49 pc 00000000002ab260  /apex/com.android.art/lib64/libart.so (art_quick_invoke_static_stub+640) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #50 pc 000000000029c070  /apex/com.android.art/lib64/libart.so (_jobject* art::InvokeMethod<(art::PointerSize)8>(art::ScopedObjectAccessAlreadyRunnable const&, _jobject*, _jobject*, _jobject*, unsigned long)+552) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #51 pc 0000000000635ed4  /apex/com.android.art/lib64/libart.so (art::Method_invoke(_JNIEnv*, _jobject*, _jobject*, _jobjectArray*) (.__uniq.165753521025965369065708152063621506277)+36) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #52 pc 00000000002c23a0  /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+144) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #53 pc 00000000002aaf94  /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #54 pc 000000000087a868  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+1620) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #55 pc 00000000006fcf7c  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+580) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #56 pc 00000000002fde48  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #57 pc 00000000005014d0  /system/framework/framework.jar (com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run+0)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #58 pc 00000000002fda80  /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238.llvm.8613519112829971472)+360) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #59 pc 00000000002fd404  /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+916) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #60 pc 00000000002c24d8  /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #61 pc 00000000009c99c4  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (com.android.internal.os.ZygoteInit.main+3508)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #62 pc 00000000002ab260  /apex/com.android.art/lib64/libart.so (art_quick_invoke_static_stub+640) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #63 pc 00000000002a8b8c  /apex/com.android.art/lib64/libart.so (art::JValue art::InvokeWithVarArgs<_jmethodID*>(art::ScopedObjectAccessAlreadyRunnable const&, _jobject*, _jmethodID*, std::__va_list)+760) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #64 pc 00000000006a44b4  /apex/com.android.art/lib64/libart.so (art::JNI<true>::CallStaticVoidMethodV(_JNIEnv*, _jclass*, _jmethodID*, std::__va_list)+164) (BuildId: cecb684d19b4f44ee3cbd66142c315f4)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #65 pc 00000000000c1cd8  /system/lib64/libandroid_runtime.so (_JNIEnv::CallStaticVoidMethod(_jclass*, _jmethodID*, ...)+120) (BuildId: 1a90cb10a1e35ca554425ef24412aeb6)
+10-18 02:12:15.467 19815 19815 F DEBUG   :       #66 pc 00000000000ce448  /system/lib64/libandroid_runtime.so (android::AndroidRuntime::start(char const*, android::Vector<android::String8> const&, bool)+872) (BuildId: 1a90cb10a1e35ca554425ef24412aeb6)
+10-18 02:12:15.468 19815 19815 F DEBUG   :       #67 pc 0000000000002574  /system/bin/app_process64 (main+1300) (BuildId: 7b8271c378751a08bc8ec0b03f7a8c05)
+10-18 02:12:15.468 19815 19815 F DEBUG   :       #68 pc 0000000000085e10  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+96) (BuildId: 4d6e56b2321dd2889f771482b268b706)

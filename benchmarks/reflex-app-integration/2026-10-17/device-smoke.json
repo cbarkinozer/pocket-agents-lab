@@ -1,0 +1,26 @@
+{
+  "complete": true,
+  "purpose": "functional integration smoke; not an accuracy benchmark",
+  "events": [
+    {
+      "stage": "decision-model-loaded",
+      "elapsedMs": 1808
+    },
+    {
+      "stage": "storage-route-returned",
+      "elapsedMs": 26725
+    },
+    {
+      "stage": "text-generated-with-decision-process-stopped",
+      "elapsedMs": 34138
+    },
+    {
+      "stage": "battery-route-after-text-unloaded",
+      "elapsedMs": 60980
+    }
+  ],
+  "firstRoute": "get_storage_info",
+  "textAnswer": "Hello! How can I assist you today?",
+  "secondRoute": "get_battery_info",
+  "sequentialModelStateAssertionsPassed": true
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "runId": 1792277972518,
+  "suite": "tool-routing-3-tools-v5",
+  "state": "running",
+  "cancelled": false,
+  "selectedModels": [
+    "reflex-1-combined-Q4_K_M.gguf"
+  ],
+  "outcomes": []
+}
