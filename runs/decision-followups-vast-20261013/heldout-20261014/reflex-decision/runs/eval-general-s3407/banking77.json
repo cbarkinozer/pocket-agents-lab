@@ -1,0 +1,19 @@
+{
+  "name": "banking77",
+  "rows": 462,
+  "decisions": 462,
+  "sha256": "3c7873d2de8b9bad9445c3acf72e85802a499ed059c44626121cc4fdd3b510c0",
+  "build_report": {
+    "total": 462,
+    "skipped": 0,
+    "reason": null,
+    "truncated": 0
+  },
+  "metrics": {
+    "accuracy": 0.7142857142857143,
+    "ece": 0.07086476235291661,
+    "loss": 1.0428085561682474,
+    "record_accuracy": 0.7142857142857143
+  },
+  "elapsed_seconds": 48.04
+}

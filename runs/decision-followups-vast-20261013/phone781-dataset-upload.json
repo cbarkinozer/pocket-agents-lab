@@ -1,0 +1,10 @@
+{
+  "repo_id": "cbarkinozer/Reflex-1-Phone-Routing",
+  "repo_type": "dataset",
+  "private": true,
+  "commit": "c3c5008628a55c4fb2e0e687e4f10b3fc83338b1",
+  "rows": 781,
+  "train_sha256": "c01503a65e182b0eb68181fcfcdd0e775c3ea4b9a3039ee9f3abcb4f05d7a2b4",
+  "verification": "Downloaded uploaded train.jsonl at exact commit and verified SHA-256",
+  "url": "https://huggingface.co/datasets/cbarkinozer/Reflex-1-Phone-Routing"
+}

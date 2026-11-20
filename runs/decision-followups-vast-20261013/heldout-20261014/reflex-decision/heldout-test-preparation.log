@@ -1,0 +1,7 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 1200 examples [00:00, 137600.87 examples/s]
+Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 400 examples [00:00, 91523.74 examples/s]
+Generating train split:   0%|          | 0/15250 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 15250/15250 [00:00<00:00, 1746433.75 examples/s]
+Generating validation split:   0%|          | 0/3100 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 3100/3100 [00:00<00:00, 902940.44 examples/s]
+Generating test split:   0%|          | 0/5500 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 5500/5500 [00:00<00:00, 1563553.75 examples/s]
+{'typed_decisions': {'rows': 400, 'decisions': 2000, 'classes': 4, 'sha256': '1d6c24f9709b62451ece105df85b8f293a4cde9a5a8b73721928b62876ad8365'}, 'banking77': {'rows': 462, 'decisions': 462, 'classes': 77, 'sha256': '3c7873d2de8b9bad9445c3acf72e85802a499ed059c44626121cc4fdd3b510c0'}, 'clinc150': {'rows': 450, 'decisions': 450, 'classes': 150, 'sha256': '0a484b00b94b66d5a7aeefb564eaab9393cc737a4b5078690055e2778e8aa3bd'}}

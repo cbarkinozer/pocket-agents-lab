@@ -1,0 +1,24 @@
+{
+  "model": "runs/phone-reviewed-scratch-full-s3407/adapter",
+  "max_seq_length": 4096,
+  "batch_size": 8,
+  "tests": {
+    "phone_historical": {
+      "accuracy": 0.9772727272727273,
+      "rows": 88
+    },
+    "typed_decisions": {
+      "accuracy": 0.4835,
+      "rows": 400
+    },
+    "banking77": {
+      "accuracy": 0.5346320346320347,
+      "rows": 462
+    },
+    "clinc150": {
+      "accuracy": 0.52,
+      "rows": 450
+    }
+  },
+  "total_elapsed_seconds": 77.37
+}

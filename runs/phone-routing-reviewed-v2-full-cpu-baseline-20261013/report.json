@@ -1,0 +1,574 @@
+{
+  "data_dir": "C:\\Users\\barkin\\Documents\\GitHub\\pocket-agents-lab\\data\\prepared\\phone-routing-human-reviewed-v2-1080-20261013",
+  "split_sha256": {
+    "train": "46fdb9107f2b08ed9fe92f427e56ded5d808feec543340e3dc66a78bc99d4441",
+    "validation": "7a177681d7a1c4e541270350c4385116efc2999abbfdbfd7c9183c5bc4035dda",
+    "calibration": "b4589ced22020c57b76056b0280c3998d23d3dd456122be9f75228f84e6f24fa"
+  },
+  "test_opened": false,
+  "train_route_counts": {
+    "get_device_info": 90,
+    "get_battery_info": 83,
+    "get_media_info": 88,
+    "search_local_files": 87,
+    "get_storage_info": 88,
+    "save_note": 86,
+    "search_notes": 88,
+    "phone_health_check": 86,
+    "answer": 89
+  },
+  "validation_route_counts": {
+    "get_battery_info": 10,
+    "search_local_files": 10,
+    "phone_health_check": 10,
+    "get_device_info": 10,
+    "answer": 10,
+    "search_notes": 10,
+    "save_note": 10,
+    "get_storage_info": 10,
+    "get_media_info": 10
+  },
+  "classes": [
+    "answer",
+    "get_battery_info",
+    "get_device_info",
+    "get_media_info",
+    "get_storage_info",
+    "phone_health_check",
+    "save_note",
+    "search_local_files",
+    "search_notes"
+  ],
+  "validation": {
+    "word_tfidf_logreg": {
+      "accuracy": 0.8666666666666667,
+      "macro_f1": 0.8671056467798963,
+      "log_loss": 0.9162432506435113,
+      "ece_10_bins": 0.40063157690148116,
+      "per_route": {
+        "answer": {
+          "precision": 1.0,
+          "recall": 0.7,
+          "f1-score": 0.8235294117647058,
+          "support": 10.0
+        },
+        "get_battery_info": {
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1-score": 0.9,
+          "support": 10.0
+        },
+        "get_device_info": {
+          "precision": 0.8181818181818182,
+          "recall": 0.9,
+          "f1-score": 0.8571428571428571,
+          "support": 10.0
+        },
+        "get_media_info": {
+          "precision": 1.0,
+          "recall": 0.9,
+          "f1-score": 0.9473684210526315,
+          "support": 10.0
+        },
+        "get_storage_info": {
+          "precision": 1.0,
+          "recall": 0.9,
+          "f1-score": 0.9473684210526315,
+          "support": 10.0
+        },
+        "phone_health_check": {
+          "precision": 0.8333333333333334,
+          "recall": 1.0,
+          "f1-score": 0.9090909090909091,
+          "support": 10.0
+        },
+        "save_note": {
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1-score": 0.9,
+          "support": 10.0
+        },
+        "search_local_files": {
+          "precision": 0.6923076923076923,
+          "recall": 0.9,
+          "f1-score": 0.782608695652174,
+          "support": 10.0
+        },
+        "search_notes": {
+          "precision": 0.7777777777777778,
+          "recall": 0.7,
+          "f1-score": 0.7368421052631579,
+          "support": 10.0
+        },
+        "accuracy": 0.8666666666666667,
+        "macro avg": {
+          "precision": 0.8801778468445136,
+          "recall": 0.8666666666666667,
+          "f1-score": 0.8671056467798963,
+          "support": 90.0
+        },
+        "weighted avg": {
+          "precision": 0.8801778468445134,
+          "recall": 0.8666666666666667,
+          "f1-score": 0.8671056467798962,
+          "support": 90.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          7,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          9,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          9,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          9,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          9,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          9,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          9,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          7
+        ]
+      ],
+      "errors": [
+        {
+          "id": "pr_search_notes_train_069",
+          "text": "Find the contractor's quote I noted",
+          "gold": "search_notes",
+          "predicted": "search_local_files",
+          "confidence": 0.46591219907561293,
+          "scenario": "recall_specific"
+        },
+        {
+          "id": "pr_search_notes_train_096",
+          "text": "Find the paint color I saved",
+          "gold": "search_notes",
+          "predicted": "search_local_files",
+          "confidence": 0.5501423227961821,
+          "scenario": "recall_specific"
+        },
+        {
+          "id": "pr_answer_train_075",
+          "text": "Write a short haiku about rain",
+          "gold": "answer",
+          "predicted": "search_notes",
+          "confidence": 0.22275427589624908,
+          "scenario": "creative"
+        },
+        {
+          "id": "pr_get_device_info_train_022",
+          "text": "Is my device model still supported?",
+          "gold": "get_device_info",
+          "predicted": "phone_health_check",
+          "confidence": 0.19172032376678763,
+          "scenario": "model_manufacturer"
+        },
+        {
+          "id": "pr_search_notes_train_031",
+          "text": "Can you find something I saved?",
+          "gold": "search_notes",
+          "predicted": "search_local_files",
+          "confidence": 0.25408806452666877,
+          "scenario": "recall_specific"
+        },
+        {
+          "id": "pr_get_storage_info_train_014",
+          "text": "Will I be able to cache this podcast?",
+          "gold": "get_storage_info",
+          "predicted": "save_note",
+          "confidence": 0.16454915809986934,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_save_note_train_087",
+          "text": "Please save what I just said",
+          "gold": "save_note",
+          "predicted": "search_notes",
+          "confidence": 0.20760358142104843,
+          "scenario": "explicit_save"
+        },
+        {
+          "id": "pr_answer_train_070",
+          "text": "What is a good book to read this summer?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.19436359533179257,
+          "scenario": "creative"
+        },
+        {
+          "id": "pr_get_battery_info_train_003",
+          "text": "Is my phone running hot?",
+          "gold": "get_battery_info",
+          "predicted": "phone_health_check",
+          "confidence": 0.3210710458588519,
+          "scenario": "battery_temperature"
+        },
+        {
+          "id": "pr_get_media_info_train_085",
+          "text": "Is my phone connected to the car audio right now?",
+          "gold": "get_media_info",
+          "predicted": "get_battery_info",
+          "confidence": 0.30740158842755305,
+          "scenario": "other"
+        },
+        {
+          "id": "pr_search_local_files_train_054",
+          "text": "Is there a copy of my diploma on this phone?",
+          "gold": "search_local_files",
+          "predicted": "get_device_info",
+          "confidence": 0.4186803108806882,
+          "scenario": "by_content"
+        },
+        {
+          "id": "pr_answer_train_027",
+          "text": "Help me draft a birthday message for my friend",
+          "gold": "answer",
+          "predicted": "search_local_files",
+          "confidence": 0.21538274049799655,
+          "scenario": "creative"
+        }
+      ]
+    },
+    "char_tfidf_logreg": {
+      "accuracy": 0.9111111111111111,
+      "macro_f1": 0.9110554163185743,
+      "log_loss": 0.8862699991067216,
+      "ece_10_bins": 0.44043059932582457,
+      "per_route": {
+        "answer": {
+          "precision": 1.0,
+          "recall": 0.9,
+          "f1-score": 0.9473684210526315,
+          "support": 10.0
+        },
+        "get_battery_info": {
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1-score": 0.9,
+          "support": 10.0
+        },
+        "get_device_info": {
+          "precision": 0.9090909090909091,
+          "recall": 1.0,
+          "f1-score": 0.9523809523809523,
+          "support": 10.0
+        },
+        "get_media_info": {
+          "precision": 0.9090909090909091,
+          "recall": 1.0,
+          "f1-score": 0.9523809523809523,
+          "support": 10.0
+        },
+        "get_storage_info": {
+          "precision": 1.0,
+          "recall": 0.9,
+          "f1-score": 0.9473684210526315,
+          "support": 10.0
+        },
+        "phone_health_check": {
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1-score": 0.9,
+          "support": 10.0
+        },
+        "save_note": {
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1-score": 0.9,
+          "support": 10.0
+        },
+        "search_local_files": {
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1-score": 0.9,
+          "support": 10.0
+        },
+        "search_notes": {
+          "precision": 0.8,
+          "recall": 0.8,
+          "f1-score": 0.8,
+          "support": 10.0
+        },
+        "accuracy": 0.9111111111111111,
+        "macro avg": {
+          "precision": 0.9131313131313132,
+          "recall": 0.9111111111111112,
+          "f1-score": 0.9110554163185743,
+          "support": 90.0
+        },
+        "weighted avg": {
+          "precision": 0.9131313131313132,
+          "recall": 0.9111111111111111,
+          "f1-score": 0.9110554163185742,
+          "support": 90.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          9,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          9,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          9,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          9,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          9,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          9,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          8
+        ]
+      ],
+      "errors": [
+        {
+          "id": "pr_search_notes_train_096",
+          "text": "Find the paint color I saved",
+          "gold": "search_notes",
+          "predicted": "search_local_files",
+          "confidence": 0.32878229627459826,
+          "scenario": "recall_specific"
+        },
+        {
+          "id": "pr_answer_train_075",
+          "text": "Write a short haiku about rain",
+          "gold": "answer",
+          "predicted": "search_notes",
+          "confidence": 0.2584277430907521,
+          "scenario": "creative"
+        },
+        {
+          "id": "pr_get_storage_info_train_014",
+          "text": "Will I be able to cache this podcast?",
+          "gold": "get_storage_info",
+          "predicted": "get_media_info",
+          "confidence": 0.1749513925187065,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_save_note_train_087",
+          "text": "Please save what I just said",
+          "gold": "save_note",
+          "predicted": "search_notes",
+          "confidence": 0.30537633686178084,
+          "scenario": "explicit_save"
+        },
+        {
+          "id": "pr_get_battery_info_train_003",
+          "text": "Is my phone running hot?",
+          "gold": "get_battery_info",
+          "predicted": "phone_health_check",
+          "confidence": 0.26950854759994125,
+          "scenario": "battery_temperature"
+        },
+        {
+          "id": "pr_search_local_files_train_054",
+          "text": "Is there a copy of my diploma on this phone?",
+          "gold": "search_local_files",
+          "predicted": "get_device_info",
+          "confidence": 0.47177401349575654,
+          "scenario": "by_content"
+        },
+        {
+          "id": "pr_phone_health_check_train_002",
+          "text": "How are battery temperature and disk usage?",
+          "gold": "phone_health_check",
+          "predicted": "get_battery_info",
+          "confidence": 0.3815817781716089,
+          "scenario": "multi_category"
+        },
+        {
+          "id": "pr_search_notes_train_034",
+          "text": "What plumber's number is in my notes?",
+          "gold": "search_notes",
+          "predicted": "save_note",
+          "confidence": 0.34559073985799366,
+          "scenario": "recall_specific"
+        }
+      ]
+    }
+  },
+  "selected_by_validation_macro_f1": "char_tfidf_logreg",
+  "calibration": {
+    "rows": 90,
+    "temperature": 0.3036527833554318,
+    "uncalibrated_log_loss": 0.9440073394356466,
+    "calibrated_log_loss_in_sample": 0.43259627438767745,
+    "uncalibrated_ece_10_bins": 0.4419513139146512,
+    "calibrated_ece_10_bins_in_sample": 0.08615704285427117,
+    "warning": "Temperature is fitted and measured on the same 90 calibration rows; improvement is in-sample."
+  },
+  "versions": {
+    "scikit_learn": "1.9.1",
+    "numpy": "2.4.6"
+  }
+}

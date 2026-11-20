@@ -1,0 +1,13 @@
+[
+  {
+    "id": 55976079,
+    "actual_status": "running",
+    "ssh_host": "ssh4.vast.ai",
+    "ssh_port": 12238,
+    "dph_total": 0.5303703703703704,
+    "duration": 1144.5345647335052,
+    "start_date": 1792004183.3608997,
+    "inet_up_cost": 3.90625e-06,
+    "inet_down_cost": 2.6041666666666666e-06
+  }
+]

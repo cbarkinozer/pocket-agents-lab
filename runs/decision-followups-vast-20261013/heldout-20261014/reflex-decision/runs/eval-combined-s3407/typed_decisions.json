@@ -1,0 +1,19 @@
+{
+  "name": "typed_decisions",
+  "rows": 400,
+  "decisions": 2000,
+  "sha256": "1d6c24f9709b62451ece105df85b8f293a4cde9a5a8b73721928b62876ad8365",
+  "build_report": {
+    "total": 2000,
+    "skipped": 0,
+    "reason": null,
+    "truncated": 0
+  },
+  "metrics": {
+    "accuracy": 0.607,
+    "ece": 0.04233453042805192,
+    "loss": 1.0325031679505483,
+    "record_accuracy": 0.1
+  },
+  "elapsed_seconds": 30.75
+}

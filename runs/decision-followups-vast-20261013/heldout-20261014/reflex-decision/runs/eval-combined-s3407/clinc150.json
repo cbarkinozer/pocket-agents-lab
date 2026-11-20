@@ -1,0 +1,19 @@
+{
+  "name": "clinc150",
+  "rows": 450,
+  "decisions": 450,
+  "sha256": "0a484b00b94b66d5a7aeefb564eaab9393cc737a4b5078690055e2778e8aa3bd",
+  "build_report": {
+    "total": 450,
+    "skipped": 0,
+    "reason": null,
+    "truncated": 0
+  },
+  "metrics": {
+    "accuracy": 0.8111111111111111,
+    "ece": 0.05715092739297287,
+    "loss": 0.72865550348173,
+    "record_accuracy": 0.8111111111111111
+  },
+  "elapsed_seconds": 76.29
+}

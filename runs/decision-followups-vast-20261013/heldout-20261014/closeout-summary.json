@@ -1,0 +1,33 @@
+{
+  "archive": "heldout-closeout-20261014.tar.gz",
+  "bytes": 260852840,
+  "sha256": "883959885b9280506688ab33fdeac3560fdef13ddcf4ed37d9105ff750b98a90",
+  "file_count": 94,
+  "cost": {
+    "captured_utc": "2026-10-14T19:31:20Z",
+    "instances": [
+      {
+        "id": 55976079,
+        "actual_status": "running",
+        "ssh_host": "ssh4.vast.ai",
+        "ssh_port": 12238,
+        "gpu_name": "RTX 4090",
+        "num_gpus": 1,
+        "host_id": 109053,
+        "machine_id": 36225,
+        "dph_total": 0.5303703703703704,
+        "dph_base": 0.4933333333333333,
+        "storage_cost": 0.3333333333333333,
+        "storage_total_cost": 0.037037037037037035,
+        "duration": 2096.766576051712,
+        "start_date": 1792004183.3608997,
+        "inet_up_cost": 3.90625e-06,
+        "inet_down_cost": 2.6041666666666666e-06,
+        "inet_up_billed": 35225.6,
+        "inet_down_billed": 6773800.96,
+        "inet_up": 1591.2,
+        "inet_down": 1578.4
+      }
+    ]
+  }
+}

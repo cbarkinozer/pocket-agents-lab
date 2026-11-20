@@ -1,0 +1,774 @@
+{
+  "data_dir": "C:\\Users\\barkin\\Documents\\GitHub\\pocket-agents-lab\\data\\prepared\\phone-routing-human-only-v2-20261013-r2",
+  "split_sha256": {
+    "train": "ade2036bc7b9b05ff9429bc474c1c4f99c73f396e08bae95269e7635c1c642d4",
+    "validation": "a3a4d8240a2f36d100c812baebc6171a6dcb7b58852bb1ef1bee04cb3f4cc4cb",
+    "calibration": "b4589ced22020c57b76056b0280c3998d23d3dd456122be9f75228f84e6f24fa"
+  },
+  "test_opened": false,
+  "train_route_counts": {
+    "get_device_info": 26,
+    "get_storage_info": 20,
+    "phone_health_check": 22,
+    "save_note": 20,
+    "search_local_files": 20,
+    "get_media_info": 20,
+    "get_battery_info": 25,
+    "answer": 24,
+    "search_notes": 23
+  },
+  "validation_route_counts": {
+    "get_battery_info": 10,
+    "search_notes": 10,
+    "save_note": 10,
+    "answer": 10,
+    "phone_health_check": 10,
+    "get_media_info": 10,
+    "get_storage_info": 10,
+    "get_device_info": 10,
+    "search_local_files": 10
+  },
+  "classes": [
+    "answer",
+    "get_battery_info",
+    "get_device_info",
+    "get_media_info",
+    "get_storage_info",
+    "phone_health_check",
+    "save_note",
+    "search_local_files",
+    "search_notes"
+  ],
+  "validation": {
+    "word_tfidf_logreg": {
+      "accuracy": 0.7,
+      "macro_f1": 0.692370519696988,
+      "log_loss": 1.4965363247669154,
+      "ece_10_bins": 0.4206001714147491,
+      "per_route": {
+        "answer": {
+          "precision": 0.5,
+          "recall": 0.2,
+          "f1-score": 0.2857142857142857,
+          "support": 10.0
+        },
+        "get_battery_info": {
+          "precision": 0.6923076923076923,
+          "recall": 0.9,
+          "f1-score": 0.782608695652174,
+          "support": 10.0
+        },
+        "get_device_info": {
+          "precision": 0.45454545454545453,
+          "recall": 1.0,
+          "f1-score": 0.625,
+          "support": 10.0
+        },
+        "get_media_info": {
+          "precision": 0.75,
+          "recall": 0.6,
+          "f1-score": 0.6666666666666666,
+          "support": 10.0
+        },
+        "get_storage_info": {
+          "precision": 0.75,
+          "recall": 0.6,
+          "f1-score": 0.6666666666666666,
+          "support": 10.0
+        },
+        "phone_health_check": {
+          "precision": 0.7777777777777778,
+          "recall": 0.7,
+          "f1-score": 0.7368421052631579,
+          "support": 10.0
+        },
+        "save_note": {
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1-score": 0.8888888888888888,
+          "support": 10.0
+        },
+        "search_local_files": {
+          "precision": 0.7777777777777778,
+          "recall": 0.7,
+          "f1-score": 0.7368421052631579,
+          "support": 10.0
+        },
+        "search_notes": {
+          "precision": 0.8888888888888888,
+          "recall": 0.8,
+          "f1-score": 0.8421052631578947,
+          "support": 10.0
+        },
+        "accuracy": 0.7,
+        "macro avg": {
+          "precision": 0.7323663990330657,
+          "recall": 0.7,
+          "f1-score": 0.692370519696988,
+          "support": 90.0
+        },
+        "weighted avg": {
+          "precision": 0.7323663990330657,
+          "recall": 0.7,
+          "f1-score": 0.692370519696988,
+          "support": 90.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          2,
+          0,
+          6,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          9,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          2,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          3,
+          0,
+          6,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          1,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          8,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          7,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          8
+        ]
+      ],
+      "errors": [
+        {
+          "id": "pr_get_battery_info_train_018",
+          "text": "How much battery life do I have left?",
+          "gold": "get_battery_info",
+          "predicted": "get_storage_info",
+          "confidence": 0.20379585651569448,
+          "scenario": "battery_level"
+        },
+        {
+          "id": "pr_answer_train_025",
+          "text": "What is the boiling point of water?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.2932751069476138,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_answer_train_076",
+          "text": "What is the area of a circle with radius 5?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.2711264056757196,
+          "scenario": "arithmetic"
+        },
+        {
+          "id": "pr_get_media_info_train_079",
+          "text": "Is noise cancellation on during playback?",
+          "gold": "get_media_info",
+          "predicted": "get_battery_info",
+          "confidence": 0.15389449673967528,
+          "scenario": "other"
+        },
+        {
+          "id": "pr_get_storage_info_train_086",
+          "text": "Can I download this 300MB model file?",
+          "gold": "get_storage_info",
+          "predicted": "get_device_info",
+          "confidence": 0.16039417174327553,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_get_storage_info_train_036",
+          "text": "Is 10GB enough for what I need?",
+          "gold": "get_storage_info",
+          "predicted": "answer",
+          "confidence": 0.15681342963823158,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_search_local_files_train_034",
+          "text": "Is there a file called itinerary on my phone?",
+          "gold": "search_local_files",
+          "predicted": "phone_health_check",
+          "confidence": 0.1738667077738385,
+          "scenario": "by_filename"
+        },
+        {
+          "id": "pr_phone_health_check_train_085",
+          "text": "Is my phone in shape for the camping trip?",
+          "gold": "phone_health_check",
+          "predicted": "get_battery_info",
+          "confidence": 0.3022154476624729,
+          "scenario": "trip_readiness"
+        },
+        {
+          "id": "pr_phone_health_check_train_010",
+          "text": "Is there a problem with any of my phone's resources?",
+          "gold": "phone_health_check",
+          "predicted": "get_device_info",
+          "confidence": 0.1760940214653614,
+          "scenario": "issue_diagnosis"
+        },
+        {
+          "id": "pr_get_storage_info_train_020",
+          "text": "What is the internal storage size?",
+          "gold": "get_storage_info",
+          "predicted": "get_device_info",
+          "confidence": 0.17178954963883616,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_get_storage_info_train_049",
+          "text": "Is this a 64GB or 128GB phone?",
+          "gold": "get_storage_info",
+          "predicted": "get_device_info",
+          "confidence": 0.46020033868903293,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_answer_train_087",
+          "text": "What is the plural of 'analysis'?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.2932751069476138,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_save_note_train_076",
+          "text": "Note the pickup address for me",
+          "gold": "save_note",
+          "predicted": "answer",
+          "confidence": 0.15085198587813456,
+          "scenario": "explicit_save"
+        },
+        {
+          "id": "pr_answer_train_068",
+          "text": "What is Occam's razor?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.24449800711455122,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_answer_train_011",
+          "text": "What is the Higgs boson?",
+          "gold": "answer",
+          "predicted": "get_media_info",
+          "confidence": 0.22323043673888038,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_get_media_info_train_019",
+          "text": "Is this audio lossless?",
+          "gold": "get_media_info",
+          "predicted": "get_device_info",
+          "confidence": 0.48768122505578804,
+          "scenario": "metadata"
+        },
+        {
+          "id": "pr_get_media_info_train_085",
+          "text": "Is my phone connected to the car audio right now?",
+          "gold": "get_media_info",
+          "predicted": "get_battery_info",
+          "confidence": 0.3488552826044178,
+          "scenario": "other"
+        },
+        {
+          "id": "pr_search_local_files_train_090",
+          "text": "Is there a file named medical_report in my downloads?",
+          "gold": "search_local_files",
+          "predicted": "get_storage_info",
+          "confidence": 0.13273862385772225,
+          "scenario": "by_filename"
+        },
+        {
+          "id": "pr_search_notes_train_053",
+          "text": "Search my saved notes",
+          "gold": "search_notes",
+          "predicted": "search_local_files",
+          "confidence": 0.18492737038727575,
+          "scenario": "recall_specific"
+        },
+        {
+          "id": "pr_search_notes_train_082",
+          "text": "Search my notes for the address",
+          "gold": "search_notes",
+          "predicted": "search_local_files",
+          "confidence": 0.17466305239474658,
+          "scenario": "by_topic"
+        },
+        {
+          "id": "pr_answer_train_093",
+          "text": "What is a calorie?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.24449800711455122,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_phone_health_check_train_024",
+          "text": "How is the phone's overall condition?",
+          "gold": "phone_health_check",
+          "predicted": "get_battery_info",
+          "confidence": 0.1544935934060626,
+          "scenario": "overall_condition"
+        },
+        {
+          "id": "pr_answer_train_021",
+          "text": "Why is the sky blue?",
+          "gold": "answer",
+          "predicted": "get_media_info",
+          "confidence": 0.18263794565184532,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_get_media_info_train_057",
+          "text": "Is this from Spotify or Apple Music?",
+          "gold": "get_media_info",
+          "predicted": "get_device_info",
+          "confidence": 0.337770248200566,
+          "scenario": "metadata"
+        },
+        {
+          "id": "pr_save_note_train_041",
+          "text": "Save note: annual subscription renews on December 1st",
+          "gold": "save_note",
+          "predicted": "search_notes",
+          "confidence": 0.2641302225933425,
+          "scenario": "explicit_save"
+        },
+        {
+          "id": "pr_search_local_files_train_064",
+          "text": "Is there a file called passport_scan on my phone?",
+          "gold": "search_local_files",
+          "predicted": "phone_health_check",
+          "confidence": 0.1738667077738385,
+          "scenario": "by_filename"
+        },
+        {
+          "id": "pr_answer_train_098",
+          "text": "What is the sum of interior angles in a triangle?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.24920944009995716,
+          "scenario": "general_knowledge"
+        }
+      ]
+    },
+    "char_tfidf_logreg": {
+      "accuracy": 0.8,
+      "macro_f1": 0.8056378195439083,
+      "log_loss": 1.4076192660944384,
+      "ece_10_bins": 0.5213117184974732,
+      "per_route": {
+        "answer": {
+          "precision": 0.8,
+          "recall": 0.4,
+          "f1-score": 0.5333333333333333,
+          "support": 10.0
+        },
+        "get_battery_info": {
+          "precision": 0.8333333333333334,
+          "recall": 1.0,
+          "f1-score": 0.9090909090909091,
+          "support": 10.0
+        },
+        "get_device_info": {
+          "precision": 0.45454545454545453,
+          "recall": 1.0,
+          "f1-score": 0.625,
+          "support": 10.0
+        },
+        "get_media_info": {
+          "precision": 1.0,
+          "recall": 0.7,
+          "f1-score": 0.8235294117647058,
+          "support": 10.0
+        },
+        "get_storage_info": {
+          "precision": 1.0,
+          "recall": 0.7,
+          "f1-score": 0.8235294117647058,
+          "support": 10.0
+        },
+        "phone_health_check": {
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1-score": 0.8888888888888888,
+          "support": 10.0
+        },
+        "save_note": {
+          "precision": 1.0,
+          "recall": 0.9,
+          "f1-score": 0.9473684210526315,
+          "support": 10.0
+        },
+        "search_local_files": {
+          "precision": 0.8,
+          "recall": 0.8,
+          "f1-score": 0.8,
+          "support": 10.0
+        },
+        "search_notes": {
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1-score": 0.9,
+          "support": 10.0
+        },
+        "accuracy": 0.8,
+        "macro avg": {
+          "precision": 0.8653198653198654,
+          "recall": 0.8,
+          "f1-score": 0.8056378195439083,
+          "support": 90.0
+        },
+        "weighted avg": {
+          "precision": 0.8653198653198653,
+          "recall": 0.8,
+          "f1-score": 0.8056378195439082,
+          "support": 90.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          4,
+          0,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          0,
+          7,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0,
+          0,
+          8,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          9,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          8,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          9
+        ]
+      ],
+      "errors": [
+        {
+          "id": "pr_answer_train_025",
+          "text": "What is the boiling point of water?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.16355800533103013,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_answer_train_076",
+          "text": "What is the area of a circle with radius 5?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.2060920640927568,
+          "scenario": "arithmetic"
+        },
+        {
+          "id": "pr_get_storage_info_train_086",
+          "text": "Can I download this 300MB model file?",
+          "gold": "get_storage_info",
+          "predicted": "search_local_files",
+          "confidence": 0.20970651717828698,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_get_storage_info_train_036",
+          "text": "Is 10GB enough for what I need?",
+          "gold": "get_storage_info",
+          "predicted": "answer",
+          "confidence": 0.1546562727527198,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_search_local_files_train_034",
+          "text": "Is there a file called itinerary on my phone?",
+          "gold": "search_local_files",
+          "predicted": "get_device_info",
+          "confidence": 0.1721320559754034,
+          "scenario": "by_filename"
+        },
+        {
+          "id": "pr_phone_health_check_train_085",
+          "text": "Is my phone in shape for the camping trip?",
+          "gold": "phone_health_check",
+          "predicted": "get_battery_info",
+          "confidence": 0.17011547727130394,
+          "scenario": "trip_readiness"
+        },
+        {
+          "id": "pr_phone_health_check_train_010",
+          "text": "Is there a problem with any of my phone's resources?",
+          "gold": "phone_health_check",
+          "predicted": "get_device_info",
+          "confidence": 0.19747302192517094,
+          "scenario": "issue_diagnosis"
+        },
+        {
+          "id": "pr_get_storage_info_train_049",
+          "text": "Is this a 64GB or 128GB phone?",
+          "gold": "get_storage_info",
+          "predicted": "get_device_info",
+          "confidence": 0.4495654445517534,
+          "scenario": "capacity_check"
+        },
+        {
+          "id": "pr_answer_train_087",
+          "text": "What is the plural of 'analysis'?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.20585886826813016,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_save_note_train_076",
+          "text": "Note the pickup address for me",
+          "gold": "save_note",
+          "predicted": "search_notes",
+          "confidence": 0.17822649972159493,
+          "scenario": "explicit_save"
+        },
+        {
+          "id": "pr_answer_train_068",
+          "text": "What is Occam's razor?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.18919780646129625,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_answer_train_011",
+          "text": "What is the Higgs boson?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.17290298820093772,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_get_media_info_train_019",
+          "text": "Is this audio lossless?",
+          "gold": "get_media_info",
+          "predicted": "get_device_info",
+          "confidence": 0.18628244810889086,
+          "scenario": "metadata"
+        },
+        {
+          "id": "pr_get_media_info_train_085",
+          "text": "Is my phone connected to the car audio right now?",
+          "gold": "get_media_info",
+          "predicted": "get_battery_info",
+          "confidence": 0.18749534970310056,
+          "scenario": "other"
+        },
+        {
+          "id": "pr_search_notes_train_082",
+          "text": "Search my notes for the address",
+          "gold": "search_notes",
+          "predicted": "search_local_files",
+          "confidence": 0.2460586310954818,
+          "scenario": "by_topic"
+        },
+        {
+          "id": "pr_answer_train_093",
+          "text": "What is a calorie?",
+          "gold": "answer",
+          "predicted": "get_device_info",
+          "confidence": 0.20174776479821,
+          "scenario": "general_knowledge"
+        },
+        {
+          "id": "pr_get_media_info_train_057",
+          "text": "Is this from Spotify or Apple Music?",
+          "gold": "get_media_info",
+          "predicted": "get_device_info",
+          "confidence": 0.20698165411619573,
+          "scenario": "metadata"
+        },
+        {
+          "id": "pr_search_local_files_train_064",
+          "text": "Is there a file called passport_scan on my phone?",
+          "gold": "search_local_files",
+          "predicted": "get_device_info",
+          "confidence": 0.16978687995422442,
+          "scenario": "by_filename"
+        }
+      ]
+    }
+  },
+  "selected_by_validation_macro_f1": "char_tfidf_logreg",
+  "calibration": {
+    "rows": 90,
+    "temperature": 0.25000514231794124,
+    "uncalibrated_log_loss": 1.4265113391906545,
+    "calibrated_log_loss_in_sample": 0.7126463576481521,
+    "uncalibrated_ece_10_bins": 0.5222421165483883,
+    "calibrated_ece_10_bins_in_sample": 0.1198750691298008,
+    "warning": "Temperature is fitted and measured on the same 90 calibration rows; improvement is in-sample."
+  },
+  "versions": {
+    "scikit_learn": "1.9.1",
+    "numpy": "2.4.6"
+  }
+}

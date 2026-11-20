@@ -1,0 +1,23 @@
+{
+  "rows": 781,
+  "route_counts": {
+    "get_device_info": 89,
+    "get_media_info": 87,
+    "search_local_files": 86,
+    "get_storage_info": 88,
+    "save_note": 86,
+    "get_battery_info": 82,
+    "phone_health_check": 86,
+    "answer": 89,
+    "search_notes": 88
+  },
+  "train_sha256": "c01503a65e182b0eb68181fcfcdd0e775c3ea4b9a3039ee9f3abcb4f05d7a2b4",
+  "source": "phone-routing-human-reviewed-v2-1080-fixedval-20261013/train.jsonl",
+  "source_archive_sha256": "883959885b9280506688ab33fdeac3560fdef13ddcf4ed37d9105ff750b98a90",
+  "model_repo": "cbarkinozer/Reflex-1",
+  "included_splits": [
+    "train"
+  ],
+  "general_training_included": false,
+  "modified_from_training": false
+}

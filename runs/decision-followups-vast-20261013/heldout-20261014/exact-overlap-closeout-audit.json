@@ -1,0 +1,26 @@
+{
+  "typed_decisions": {
+    "general/train": 0,
+    "general/val": 0,
+    "general/calibration": 0,
+    "phone/train": 0,
+    "phone/validation": 0,
+    "phone/calibration": 0
+  },
+  "banking77": {
+    "general/train": 0,
+    "general/val": 0,
+    "general/calibration": 0,
+    "phone/train": 0,
+    "phone/validation": 0,
+    "phone/calibration": 0
+  },
+  "clinc150": {
+    "general/train": 0,
+    "general/val": 0,
+    "general/calibration": 0,
+    "phone/train": 0,
+    "phone/validation": 0,
+    "phone/calibration": 0
+  }
+}

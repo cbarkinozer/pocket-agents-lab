@@ -1,0 +1,15 @@
+{
+  "format": "unsloth-decision-gguf",
+  "version": 1,
+  "layout": "clef",
+  "quantizations": [
+    "Q4_K_M"
+  ],
+  "files": {
+    "Q4_K_M": {
+      "model": "model-Q4_K_M.gguf",
+      "mmproj": "mmproj-Q8_0.gguf"
+    }
+  },
+  "source_fingerprint": "5089f0d7e22510472f36b98ad63f1351f6c086a95b00421f9c2dc8badb8ef960"
+}

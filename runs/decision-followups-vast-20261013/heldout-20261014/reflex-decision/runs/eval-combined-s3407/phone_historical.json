@@ -1,0 +1,19 @@
+{
+  "name": "phone_historical",
+  "rows": 88,
+  "decisions": 88,
+  "sha256": "bc2693ff6b8ccb16eeb1df0a76127e38ed426f0cb0479f0ecbacd64793cd0447",
+  "build_report": {
+    "total": 88,
+    "skipped": 0,
+    "reason": null,
+    "truncated": 0
+  },
+  "metrics": {
+    "accuracy": 0.9659090909090909,
+    "ece": 0.03610237552361051,
+    "loss": 0.13148646092155436,
+    "record_accuracy": 0.9659090909090909
+  },
+  "elapsed_seconds": 24.04
+}
