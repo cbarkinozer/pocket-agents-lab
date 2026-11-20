@@ -1,0 +1,65 @@
+{
+  "note": "Local artifacts excluded from Git; files preserved on disk.",
+  "files": [
+    {
+      "path": "runs/decision-followups-full-gpu-inputs-20261013.zip",
+      "bytes": 1957051,
+      "sha256": "0549f580f769067a4a018aed5a39f35040682af28b5e663e190290579102e3e8"
+    },
+    {
+      "path": "runs/decision-followups-vast-20261013/hf-release-Reflex-1/adapter/adapter_model.safetensors",
+      "bytes": 43346432,
+      "sha256": "30e1aa405b994d72a2f89bb04897f601014b3414789b85df22d06c116aa42a7a"
+    },
+    {
+      "path": "runs/decision-followups-vast-20261013/hf-release-Reflex-1/adapter/joint_head.safetensors",
+      "bytes": 54661902,
+      "sha256": "2d27f016b2d8e0714ccb2f2f06d42831a4fa68d6b5e7356a72677407e15ceff4"
+    },
+    {
+      "path": "runs/decision-followups-vast-20261013/hf-release-Reflex-1/adapter/tokenizer.json",
+      "bytes": 19989343,
+      "sha256": "87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4"
+    },
+    {
+      "path": "runs/decision-followups-vast-20261013/hf-release-Reflex-1/gguf/mmproj-Q8_0.gguf",
+      "bytes": 115923136,
+      "sha256": "37800be294d8c041e6146516b636414b8a75d0dd0878b08f6e0282e471790f94"
+    },
+    {
+      "path": "runs/decision-followups-vast-20261013/hf-release-Reflex-1/gguf/model-Q4_K_M.gguf",
+      "bytes": 545161248,
+      "sha256": "abfea5f878331206f65e4117157984e14803b093b634c0ed52513c0723ef0699"
+    },
+    {
+      "path": "runs/phone-routing-reviewed-v2-cpu-baseline-20261013-r2/selected-baseline.joblib",
+      "bytes": 430036,
+      "sha256": "2ff511eeca58e032e0f0b5fb2609c7055bec2f9ed9488b54cd0105687a972068"
+    },
+    {
+      "path": "runs/phone-routing-reviewed-v2-cpu-baseline-20261013/selected-baseline.joblib",
+      "bytes": 430036,
+      "sha256": "2ff511eeca58e032e0f0b5fb2609c7055bec2f9ed9488b54cd0105687a972068"
+    },
+    {
+      "path": "runs/phone-routing-reviewed-v2-full-cpu-baseline-20261013/selected-baseline.joblib",
+      "bytes": 957252,
+      "sha256": "2ed6be6d06c6309caf7481fdd84b69f799250963d5d1a974aba44e3c2791d88d"
+    },
+    {
+      "path": "runs/phone-routing-reviewed-v2-full-fixedval-cpu-baseline-20261013/selected-baseline.joblib",
+      "bytes": 949940,
+      "sha256": "ef3381a2bc85ce02a77607a02b56c5248cdc7aacff640251b65fc0db60ecbaf1"
+    },
+    {
+      "path": "runs/phone-routing-reviewed-v2-full-gpu-inputs-20261013.zip",
+      "bytes": 88862,
+      "sha256": "d23839fbbf693b9ea6d4c07284ce42c9d49119532a758576d246198f95946145"
+    },
+    {
+      "path": "runs/phone-routing-reviewed-v2-gpu-inputs-20261013.zip",
+      "bytes": 51119,
+      "sha256": "3a98da915210a72d38d8e64ce2daff2702dbab6d5d8416f77c28151a2edc0eaa"
+    }
+  ]
+}

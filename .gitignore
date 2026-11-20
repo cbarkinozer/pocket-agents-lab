@@ -14,3 +14,10 @@ runs/**/*.tar.gz
 
 # Prepared by tools/prepare_reflex_android_runtime.py from pinned Android runtime.
 app/src/main/jniLibs/
+
+# Local model binaries and input archives; provenance stays tracked.
+runs/**/*.zip
+runs/**/*.gguf
+runs/**/*.safetensors
+runs/**/*.joblib
+runs/**/tokenizer.json
